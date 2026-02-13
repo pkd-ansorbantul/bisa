@@ -513,25 +513,30 @@
     <div class="row align-items-center">
       <div class="col-lg-6">
         <p style="font-size:1.2rem; line-height:1.7;">Portal digital <strong>Pelatihan Kepemimpinan Dasar (PKD) GP Ansor Kabupaten Bantul</strong>.</p>
-        <p class="mb-4">Gunakan menu di atas untuk mengikuti rangkaian kegiatan:</p>
+        <p class="mb-4">Gunakan menu di atas atau klik langsung menu di bawah untuk mengikuti rangkaian kegiatan:</p>
         <div class="d-flex flex-column gap-3">
-          <div class="d-flex align-items-center">
+          <!-- Pre-test -->
+          <div class="d-flex align-items-center" data-section="pretest" style="cursor: pointer;" role="button">
             <div class="feature-icon me-3"><i class="bi bi-pencil-square"></i></div>
             <div><strong>Pre-test</strong><br><span class="text-muted">Uji pengetahuan awal sebelum pelatihan.</span></div>
           </div>
-          <div class="d-flex align-items-center">
+          <!-- Post-test -->
+          <div class="d-flex align-items-center" data-section="posttest" style="cursor: pointer;" role="button">
             <div class="feature-icon me-3"><i class="bi bi-trophy"></i></div>
             <div><strong>Post-test</strong><br><span class="text-muted">Evaluasi setelah materi selesai.</span></div>
           </div>
-          <div class="d-flex align-items-center">
+          <!-- Absen Digital -->
+          <div class="d-flex align-items-center" data-section="absen" style="cursor: pointer;" role="button">
             <div class="feature-icon me-3"><i class="bi bi-qr-code"></i></div>
             <div><strong>Absen Digital</strong><br><span class="text-muted">Scan QR atau masukkan password sesi.</span></div>
           </div>
-          <div class="d-flex align-items-center">
+          <!-- Skrining -->
+          <div class="d-flex align-items-center" data-section="skrining" style="cursor: pointer;" role="button">
             <div class="feature-icon me-3"><i class="bi bi-clipboard-check"></i></div>
             <div><strong>Skrining</strong><br><span class="text-muted">Form pendataan awal peserta.</span></div>
           </div>
-          <div class="d-flex align-items-center">
+          <!-- Materi -->
+          <div class="d-flex align-items-center" data-section="materi" style="cursor: pointer;" role="button">
             <div class="feature-icon me-3"><i class="bi bi-file-earmark-pdf"></i></div>
             <div><strong>Materi</strong><br><span class="text-muted">Akses materi pelatihan, tayangkan langsung.</span></div>
           </div>
@@ -3309,6 +3314,14 @@
   window.onload = function() {
     loadAuthState();
     loadAllData().catch(console.warn);
+
+    // Event listener untuk menu di beranda (yang dapat diklik)
+    document.querySelectorAll('#berandaSection [data-section]').forEach(el => {
+      el.addEventListener('click', function(e) {
+        e.preventDefault();
+        navigateToSection(this.dataset.section);
+      });
+    });
 
     document.getElementById('simpanMateriBtn')?.addEventListener('click', submitMateri);
 
