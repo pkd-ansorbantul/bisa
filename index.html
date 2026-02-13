@@ -16,13 +16,14 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
   
   <style>
+    /* ========== GAYA ASLI TETAP ========== */
     .navbar-brand {
       line-height: 1.2;
     }
     .brand-title {
       font-size: 1.35rem;
       font-weight: 700;
-      color: #0a3d62; /* Warna gelap khas Ansor */
+      color: #0a3d62;
     }
     .brand-sub {
       font-size: 0.9rem;
@@ -37,7 +38,6 @@
       width: auto;
       margin-right: 12px;
     }
-    /* Menu aktif / hover */
     .nav-link.active {
       font-weight: 600;
       color: #0a3d62 !important;
@@ -57,7 +57,6 @@
         font-size: 1.2rem;
       }
     }
-    /* ===== MODERN, RINGAN, DAN BERSIH ===== */
     * { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
     body {
       background: #f8fafc;
@@ -273,7 +272,6 @@
     .toast.border-success { border-left-color: #28a745; }
     .toast.border-danger { border-left-color: #dc3545; }
 
-    /* Gaya khusus Beranda */
     .feature-icon {
       font-size: 2.2rem;
       color: #2563eb;
@@ -292,36 +290,46 @@
       .quiz-header { flex-direction: column; gap: 10px; }
       .container-card { padding: 1.5rem; }
     }
+
+    /* ===== GAYA TAMBAHAN MATERI ===== */
+    .preview-materi-btn {
+      transition: all 0.2s;
+    }
+    .preview-materi-btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 14px rgba(37,99,235,0.25);
+    }
+    #previewMateriModal .modal-content {
+      background: #0f172a;
+    }
   </style>
 </head>
 <body>
 
-<!-- ==================== NAVBAR MODERN – URUTAN BARU ==================== -->
-<!-- Navbar Sticky Top dengan dua baris teks brand -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
-    <div class="container">
-      <!-- Brand: Logo + Teks dua baris -->
-      <a class="navbar-brand d-flex align-items-center" href="#">
-        <img src="LOGO ANSOR.webp" alt="GP Ansor" class="me-2">
-        <span>
-          <span class="brand-title">PKD GP Ansor</span>
-          <span class="brand-sub">Kabupaten Bantul</span>
-        </span>
-      </a>
-   <!-- Tombol toggler untuk mobile -->
-      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
-        aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+<!-- ==================== NAVBAR MODERN ==================== -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <img src="LOGO ANSOR.webp" alt="GP Ansor" class="me-2">
+      <span>
+        <span class="brand-title">PKD GP Ansor</span>
+        <span class="brand-sub">Kabupaten Bantul</span>
+      </span>
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+      aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
     <div class="collapse navbar-collapse" id="navbarMain">
       <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-        <!-- BERANDA (urutan pertama, aktif default) -->
+        <!-- BERANDA -->
         <li class="nav-item"><a class="nav-link active" href="#" data-section="beranda"><i class="bi bi-house-door"></i>Beranda</a></li>
         <li class="nav-item"><a class="nav-link" href="#" data-section="pretest"><i class="bi bi-pencil-square"></i>Pre-test</a></li>
         <li class="nav-item"><a class="nav-link" href="#" data-section="posttest"><i class="bi bi-trophy"></i>Post-test</a></li>
         <li class="nav-item"><a class="nav-link" href="#" data-section="absen"><i class="bi bi-qr-code"></i>Absen</a></li>
-        <!-- SKRINING dipindah ke samping Absen -->
         <li class="nav-item"><a class="nav-link" href="#" data-section="skrining"><i class="bi bi-clipboard-check"></i>Skrining</a></li>
+        <!-- ===== MENU MATERI ===== -->
+        <li class="nav-item"><a class="nav-link" href="#" data-section="materi"><i class="bi bi-file-earmark-pdf"></i>Materi</a></li>
         <li class="nav-item" id="adminMenuItem" style="display: none;"><a class="nav-link" href="#" data-section="admin"><i class="bi bi-gear-wide"></i>Admin</a></li>
       </ul>
       <div class="d-flex align-items-center gap-2">
@@ -408,6 +416,66 @@
   </div>
 </div>
 
+<!-- ==================== MODAL UPLOAD MATERI (ADMIN) ==================== -->
+<div class="modal fade" id="uploadMateriModal" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white border-0 rounded-top-4">
+        <h5 class="modal-title"><i class="bi bi-upload me-2"></i>Upload Materi</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Judul Materi</label>
+          <input type="text" class="form-control" id="materiJudul" placeholder="Contoh: ASWAJA 1" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Deskripsi (opsional)</label>
+          <textarea class="form-control" id="materiDeskripsi" rows="2"></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">File (PDF/PPT/PPTX)</label>
+          <input type="file" class="form-control" id="materiFile" accept=".pdf,.ppt,.pptx" required>
+          <div class="form-text text-muted">Maksimal 20 MB.</div>
+        </div>
+        <div id="uploadMateriError" class="text-danger small" style="display: none;"></div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary rounded-pill px-4" id="simpanMateriBtn">Upload</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL PREVIEW MATERI ==================== -->
+<div class="modal fade" id="previewMateriModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="background: #1e1e2f; border-radius: 20px;">
+      <div class="modal-header bg-dark text-white border-0 rounded-top-4">
+        <h5 class="modal-title" id="previewMateriLabel">
+          <i class="bi bi-file-earmark-play me-2"></i><span id="previewMateriJudul">Pratinjau Materi</span>
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-0 d-flex justify-content-center align-items-center" style="min-height: 70vh; background: #0f172a; border-radius: 0 0 20px 20px; position: relative;">
+        <div id="previewMateriSpinner" class="position-absolute top-50 start-50 translate-middle">
+          <div class="spinner-border text-light" role="status">
+            <span class="visually-hidden">Memuat...</span>
+          </div>
+        </div>
+        <iframe id="previewMateriIframe" src="" style="width: 100%; height: 80vh; border: none; border-radius: 0 0 20px 20px;" allowfullscreen onload="document.getElementById('previewMateriSpinner').style.display='none';"></iframe>
+      </div>
+      <div class="modal-footer border-0 bg-dark rounded-bottom-4">
+        <button type="button" class="btn btn-outline-light rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
+        <a id="previewMateriDownloadBtn" href="#" target="_blank" class="btn btn-primary rounded-pill px-4">
+          <i class="bi bi-download me-1"></i>Unduh
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ==================== MODAL DETAIL ADMIN ==================== -->
 <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
@@ -439,7 +507,7 @@
 
 <!-- ==================== KONTEN UTAMA ==================== -->
 <div id="contentArea">
-  <!-- BERANDA SECTION (baru) -->
+  <!-- BERANDA SECTION -->
   <section id="berandaSection" class="container container-card">
     <h2 class="section-title"><i class="bi bi-house-heart-fill me-2"></i>Selamat Datang di Sistem PKD</h2>
     <div class="row align-items-center">
@@ -463,6 +531,10 @@
             <div class="feature-icon me-3"><i class="bi bi-clipboard-check"></i></div>
             <div><strong>Skrining</strong><br><span class="text-muted">Form pendataan awal peserta.</span></div>
           </div>
+          <div class="d-flex align-items-center">
+            <div class="feature-icon me-3"><i class="bi bi-file-earmark-pdf"></i></div>
+            <div><strong>Materi</strong><br><span class="text-muted">Akses materi pelatihan, tayangkan langsung.</span></div>
+          </div>
         </div>
       </div>
       <div class="col-lg-6 text-center">
@@ -476,7 +548,7 @@
     </div>
   </section>
 
-  <!-- SKRINING SECTION (dulu homeSection, sekarang skriningSection) -->
+  <!-- SKRINING SECTION -->
   <section id="skriningSection" class="container container-card" style="display: none;">
     <h2 class="section-title"><i class="bi bi-clipboard-check me-2"></i>Form Skrining PKD</h2>
     <div id="skriningFormContainer">Memuat form...</div>
@@ -500,6 +572,12 @@
     <div id="absenContainer">Memuat daftar sesi...</div>
   </section>
 
+  <!-- ===== MATERI SECTION (PUBLIC) ===== -->
+  <section id="materiSection" class="container container-card" style="display: none;">
+    <h2 class="section-title"><i class="bi bi-journal-bookmark-fill me-2"></i>Materi Pelatihan</h2>
+    <div id="materiContainer">Memuat daftar materi...</div>
+  </section>
+
   <!-- ADMIN SECTION -->
   <section id="adminSection" class="container container-card" style="display: none;">
     <h2 class="section-title"><i class="bi bi-shield-lock me-2"></i>Panel Admin</h2>
@@ -508,6 +586,8 @@
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#adminPretest">🧠 Pre-test</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#adminPosttest">🎯 Post-test</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#adminSesi">📆 Sesi Absen</button></li>
+      <!-- ===== TAB MATERI UNTUK ADMIN ===== -->
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#adminMateri">📁 Materi</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#adminSkriningData">📋 Data Skrining</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#adminPretestData">🧠 Data Pre-test</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#adminPosttestData">🎯 Data Posttest</button></li>
@@ -519,6 +599,7 @@
       <div class="tab-pane fade" id="adminPretest">Memuat...</div>
       <div class="tab-pane fade" id="adminPosttest">Memuat...</div>
       <div class="tab-pane fade" id="adminSesi">Memuat...</div>
+      <div class="tab-pane fade" id="adminMateri">Memuat...</div>
       <div class="tab-pane fade" id="adminSkriningData">Memuat...</div>
       <div class="tab-pane fade" id="adminPretestData">Memuat...</div>
       <div class="tab-pane fade" id="adminPosttestData">Memuat...</div>
@@ -539,12 +620,12 @@
 <!-- ==================== BOOTSTRAP JS ==================== -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- ==================== SCRIPT UTAMA (LENGKAP) ==================== -->
+<!-- ==================== SCRIPT UTAMA (LENGKAP + MATERI) ==================== -->
 <script>
   // =====================================================
-  //   KONFIGURASI & STATE
+  //   KONFIGURASI & STATE (ASLI + MATERI)
   // =====================================================
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycby-eSRTqKfXcC5OEobvVp3OqQmmlG8FGyl1AwrQ1qplm_P8LsPw1D58ostmKMe6A23j/exec'; // GANTI DENGAN URL DEPLOY ANDA!
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbwbvFaN_rTUYZfP8wHR_Z_Ji9LTWfpa8AL6ibBj-zv3GPGCaYEmv3Zh0mZucXceZT2O/exec'; // GANTI DENGAN URL DEPLOY ANDA!
   const CACHE_DURATION = 3600000;
   const CACHE_KEY = 'pkd_global_cache';
 
@@ -555,6 +636,7 @@
     sesiAbsen: null,
     quizSettings: null,
     absensiList: null,
+    materiList: null,
     lastFetch: 0
   };
 
@@ -562,10 +644,8 @@
   let pendingAllDataPromise = null;
 
   let isAdmin = false;
-  // unlockedMenus disesuaikan: beranda, skrining, pretest, posttest, absen
-  const unlockedMenus = { beranda: false, skrining: false, pretest: false, posttest: false, absen: false };
+  const unlockedMenus = { beranda: false, skrining: false, pretest: false, posttest: false, absen: false, materi: false };
 
-  // Variabel quiz (dapat diakses di seluruh fungsi)
   let pretestQuiz = null;
   let posttestQuiz = null;
 
@@ -702,6 +782,7 @@
             sesiAbsen:         res.sesiAbsen         || [],
             quizSettings:      res.quizSettings      || {},
             absensiList:       res.absensiList       || [],
+            materiList:        res.materiList        || [],
             lastFetch: Date.now()
           };
           localStorage.setItem(CACHE_KEY, JSON.stringify(globalCache));
@@ -748,6 +829,11 @@
     return all.absensiList || [];
   }
 
+  async function fetchMateriList(forceRefresh = false) {
+    const all = await loadAllData(forceRefresh);
+    return all.materiList || [];
+  }
+
   function invalidateCache() {
     globalCache = {
       skriningQuestions: null,
@@ -756,6 +842,7 @@
       sesiAbsen: null,
       quizSettings: null,
       absensiList: null,
+      materiList: null,
       lastFetch: 0
     };
     localStorage.removeItem(CACHE_KEY);
@@ -791,7 +878,7 @@
   }
 
   // =====================================================
-  //   NAVIGASI – DENGAN BERANDA & SKRINING
+  //   NAVIGASI
   // =====================================================
   document.querySelectorAll('.nav-link[data-section]').forEach(link => {
     link.addEventListener('click', function(e) {
@@ -801,17 +888,13 @@
   });
 
   async function navigateToSection(section) {
-    // Hapus active dari semua nav-link
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-    // Aktifkan nav-link yang sesuai
     document.querySelector(`.nav-link[data-section="${section}"]`)?.classList.add('active');
 
-    // Untuk semua user (admin/non-admin) langsung tampilkan section
     showSection(section);
   }
 
   function showSection(sectionId) {
-    // Hentikan timer pretest/posttest jika keluar dari halaman quiz
     if (sectionId !== 'pretest' && pretestQuiz?.timer) {
       clearInterval(pretestQuiz.timer);
       pretestQuiz.timer = null;
@@ -821,31 +904,30 @@
       posttestQuiz.timer = null;
     }
 
-    // Sembunyikan semua section
     document.querySelectorAll('#contentArea > section').forEach(s => s.style.display = 'none');
     const target = document.getElementById(sectionId + 'Section');
     if (target) target.style.display = 'block';
 
-    // Panggil fungsi load sesuai section
-    if (sectionId === 'beranda') {
-      // Beranda statis, tidak perlu load data
-    }
     if (sectionId === 'skrining') loadSkriningForm();
     if (sectionId === 'pretest') loadPretest();
     if (sectionId === 'posttest') loadPosttest();
     if (sectionId === 'absen') loadAbsenSesi();
+    if (sectionId === 'materi') loadMateriList();
+
     if (sectionId === 'admin' && isAdmin) {
       loadAdminSkrining();
       loadAdminPretest();
       loadAdminPosttest();
       loadAdminSesi();
       loadAdminQuizSettings();
+      loadAdminMateri();
 
       const dataTabs = [
         { target: '#adminSkriningData', handler: loadAdminSkriningData },
         { target: '#adminPretestData',  handler: loadAdminPretestData },
         { target: '#adminPosttestData', handler: loadAdminPosttestData },
-        { target: '#adminAbsensiData',  handler: loadAdminAbsensiData }
+        { target: '#adminAbsensiData',  handler: loadAdminAbsensiData },
+        { target: '#adminMateri',       handler: loadAdminMateri }
       ];
       dataTabs.forEach(item => {
         const tabTrigger = document.querySelector(`button[data-bs-target="${item.target}"]`);
@@ -867,7 +949,6 @@
   // =====================================================
   document.getElementById('loginSwitchBtn').addEventListener('click', function() {
     if (isAdmin) {
-      // Logout
       isAdmin = false;
       this.innerHTML = '<i class="bi bi-shield-lock me-1"></i>Login Admin';
       document.getElementById('roleBadge').innerHTML = '<i class="bi bi-person-circle me-1"></i>Member';
@@ -875,7 +956,7 @@
       Object.keys(unlockedMenus).forEach(key => unlockedMenus[key] = false);
       invalidateCache();
       persistAuthState();
-      navigateToSection('beranda'); // arahkan ke Beranda setelah logout
+      navigateToSection('beranda');
     } else {
       const adminLoginModal = new bootstrap.Modal(document.getElementById('adminLoginModal'));
       document.getElementById('adminUsername').value = '';
@@ -915,7 +996,7 @@
 
         const modal = bootstrap.Modal.getInstance(document.getElementById('adminLoginModal'));
         modal.hide();
-        navigateToSection('beranda'); // arahkan ke Beranda setelah login
+        navigateToSection('beranda');
       } else {
         errorDiv.innerText = 'Username atau password salah!';
         errorDiv.style.display = 'block';
@@ -927,7 +1008,7 @@
   });
 
   // =====================================================
-  //   SKRINING FORM (NOMOR URUT) – dipanggil dari skriningSection
+  //   SKRINING FORM
   // =====================================================
   function saveSkriningFormState() {
     const form = document.getElementById('formSkriningDinamis');
@@ -1107,7 +1188,7 @@
   });
 
   // =====================================================
-  //   PRETEST (LENGKAP)
+  //   PRETEST
   // =====================================================
   function savePretestQuiz() {
     if (!pretestQuiz) return;
@@ -1330,16 +1411,9 @@
       else colorClass = 'opt-default';
 
       const isAnswered = quiz.answers[quiz.currentIndex] !== undefined;
-      let additionalClass = '';
       let disabled = isAnswered ? 'disabled' : '';
-      if (isAnswered) {
-        const answer = quiz.answers[quiz.currentIndex];
-        if (answer.selectedOption === i) {
-          additionalClass = answer.isCorrect ? 'correct' : 'wrong';
-        }
-      }
 
-      html += `<button type="button" class="option-btn kahoot-option ${colorClass} ${additionalClass}" data-qid="${q.id}" data-opt-index="${i}" ${disabled}>
+      html += `<button type="button" class="option-btn kahoot-option ${colorClass}" data-qid="${q.id}" data-opt-index="${i}" ${disabled}>
                 <span class="opt-letter">${String.fromCharCode(65 + i)}.</span>
                 <span class="opt-text">${ops}</span>
                </button>`;
@@ -1511,7 +1585,7 @@
   }
 
   // =====================================================
-  //   POSTTEST (LENGKAP)
+  //   POSTTEST
   // =====================================================
   function savePosttestQuiz() {
     if (!posttestQuiz) return;
@@ -1734,16 +1808,9 @@
       else colorClass = 'opt-default';
 
       const isAnswered = quiz.answers[quiz.currentIndex] !== undefined;
-      let additionalClass = '';
       let disabled = isAnswered ? 'disabled' : '';
-      if (isAnswered) {
-        const answer = quiz.answers[quiz.currentIndex];
-        if (answer.selectedOption === i) {
-          additionalClass = answer.isCorrect ? 'correct' : 'wrong';
-        }
-      }
 
-      html += `<button type="button" class="option-btn kahoot-option ${colorClass} ${additionalClass}" data-qid="${q.id}" data-opt-index="${i}" ${disabled}>
+      html += `<button type="button" class="option-btn kahoot-option ${colorClass}" data-qid="${q.id}" data-opt-index="${i}" ${disabled}>
                 <span class="opt-letter">${String.fromCharCode(65 + i)}.</span>
                 <span class="opt-text">${ops}</span>
                </button>`;
@@ -1915,7 +1982,7 @@
   }
 
   // =====================================================
-  //   ABSEN DIGITAL (LENGKAP)
+  //   ABSEN DIGITAL
   // =====================================================
   function saveAbsenFormState() {
     const nama = document.getElementById('namaAbsen')?.value || '';
@@ -2971,19 +3038,247 @@
   }
 
   // =====================================================
-  //   INISIALISASI – default ke BERANDA
+  //   FUNGSI MATERI (PUBLIC & ADMIN)
+  // =====================================================
+  
+  async function loadMateriList() {
+    const container = document.getElementById('materiContainer');
+    if (!container) return;
+    container.innerHTML = 'Memuat materi...';
+
+    try {
+      let materi = [];
+      if (globalCache.materiList) {
+        materi = globalCache.materiList;
+      } else {
+        const res = await callAppsScript({ action: 'getMateriList' }, 'GET');
+        if (res.success) materi = res.data || [];
+      }
+
+      if (!materi.length) {
+        container.innerHTML = '<div class="alert alert-info text-center">Belum ada materi yang diunggah.</div>';
+        return;
+      }
+
+      let html = '<div class="row g-4">';
+      materi.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(m => {
+        const fileUrl = `https://drive.google.com/file/d/${m.fileId}/view`;
+        const previewUrl = `https://drive.google.com/file/d/${m.fileId}/preview`;
+        const icon = m.tipe === 'pdf' ? 'bi-file-pdf-fill text-danger' : 'bi-file-ppt-fill text-warning';
+        
+        html += `
+          <div class="col-md-6">
+            <div class="card h-100 border-0 shadow-sm rounded-4">
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                  <i class="${icon} fs-1 me-3"></i>
+                  <h5 class="card-title mb-0">${escapeHtml(m.judul || '')}</h5>
+                </div>
+                <p class="card-text text-muted small">${escapeHtml(m.deskripsi || '')}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="badge bg-light text-dark">${m.tipe.toUpperCase()}</span>
+                  <div>
+                    <button class="btn btn-primary btn-sm rounded-pill px-3 me-1 preview-materi-btn" 
+                      data-judul="${escapeHtml(m.judul)}" 
+                      data-preview-url="${previewUrl}" 
+                      data-download-url="${fileUrl}">
+                      <i class="bi bi-play-circle me-1"></i>Tayangkan
+                    </button>
+                    <a href="${fileUrl}" target="_blank" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                      <i class="bi bi-download"></i>
+                    </a>
+                  </div>
+                </div>
+                <div class="mt-2 text-end text-muted small">
+                  Diupload: ${new Date(m.timestamp).toLocaleDateString('id-ID')}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+      html += '</div>';
+      container.innerHTML = html;
+
+      document.querySelectorAll('.preview-materi-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const judul = this.dataset.judul;
+          const previewUrl = this.dataset.previewUrl;
+          const downloadUrl = this.dataset.downloadUrl;
+
+          document.getElementById('previewMateriJudul').innerText = judul;
+          document.getElementById('previewMateriIframe').src = previewUrl;
+          document.getElementById('previewMateriDownloadBtn').href = downloadUrl;
+          document.getElementById('previewMateriSpinner').style.display = 'flex';
+
+          new bootstrap.Modal(document.getElementById('previewMateriModal')).show();
+        });
+      });
+
+    } catch (e) {
+      container.innerHTML = `<div class="alert alert-danger">Gagal memuat materi: ${escapeHtml(e.message)}</div>`;
+    }
+  }
+
+  async function loadAdminMateri() {
+    const container = document.getElementById('adminMateri');
+    if (!container) return;
+    container.innerHTML = 'Memuat data materi...';
+
+    try {
+      const res = await callAppsScript({ action: 'getMateriList' }, 'GET');
+      const materi = res.success ? res.data || [] : [];
+
+      let html = `
+        <div class="d-flex justify-content-between mb-3">
+          <h5>📁 Daftar Materi</h5>
+          <button class="btn btn-success btn-sm" id="addMateriAdminBtn">➕ Unggah</button>
+        </div>
+      `;
+
+      if (!materi.length) {
+        html += '<p class="text-muted">Belum ada materi.</p>';
+      } else {
+        html += `<div class="table-responsive crud-table">
+          <table class="table table-bordered table-sm table-admin">
+            <thead><tr><th>ID</th><th>Judul</th><th>Deskripsi</th><th>Tipe</th><th>Diunggah</th><th>Aksi</th></tr></thead>
+            <tbody>`;
+        materi.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(m => {
+          html += `<tr>
+            <td>${m.id}</td>
+            <td>${escapeHtml(m.judul || '')}</td>
+            <td>${escapeHtml(m.deskripsi || '')}</td>
+            <td>${m.tipe?.toUpperCase()}</td>
+            <td>${new Date(m.timestamp).toLocaleDateString('id-ID')}</td>
+            <td>
+              <button class="btn btn-sm btn-danger delete-materi" data-id="${m.id}" data-fileid="${m.fileId}">🗑️</button>
+              <a href="https://drive.google.com/file/d/${m.fileId}/view" target="_blank" class="btn btn-sm btn-outline-primary">🔍</a>
+            </td>
+          </tr>`;
+        });
+        html += `</tbody></table></div>`;
+      }
+
+      container.innerHTML = html;
+
+      document.getElementById('addMateriAdminBtn')?.addEventListener('click', () => {
+        new bootstrap.Modal(document.getElementById('uploadMateriModal')).show();
+      });
+
+      document.querySelectorAll('.delete-materi').forEach(btn => {
+        btn.addEventListener('click', async function() {
+          if (!confirm('Hapus materi ini? File akan dipindah ke Trash.')) return;
+          const id = this.dataset.id;
+          const fileId = this.dataset.fileid;
+          try {
+            await callAppsScript({ action: 'deleteMateri', id, fileId }, 'POST');
+            showToast('Materi berhasil dihapus', 'success');
+            invalidateCache();
+            loadAdminMateri();
+            if (document.getElementById('materiSection').style.display !== 'none') {
+              loadMateriList();
+            }
+          } catch (e) {
+            showToast('Gagal hapus: ' + e.message, 'danger');
+          }
+        });
+      });
+
+    } catch (e) {
+      container.innerHTML = `<div class="alert alert-danger">Gagal memuat: ${escapeHtml(e.message)}</div>`;
+    }
+  }
+
+  function readFileAsBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function submitMateri() {
+    const judul = document.getElementById('materiJudul').value.trim();
+    const deskripsi = document.getElementById('materiDeskripsi').value.trim();
+    const fileInput = document.getElementById('materiFile');
+    const errorDiv = document.getElementById('uploadMateriError');
+
+    if (!judul) {
+      errorDiv.innerText = 'Judul wajib diisi!';
+      errorDiv.style.display = 'block';
+      return;
+    }
+    if (!fileInput.files.length) {
+      errorDiv.innerText = 'Pilih file PDF/PPT/PPTX!';
+      errorDiv.style.display = 'block';
+      return;
+    }
+
+    const file = fileInput.files[0];
+    const maxSize = 20 * 1024 * 1024; // 20 MB
+    if (file.size > maxSize) {
+      errorDiv.innerText = 'Ukuran file maksimal 20 MB!';
+      errorDiv.style.display = 'block';
+      return;
+    }
+
+    errorDiv.style.display = 'none';
+
+    try {
+      const base64 = await readFileAsBase64(file);
+
+      const params = {
+        action: 'addMateri',
+        judul,
+        deskripsi,
+        fileData: base64,
+        fileName: file.name,
+        uploadBy: isAdmin ? 'admin' : 'unknown'
+      };
+
+      await callAppsScript(params, 'POST');
+      showToast('Materi berhasil diunggah!', 'success');
+      
+      bootstrap.Modal.getInstance(document.getElementById('uploadMateriModal')).hide();
+      document.getElementById('materiJudul').value = '';
+      document.getElementById('materiDeskripsi').value = '';
+      document.getElementById('materiFile').value = '';
+      
+      invalidateCache();
+      if (document.getElementById('materiSection').style.display !== 'none') loadMateriList();
+      if (document.getElementById('adminMateri').style.display !== 'none') loadAdminMateri();
+    } catch (e) {
+      errorDiv.innerText = 'Upload gagal: ' + e.message;
+      errorDiv.style.display = 'block';
+    }
+  }
+
+  // =====================================================
+  //   INISIALISASI
   // =====================================================
   window.onload = function() {
     loadAuthState();
     loadAllData().catch(console.warn);
 
+    document.getElementById('simpanMateriBtn')?.addEventListener('click', submitMateri);
+
+    document.getElementById('previewMateriModal')?.addEventListener('hidden.bs.modal', function () {
+      document.getElementById('previewMateriIframe').src = '';
+      document.getElementById('previewMateriSpinner').style.display = 'flex';
+    });
+
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('sesi_id') && urlParams.has('token')) {
       navigateToSection('absen');
     } else {
-      navigateToSection('beranda'); // sekarang default ke Beranda
+      navigateToSection('beranda');
     }
   };
+
+  // =====================================================
+  //   END SCRIPT
+  // =====================================================
 </script>
 </body>
 </html>
