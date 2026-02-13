@@ -302,6 +302,26 @@
     #previewMateriModal .modal-content {
       background: #0f172a;
     }
+
+    /* ===== SKELETON LOADING ===== */
+    .skeleton-loading {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: skeleton-wave 1.5s infinite;
+      border-radius: 8px;
+      height: 1.5em;
+      width: 100%;
+    }
+    @keyframes skeleton-wave {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ===== TABEL DATA DENGAN FILTER ===== */
+    .filter-input {
+      max-width: 300px;
+      margin-bottom: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -328,6 +348,8 @@
         <li class="nav-item"><a class="nav-link" href="#" data-section="posttest"><i class="bi bi-trophy"></i>Post-test</a></li>
         <li class="nav-item"><a class="nav-link" href="#" data-section="absen"><i class="bi bi-qr-code"></i>Absen</a></li>
         <li class="nav-item"><a class="nav-link" href="#" data-section="skrining"><i class="bi bi-clipboard-check"></i>Skrining</a></li>
+        <!-- ===== MENU PESERTA ===== -->
+        <li class="nav-item"><a class="nav-link" href="#" data-section="peserta"><i class="bi bi-person-badge"></i>Peserta</a></li>
         <!-- ===== MENU MATERI ===== -->
         <li class="nav-item"><a class="nav-link" href="#" data-section="materi"><i class="bi bi-file-earmark-pdf"></i>Materi</a></li>
         <li class="nav-item" id="adminMenuItem" style="display: none;"><a class="nav-link" href="#" data-section="admin"><i class="bi bi-gear-wide"></i>Admin</a></li>
@@ -492,6 +514,98 @@
   </div>
 </div>
 
+<!-- ==================== MODAL EDIT/TAMBAH PESERTA (ADMIN) ==================== -->
+<div class="modal fade" id="pesertaModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white border-0 rounded-top-4">
+        <h5 class="modal-title" id="pesertaModalLabel">Tambah/Edit Peserta</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <input type="hidden" id="pesertaId">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Foto</label>
+          <input type="file" class="form-control" id="pesertaFoto" accept="image/*">
+          <img id="pesertaFotoPreview" src="#" alt="Preview" style="max-width: 150px; display: none;" class="mt-2 rounded">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Nama Lengkap</label>
+          <input type="text" class="form-control" id="pesertaNamaLengkap" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Tempat dan Tanggal Lahir</label>
+          <input type="text" class="form-control" id="pesertaTempatTglLahir">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Pekerjaan</label>
+          <input type="text" class="form-control" id="pesertaPekerjaan">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Pendidikan Terakhir</label>
+          <input type="text" class="form-control" id="pesertaPendidikan">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Alamat</label>
+          <textarea class="form-control" id="pesertaAlamat" rows="2"></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">No HP</label>
+          <input type="tel" class="form-control" id="pesertaNoHP">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Email</label>
+          <input type="email" class="form-control" id="pesertaEmail">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Utusan</label>
+          <input type="text" class="form-control" id="pesertaUtusan">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Pengalaman Organisasi</label>
+          <textarea class="form-control" id="pesertaPengalaman" rows="3"></textarea>
+        </div>
+        <div id="pesertaModalError" class="text-danger small" style="display: none;"></div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary rounded-pill px-4" id="simpanPesertaBtn">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL IMPOR CSV PESERTA (BARU) ==================== -->
+<div class="modal fade" id="importPesertaModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white border-0 rounded-top-4">
+        <h5 class="modal-title"><i class="bi bi-file-earmark-arrow-up me-2"></i>Impor Data Peserta dari CSV</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Pilih File CSV</label>
+          <input type="file" class="form-control" id="importCsvFile" accept=".csv" required>
+          <div class="form-text text-muted">
+            Format CSV harus memiliki header: 
+            <code>nama_lengkap, tempat_tgl_lahir, pekerjaan, pendidikan_terakhir, alamat, no_hp, email, utusan, pengalaman_organisasi</code> 
+            (kolom lain diabaikan).
+          </div>
+        </div>
+        <div id="importCsvError" class="text-danger small" style="display: none;"></div>
+        <div id="importCsvProgress" class="progress mt-2" style="display: none;">
+          <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%">Memproses...</div>
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary rounded-pill px-4" id="importCsvSubmitBtn">Upload</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ==================== TOAST NOTIFICATION ==================== -->
 <div class="toast-container">
   <div id="notificationToast" class="toast border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
@@ -535,6 +649,11 @@
             <div class="feature-icon me-3"><i class="bi bi-clipboard-check"></i></div>
             <div><strong>Skrining</strong><br><span class="text-muted">Form pendataan awal peserta.</span></div>
           </div>
+          <!-- Peserta -->
+          <div class="d-flex align-items-center" data-section="peserta" style="cursor: pointer;" role="button">
+            <div class="feature-icon me-3"><i class="bi bi-person-badge"></i></div>
+            <div><strong>Peserta</strong><br><span class="text-muted">Isi data diri peserta PKD.</span></div>
+          </div>
           <!-- Materi -->
           <div class="d-flex align-items-center" data-section="materi" style="cursor: pointer;" role="button">
             <div class="feature-icon me-3"><i class="bi bi-file-earmark-pdf"></i></div>
@@ -577,7 +696,13 @@
     <div id="absenContainer">Memuat daftar sesi...</div>
   </section>
 
-  <!-- ===== MATERI SECTION (PUBLIC) ===== -->
+  <!-- PESERTA SECTION -->
+  <section id="pesertaSection" class="container container-card" style="display: none;">
+    <h2 class="section-title"><i class="bi bi-person-badge me-2"></i>Form Data Peserta PKD</h2>
+    <div id="pesertaFormContainer">Memuat form...</div>
+  </section>
+
+  <!-- MATERI SECTION (PUBLIC) -->
   <section id="materiSection" class="container container-card" style="display: none;">
     <h2 class="section-title"><i class="bi bi-journal-bookmark-fill me-2"></i>Materi Pelatihan</h2>
     <div id="materiContainer">Memuat daftar materi...</div>
@@ -593,6 +718,8 @@
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#adminSesi">📆 Sesi Absen</button></li>
       <!-- ===== TAB MATERI UNTUK ADMIN ===== -->
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#adminMateri">📁 Materi</button></li>
+      <!-- ===== TAB PESERTA UNTUK ADMIN ===== -->
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#adminPeserta">👥 Data Peserta</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#adminSkriningData">📋 Data Skrining</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#adminPretestData">🧠 Data Pre-test</button></li>
       <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#adminPosttestData">🎯 Data Posttest</button></li>
@@ -605,6 +732,7 @@
       <div class="tab-pane fade" id="adminPosttest">Memuat...</div>
       <div class="tab-pane fade" id="adminSesi">Memuat...</div>
       <div class="tab-pane fade" id="adminMateri">Memuat...</div>
+      <div class="tab-pane fade" id="adminPeserta">Memuat...</div>
       <div class="tab-pane fade" id="adminSkriningData">Memuat...</div>
       <div class="tab-pane fade" id="adminPretestData">Memuat...</div>
       <div class="tab-pane fade" id="adminPosttestData">Memuat...</div>
@@ -625,15 +753,17 @@
 <!-- ==================== BOOTSTRAP JS ==================== -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- ==================== SCRIPT UTAMA (LENGKAP + PERBAIKAN TIMEOUT & FALLBACK) ==================== -->
+<!-- ==================== SCRIPT UTAMA (LENGKAP + PERBAIKAN PERSISTENSI) ==================== -->
 <script>
   // =====================================================
-  //   KONFIGURASI & STATE (ASLI + MATERI)
+  //   KONFIGURASI & STATE (ASLI + OPTIMASI)
   // =====================================================
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbwNSCaY7ovmF2EdU4TETKHyBR2W7jddP7-CX6V2Cn5W1gxgVTEeXQSJVr-yQtdcV_td/exec'; // GANTI DENGAN URL DEPLOY ANDA!
-  const CACHE_DURATION = 3600000;
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbwCiFnxor6elaMTwxoDMxt9F5jMYIzyntaJonkuQLFaCOweqElQorGs1jv39KsomMcG/exec'; // GANTI DENGAN URL DEPLOY ANDA!
+  const CACHE_DURATION = 3600000; // 1 jam untuk data publik
+  const ADMIN_CACHE_DURATION = 30000; // 30 detik untuk data admin
   const CACHE_KEY = 'pkd_global_cache';
 
+  // Cache publik
   let globalCache = {
     skriningQuestions: null,
     pretestQuestions: null,
@@ -645,40 +775,68 @@
     lastFetch: 0
   };
 
+  // Cache admin terpisah dengan masa berlaku pendek
+  let adminDataCache = {
+    skriningQuestions: null,
+    pretestQuestions: null,
+    posttestQuestions: null,
+    sesiAbsen: null,
+    materiList: null,
+    quizSettings: null,
+    skriningResponses: null,
+    pretestResponses: null,
+    posttestResponses: null,
+    absensiResponses: null,
+    pesertaList: null, // tambahan untuk peserta
+    lastFetch: 0
+  };
+
   let isLoadingAll = false;
   let pendingAllDataPromise = null;
 
   let isAdmin = false;
-  const unlockedMenus = { beranda: false, skrining: false, pretest: false, posttest: false, absen: false, materi: false };
+  const unlockedMenus = { beranda: false, skrining: false, pretest: false, posttest: false, absen: false, materi: false, peserta: false };
 
   let pretestQuiz = null;
   let posttestQuiz = null;
 
   // =====================================================
-  //   PERSISTENSI AUTH
+  //   PERSISTENSI AUTH (DIPERBAIKI - ROBUST)
   // =====================================================
   function persistAuthState() {
-    if (isAdmin) {
-      localStorage.setItem('isAdmin', 'true');
-    } else {
-      localStorage.removeItem('isAdmin');
-    }
-    localStorage.setItem('unlockedMenus', JSON.stringify(unlockedMenus));
+    const state = {
+      isAdmin: isAdmin,
+      unlockedMenus: unlockedMenus
+    };
+    const serialized = JSON.stringify(state);
+    sessionStorage.setItem('pkd_auth', serialized);
+    localStorage.setItem('pkd_auth', serialized); // cadangan
   }
 
   function loadAuthState() {
-    const storedAdmin = localStorage.getItem('isAdmin');
-    if (storedAdmin === 'true') {
-      isAdmin = true;
+    let serialized = sessionStorage.getItem('pkd_auth');
+    if (!serialized) {
+      serialized = localStorage.getItem('pkd_auth');
+    }
+    if (serialized) {
+      try {
+        const state = JSON.parse(serialized);
+        isAdmin = state.isAdmin || false;
+        Object.assign(unlockedMenus, state.unlockedMenus || {});
+      } catch (e) {
+        console.warn('Gagal parse auth state', e);
+      }
+    }
+
+    // Update UI
+    if (isAdmin) {
       document.getElementById('loginSwitchBtn').innerHTML = '<i class="bi bi-box-arrow-right me-1"></i>Logout Admin';
       document.getElementById('roleBadge').innerHTML = '<i class="bi bi-shield-fill me-1"></i>Admin';
       document.getElementById('adminMenuItem').style.display = 'block';
-    }
-    const storedMenus = localStorage.getItem('unlockedMenus');
-    if (storedMenus) {
-      try {
-        Object.assign(unlockedMenus, JSON.parse(storedMenus));
-      } catch (e) {}
+    } else {
+      document.getElementById('loginSwitchBtn').innerHTML = '<i class="bi bi-shield-lock me-1"></i>Login Admin';
+      document.getElementById('roleBadge').innerHTML = '<i class="bi bi-person-circle me-1"></i>Member';
+      document.getElementById('adminMenuItem').style.display = 'none';
     }
   }
 
@@ -725,7 +883,6 @@
             clearTimeout(timer);
             resolve(data || {});
           }
-          // Cleanup setelah callback dipanggil
           delete window[callbackName];
           if (document.head.contains(script)) document.head.removeChild(script);
         };
@@ -740,7 +897,6 @@
           }
         };
 
-        // Hapus properti yang tidak perlu dikirim via JSONP (seperti tandaTangan)
         const cleanParams = { ...params };
         if (cleanParams.tandaTangan) delete cleanParams.tandaTangan;
 
@@ -748,7 +904,6 @@
         script.src = `${scriptUrl}?${queryString}`;
         document.head.appendChild(script);
       } else {
-        // POST no-cors
         fetch(scriptUrl, {
           method: 'POST',
           mode: 'no-cors',
@@ -762,7 +917,7 @@
   }
 
   // =====================================================
-  //   SISTEM CACHE + FALLBACK OTOMATIS
+  //   SISTEM CACHE PUBLIK + FALLBACK (ASLI)
   // =====================================================
   async function loadAllData(forceRefresh = false) {
     if (pendingAllDataPromise && !forceRefresh) return pendingAllDataPromise;
@@ -772,7 +927,6 @@
       return globalCache;
     }
 
-    // Cek localStorage
     try {
       const stored = localStorage.getItem(CACHE_KEY);
       if (!forceRefresh && stored) {
@@ -787,7 +941,6 @@
     isLoadingAll = true;
     pendingAllDataPromise = (async () => {
       try {
-        // Coba ambil dengan getAllData
         const res = await callAppsScript({ action: 'getAllData' }, 'GET', 30000);
         if (res && res.success) {
           const newCache = {
@@ -808,7 +961,6 @@
         }
       } catch (e) {
         console.warn('getAllData gagal, fallback ke single requests:', e);
-        // Fallback: muat satu per satu
         try {
           const [skrining, pretest, posttest, sesi, quiz, materi] = await Promise.all([
             callAppsScript({ action: 'getSkriningQuestions' }, 'GET', 15000).then(r => r.data || []),
@@ -845,6 +997,7 @@
     return pendingAllDataPromise;
   }
 
+  // ... (fungsi fetch lainnya tetap sama) ...
   async function fetchSkriningQuestions(forceRefresh = false) {
     const all = await loadAllData(forceRefresh);
     return all.skriningQuestions || [];
@@ -895,6 +1048,117 @@
   }
 
   // =====================================================
+  //   FUNGSI UNTUK ADMIN CACHE (OPTIMASI)
+  // =====================================================
+  async function loadAdminData(forceRefresh = false) {
+    const now = Date.now();
+    if (!forceRefresh && adminDataCache.lastFetch > 0 && (now - adminDataCache.lastFetch) < ADMIN_CACHE_DURATION) {
+      return adminDataCache;
+    }
+
+    try {
+      const [
+        skriningQuestions,
+        pretestQuestions,
+        posttestQuestions,
+        sesiAbsen,
+        materiList,
+        quizSettings,
+        skriningResponses,
+        pretestResponses,
+        posttestResponses,
+        absensiResponses,
+        pesertaList
+      ] = await Promise.all([
+        callAppsScript({ action: 'getSkriningQuestions' }, 'GET').then(r => r.data || []),
+        callAppsScript({ action: 'getPretestQuestions' }, 'GET').then(r => r.data || []),
+        callAppsScript({ action: 'getPosttestQuestions' }, 'GET').then(r => r.data || []),
+        callAppsScript({ action: 'getSesiAbsen' }, 'GET').then(r => r.data || []),
+        callAppsScript({ action: 'getMateriList' }, 'GET').then(r => r.data || []),
+        callAppsScript({ action: 'getQuizSettings' }, 'GET').then(r => r.data || {}),
+        callAppsScript({ action: 'getSkriningResponses' }, 'GET').then(r => r.success ? r.data : []),
+        callAppsScript({ action: 'getPretestResponses' }, 'GET').then(r => r.success ? r.data : []),
+        callAppsScript({ action: 'getPosttestResponses' }, 'GET').then(r => r.success ? r.data : []),
+        callAppsScript({ action: 'getAbsensiResponses' }, 'GET').then(r => r.success ? r.data : []),
+        callAppsScript({ action: 'getPesertaList' }, 'GET').then(r => r.success ? r.data : [])
+      ]);
+
+      adminDataCache = {
+        skriningQuestions,
+        pretestQuestions,
+        posttestQuestions,
+        sesiAbsen,
+        materiList,
+        quizSettings,
+        skriningResponses,
+        pretestResponses,
+        posttestResponses,
+        absensiResponses,
+        pesertaList,
+        lastFetch: Date.now()
+      };
+      return adminDataCache;
+    } catch (e) {
+      console.error('Gagal memuat data admin:', e);
+      throw e;
+    }
+  }
+
+  // Refresh hanya bagian tertentu dari admin cache
+  async function refreshAdminPart(part) {
+    let data;
+    switch(part) {
+      case 'skriningQuestions':
+        data = await callAppsScript({ action: 'getSkriningQuestions' }, 'GET').then(r => r.data || []);
+        adminDataCache.skriningQuestions = data;
+        break;
+      case 'pretestQuestions':
+        data = await callAppsScript({ action: 'getPretestQuestions' }, 'GET').then(r => r.data || []);
+        adminDataCache.pretestQuestions = data;
+        break;
+      case 'posttestQuestions':
+        data = await callAppsScript({ action: 'getPosttestQuestions' }, 'GET').then(r => r.data || []);
+        adminDataCache.posttestQuestions = data;
+        break;
+      case 'sesiAbsen':
+        data = await callAppsScript({ action: 'getSesiAbsen' }, 'GET').then(r => r.data || []);
+        adminDataCache.sesiAbsen = data;
+        break;
+      case 'materiList':
+        data = await callAppsScript({ action: 'getMateriList' }, 'GET').then(r => r.data || []);
+        adminDataCache.materiList = data;
+        break;
+      case 'quizSettings':
+        data = await callAppsScript({ action: 'getQuizSettings' }, 'GET').then(r => r.data || {});
+        adminDataCache.quizSettings = data;
+        break;
+      case 'skriningResponses':
+        data = await callAppsScript({ action: 'getSkriningResponses' }, 'GET').then(r => r.success ? r.data : []);
+        adminDataCache.skriningResponses = data;
+        break;
+      case 'pretestResponses':
+        data = await callAppsScript({ action: 'getPretestResponses' }, 'GET').then(r => r.success ? r.data : []);
+        adminDataCache.pretestResponses = data;
+        break;
+      case 'posttestResponses':
+        data = await callAppsScript({ action: 'getPosttestResponses' }, 'GET').then(r => r.success ? r.data : []);
+        adminDataCache.posttestResponses = data;
+        break;
+      case 'absensiResponses':
+        data = await callAppsScript({ action: 'getAbsensiResponses' }, 'GET').then(r => r.success ? r.data : []);
+        adminDataCache.absensiResponses = data;
+        break;
+      case 'pesertaList':
+        data = await callAppsScript({ action: 'getPesertaList' }, 'GET').then(r => r.success ? r.data : []);
+        adminDataCache.pesertaList = data;
+        break;
+      default:
+        return;
+    }
+    adminDataCache.lastFetch = Date.now();
+  }
+
+  // =====================================================
   //   TOAST
   // =====================================================
   function showToast(message, type = 'success') {
@@ -924,7 +1188,7 @@
   }
 
   // =====================================================
-  //   NAVIGASI
+  //   NAVIGASI (DIPERBAIKI: simpan lastSection + proteksi admin)
   // =====================================================
   document.querySelectorAll('.nav-link[data-section]').forEach(link => {
     link.addEventListener('click', function(e) {
@@ -934,10 +1198,18 @@
   });
 
   async function navigateToSection(section) {
+    // Proteksi akses admin
+    if (section === 'admin' && !isAdmin) {
+      showToast('Anda tidak memiliki akses ke halaman admin', 'danger');
+      section = 'beranda';
+    }
+
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
     document.querySelector(`.nav-link[data-section="${section}"]`)?.classList.add('active');
 
     showSection(section);
+    // Simpan section terakhir yang dikunjungi
+    localStorage.setItem('lastSection', section);
   }
 
   function showSection(sectionId) {
@@ -958,22 +1230,26 @@
     if (sectionId === 'pretest') loadPretest();
     if (sectionId === 'posttest') loadPosttest();
     if (sectionId === 'absen') loadAbsenSesi();
+    if (sectionId === 'peserta') loadPesertaForm();
     if (sectionId === 'materi') loadMateriList();
 
     if (sectionId === 'admin' && isAdmin) {
+      // Muat semua tab dengan cache admin
       loadAdminSkrining();
       loadAdminPretest();
       loadAdminPosttest();
       loadAdminSesi();
       loadAdminQuizSettings();
       loadAdminMateri();
+      loadAdminPeserta(); // tambahkan ini
 
+      // Setup listener untuk tab data yang hanya dimuat saat pertama kali diklik
       const dataTabs = [
         { target: '#adminSkriningData', handler: loadAdminSkriningData },
         { target: '#adminPretestData',  handler: loadAdminPretestData },
         { target: '#adminPosttestData', handler: loadAdminPosttestData },
-        { target: '#adminAbsensiData',  handler: loadAdminAbsensiData },
-        { target: '#adminMateri',       handler: loadAdminMateri }
+        { target: '#adminAbsensiData',  handler: loadAdminAbsensiData }
+        // peserta sudah dimuat langsung di atas, jadi tidak perlu listener
       ];
       dataTabs.forEach(item => {
         const tabTrigger = document.querySelector(`button[data-bs-target="${item.target}"]`);
@@ -991,10 +1267,11 @@
   }
 
   // =====================================================
-  //   LOGIN / LOGOUT ADMIN
+  //   LOGIN / LOGOUT ADMIN (DIPERBAIKI: hapus lastSection saat logout)
   // =====================================================
   document.getElementById('loginSwitchBtn').addEventListener('click', function() {
     if (isAdmin) {
+      // Logout
       isAdmin = false;
       this.innerHTML = '<i class="bi bi-shield-lock me-1"></i>Login Admin';
       document.getElementById('roleBadge').innerHTML = '<i class="bi bi-person-circle me-1"></i>Member';
@@ -1002,6 +1279,8 @@
       Object.keys(unlockedMenus).forEach(key => unlockedMenus[key] = false);
       invalidateCache();
       persistAuthState();
+      // Hapus lastSection agar tidak kembali ke admin setelah logout
+      localStorage.removeItem('lastSection');
       navigateToSection('beranda');
     } else {
       const adminLoginModal = new bootstrap.Modal(document.getElementById('adminLoginModal'));
@@ -1037,8 +1316,10 @@
         document.getElementById('adminMenuItem').style.display = 'block';
         Object.keys(unlockedMenus).forEach(key => unlockedMenus[key] = true);
         invalidateCache();
-        loadAllData(true).catch(console.warn);
+        // Muat data admin di latar belakang
+        loadAdminData(true).catch(console.warn);
         showToast('Login admin berhasil', 'success');
+        persistAuthState();
 
         const modal = bootstrap.Modal.getInstance(document.getElementById('adminLoginModal'));
         modal.hide();
@@ -1054,7 +1335,7 @@
   });
 
   // =====================================================
-  //   SKRINING FORM
+  //   SKRINING FORM (ASLI + OPTIMASI)
   // =====================================================
   function saveSkriningFormState() {
     const form = document.getElementById('formSkriningDinamis');
@@ -1133,7 +1414,7 @@
               <div class="mb-3"><label class="form-label">${questionNumber++}. Catatan</label><textarea class="form-control" name="catatan"></textarea></div>
               <div class="mb-4">
                 <label class="form-label fw-bold">${questionNumber++}. ✍️ Tanda Tangan Assessor</label>
-                <div class="signature-area"><canvas id="signatureCanvasSkrining" width="300" height="150"></canvas></div>
+                <div class="signature-area"><canvas id="signatureCanvasSkrining" width="250" height="120"></canvas></div>
                 <div class="signature-buttons">
                   <button type="button" class="btn btn-outline-secondary btn-signature" id="clearSkriningSign">Hapus</button>
                   <button type="button" class="btn btn-outline-primary btn-signature" id="undoSkriningSign">Undo</button>
@@ -1181,7 +1462,7 @@
     const formData = new FormData(form);
     const data = {};
     formData.forEach((v, k) => data[k] = v);
-    const signatureDataURL = window.sigPadSkrining.toDataURL('image/jpeg', 0.3);
+    const signatureDataURL = window.sigPadSkrining.toDataURL('image/jpeg', 0.2);
     data.signature = signatureDataURL;
     showSkriningPreview(data, signatureDataURL);
   }
@@ -1207,7 +1488,7 @@
     html += `<tr><th>Pernah rekrutmen/diklatsar?</th><td>${escapeHtml(data.pernah || '')}</td></tr>`;
     html += `<tr><th>Alasan Tertarik</th><td>${escapeHtml(data.alasan || '')}</td></tr>`;
     html += `<tr><th>Catatan</th><td>${escapeHtml(data.catatan || '')}</td></tr>`;
-    html += `<tr><th>Tanda Tangan Assessor</th><td><img src="${signatureDataURL}" class="preview-signature" alt="Signature"></td></tr>`;
+    html += `<tr><th>Tanda Tangan Assessor</th><td><img src="${signatureDataURL}" class="preview-signature" alt="Signature" style="max-width:200px;"></td></tr>`;
     html += `</table>`;
 
     modalBody.innerHTML = html;
@@ -1218,6 +1499,10 @@
 
   document.getElementById('previewKirimBtn').addEventListener('click', async function() {
     if (!window.__skriningPreviewData) return;
+    const btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengirim...';
+
     const { data, signatureDataURL } = window.__skriningPreviewData;
     delete data.signature;
     const params = { action: 'submitSkrining', ...data, signature: signatureDataURL };
@@ -1230,11 +1515,14 @@
       clearSkriningFormState();
     } catch (e) {
       showToast('❌ Gagal mengirim: ' + e.message, 'danger');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '📤 Kirim Skrining';
     }
   });
 
   // =====================================================
-  //   PRETEST
+  //   PRETEST (ASLI)
   // =====================================================
   function savePretestQuiz() {
     if (!pretestQuiz) return;
@@ -1631,7 +1919,7 @@
   }
 
   // =====================================================
-  //   POSTTEST
+  //   POSTTEST (ASLI)
   // =====================================================
   function savePosttestQuiz() {
     if (!posttestQuiz) return;
@@ -2028,7 +2316,7 @@
   }
 
   // =====================================================
-  //   ABSEN DIGITAL
+  //   ABSEN DIGITAL (ASLI + OPTIMASI)
   // =====================================================
   function saveAbsenFormState() {
     const nama = document.getElementById('namaAbsen')?.value || '';
@@ -2117,7 +2405,7 @@
 
     html += `<div class="mb-3">
                 <label class="form-label fw-bold">✍️ Tanda Tangan Digital</label>
-                <div class="signature-area"><canvas id="signatureCanvasAbsen" width="300" height="150"></canvas></div>
+                <div class="signature-area"><canvas id="signatureCanvasAbsen" width="250" height="120"></canvas></div>
                 <div class="signature-buttons">
                   <button type="button" class="btn btn-outline-secondary" id="clearAbsenSign">Hapus</button>
                   <button type="button" class="btn btn-outline-primary" id="undoAbsenSign">Undo</button>
@@ -2141,14 +2429,22 @@
       window.sigPadAbsen.addEventListener('endStroke', saveAbsenFormState);
     }
 
-    document.getElementById('submitAbsenBtn').addEventListener('click', async () => {
+    document.getElementById('submitAbsenBtn').addEventListener('click', async function() {
+      const btn = this;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengirim...';
+
       if (!window.sigPadAbsen || window.sigPadAbsen.isEmpty()) {
         showToast('Tanda tangan wajib!', 'danger');
+        btn.disabled = false;
+        btn.innerHTML = '📋 Kirim Absen';
         return;
       }
       const nama = document.getElementById('namaAbsen').value.trim();
       if (!nama) {
         showToast('Nama wajib diisi!', 'danger');
+        btn.disabled = false;
+        btn.innerHTML = '📋 Kirim Absen';
         return;
       }
       const sesiId = document.getElementById('pilihSesiAbsen').value;
@@ -2157,7 +2453,7 @@
         action: 'submitAbsen',
         nama: nama,
         sesiId: sesiId,
-        tandaTangan: window.sigPadAbsen.toDataURL('image/jpeg', 0.3)
+        tandaTangan: window.sigPadAbsen.toDataURL('image/jpeg', 0.2)
       };
 
       if (isQRMode) {
@@ -2166,6 +2462,8 @@
         const password = document.getElementById('passwordAbsen').value.trim();
         if (!password) {
           showToast('Password sesi wajib diisi!', 'danger');
+          btn.disabled = false;
+          btn.innerHTML = '📋 Kirim Absen';
           return;
         }
         params.password = password;
@@ -2184,19 +2482,424 @@
         }
       } catch (e) {
         showToast('❌ Error: ' + e.message, 'danger');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '📋 Kirim Absen';
       }
     });
   }
 
   // =====================================================
-  //   ADMIN: CRUD SKRINING QUESTIONS
+  //   FUNGSI PESERTA (BARU)
+  // =====================================================
+  
+  // State management untuk form peserta
+  function savePesertaFormState() {
+    const form = document.getElementById('formPesertaDinamis');
+    if (!form) return;
+    const formData = new FormData(form);
+    const data = {};
+    formData.forEach((v, k) => data[k] = v);
+    // File foto tidak disimpan di localStorage
+    localStorage.setItem('pesertaFormState', JSON.stringify(data));
+  }
+
+  function restorePesertaFormState() {
+    const saved = localStorage.getItem('pesertaFormState');
+    if (!saved) return;
+    try {
+      const data = JSON.parse(saved);
+      const form = document.getElementById('formPesertaDinamis');
+      if (!form) return;
+      Object.keys(data).forEach(key => {
+        const field = form.querySelector(`[name="${key}"]`);
+        if (field) field.value = data[key];
+      });
+    } catch (e) {}
+  }
+
+  function clearPesertaFormState() {
+    localStorage.removeItem('pesertaFormState');
+  }
+
+  // Load form publik
+  async function loadPesertaForm() {
+    const container = document.getElementById('pesertaFormContainer');
+    container.innerHTML = 'Memuat form...';
+
+    let html = `
+      <form id="formPesertaDinamis">
+        <div class="mb-3">
+          <label class="form-label fw-bold">📸 Foto</label>
+          <input type="file" class="form-control" name="foto" accept="image/*" id="pesertaFotoInput">
+          <img id="pesertaFotoPreview" src="#" alt="Preview" style="max-width: 200px; display: none;" class="mt-2 rounded border">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">👤 Nama Lengkap</label>
+          <input type="text" class="form-control" name="nama_lengkap" placeholder="Contoh: Ahmad Fauzi" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">📍 Tempat dan Tanggal Lahir</label>
+          <input type="text" class="form-control" name="tempat_tgl_lahir" placeholder="Contoh: Bantul, 1 Januari 2000">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">💼 Pekerjaan</label>
+          <input type="text" class="form-control" name="pekerjaan" placeholder="Contoh: Mahasiswa / Guru">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">🎓 Pendidikan Terakhir</label>
+          <input type="text" class="form-control" name="pendidikan_terakhir" placeholder="Contoh: S1 Manajemen">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">🏠 Alamat</label>
+          <textarea class="form-control" name="alamat" rows="2" placeholder="Contoh: Demangan RT 8 Bangunharjo Sewon"></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">📞 No HP</label>
+          <input type="tel" class="form-control" name="no_hp" placeholder="Contoh: 08123456789">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">📧 Email</label>
+          <input type="email" class="form-control" name="email" placeholder="Contoh: ahmad@example.com">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">🤝 Utusan</label>
+          <input type="text" class="form-control" name="utusan" placeholder="Contoh: PAC Bangunharjo">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">📋 Pengalaman Organisasi</label>
+          <textarea class="form-control" name="pengalaman_organisasi" rows="3" placeholder="Tuliskan pengalaman organisasi Anda"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill">📤 Kirim Data Peserta</button>
+      </form>
+    `;
+    container.innerHTML = html;
+
+    document.getElementById('pesertaFotoInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          document.getElementById('pesertaFotoPreview').src = ev.target.result;
+          document.getElementById('pesertaFotoPreview').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    restorePesertaFormState();
+
+    document.querySelectorAll('#formPesertaDinamis input, #formPesertaDinamis textarea').forEach(el => {
+      el.addEventListener('input', savePesertaFormState);
+    });
+
+    document.getElementById('formPesertaDinamis').addEventListener('submit', submitPesertaForm);
+  }
+
+  // Submit form publik
+  async function submitPesertaForm(e) {
+    e.preventDefault();
+    const form = document.getElementById('formPesertaDinamis');
+    const formData = new FormData(form);
+    const data = {};
+
+    const fotoFile = formData.get('foto');
+    if (fotoFile && fotoFile.size > 5 * 1024 * 1024) {
+      showToast('Ukuran foto maksimal 5 MB', 'danger');
+      return;
+    }
+    if (fotoFile && fotoFile.size > 0) {
+      const reader = new FileReader();
+      reader.readAsDataURL(fotoFile);
+      await new Promise((resolve) => {
+        reader.onload = () => {
+          data.foto = reader.result;
+          resolve();
+        };
+      });
+    }
+
+    formData.forEach((value, key) => {
+      if (key !== 'foto') data[key] = value;
+    });
+
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengirim...';
+
+    try {
+      await callAppsScript({ action: 'submitPeserta', ...data }, 'POST');
+      showToast('✅ Data peserta berhasil dikirim!', 'success');
+      form.reset();
+      document.getElementById('pesertaFotoPreview').style.display = 'none';
+      clearPesertaFormState();
+    } catch (err) {
+      showToast('❌ Gagal mengirim: ' + err.message, 'danger');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '📤 Kirim Data Peserta';
+    }
+  }
+
+  // Load data peserta di admin
+  async function loadAdminPeserta() {
+    const container = document.getElementById('adminPeserta');
+    container.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>`;
+
+    try {
+      // Gunakan cache admin jika ada
+      let pesertaList = adminDataCache.pesertaList;
+      if (!pesertaList) {
+        const res = await callAppsScript({ action: 'getPesertaList' }, 'GET');
+        pesertaList = res.data || [];
+        adminDataCache.pesertaList = pesertaList;
+      }
+
+      let html = `
+        <div class="d-flex justify-content-between mb-3">
+          <h5>👥 Daftar Peserta PKD</h5>
+          <div>
+            <button class="btn btn-success btn-sm me-2" id="tambahPesertaAdminBtn">➕ Tambah</button>
+            <button class="btn btn-info btn-sm me-2" id="importPesertaBtn">📥 Impor CSV</button>
+            <button class="btn btn-secondary btn-sm" id="exportPesertaBtn">📤 Ekspor CSV</button>
+          </div>
+        </div>
+        <div class="table-responsive" style="max-height:500px; overflow-y:auto;">
+          <table class="table table-bordered table-sm table-striped">
+            <thead><tr>
+              <th>ID</th><th>Foto</th><th>Nama Lengkap</th><th>Tempat/Tgl Lahir</th><th>Pekerjaan</th>
+              <th>Pendidikan</th><th>Alamat</th><th>No HP</th><th>Email</th><th>Utusan</th>
+              <th>Pengalaman</th><th>Aksi</th>
+            </tr></thead>
+            <tbody>
+      `;
+
+      pesertaList.forEach(p => {
+        html += `<tr>
+          <td>${p.id}</td>
+          <td>${p.fotoDriveId ? `<a href="https://drive.google.com/file/d/${p.fotoDriveId}/view" target="_blank">Lihat</a>` : '-'}</td>
+          <td>${escapeHtml(p.nama_lengkap || '')}</td>
+          <td>${escapeHtml(p.tempat_tgl_lahir || '')}</td>
+          <td>${escapeHtml(p.pekerjaan || '')}</td>
+          <td>${escapeHtml(p.pendidikan_terakhir || '')}</td>
+          <td>${escapeHtml(p.alamat || '')}</td>
+          <td>${escapeHtml(p.no_hp || '')}</td>
+          <td>${escapeHtml(p.email || '')}</td>
+          <td>${escapeHtml(p.utusan || '')}</td>
+          <td>${escapeHtml(p.pengalaman_organisasi || '')}</td>
+          <td>
+            <button class="btn btn-sm btn-warning edit-peserta" data-id="${p.id}">✏️</button>
+            <button class="btn btn-sm btn-danger delete-peserta" data-id="${p.id}">🗑️</button>
+          </td>
+        </tr>`;
+      });
+
+      html += `</tbody></table></div>`;
+      container.innerHTML = html;
+
+      document.getElementById('tambahPesertaAdminBtn').addEventListener('click', () => showPesertaModal());
+
+      document.querySelectorAll('.edit-peserta').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const id = this.dataset.id;
+          const peserta = pesertaList.find(p => p.id == id);
+          showPesertaModal(peserta);
+        });
+      });
+
+      document.querySelectorAll('.delete-peserta').forEach(btn => {
+        btn.addEventListener('click', async function() {
+          if (!confirm('Hapus data peserta ini?')) return;
+          const id = this.dataset.id;
+          await callAppsScript({ action: 'deletePeserta', id }, 'POST');
+          // Refresh cache dan tampilan
+          await refreshAdminPart('pesertaList');
+          loadAdminPeserta();
+        });
+      });
+
+      // --- TAMBAHKAN EVENT LISTENER UNTUK IMPOR DAN EKSPOR CSV ---
+      document.getElementById('importPesertaBtn')?.addEventListener('click', () => {
+        new bootstrap.Modal(document.getElementById('importPesertaModal')).show();
+      });
+
+      document.getElementById('exportPesertaBtn')?.addEventListener('click', exportPesertaCSV);
+
+    } catch (e) {
+      container.innerHTML = `<div class="alert alert-danger">Gagal memuat: ${escapeHtml(e.message)}</div>`;
+    }
+  }
+
+  // Tampilkan modal tambah/edit peserta
+  function showPesertaModal(peserta = null) {
+    const isEdit = !!peserta;
+    document.getElementById('pesertaModalLabel').innerText = isEdit ? 'Edit Peserta' : 'Tambah Peserta';
+    document.getElementById('pesertaId').value = isEdit ? peserta.id : '';
+    document.getElementById('pesertaNamaLengkap').value = isEdit ? (peserta.nama_lengkap || '') : '';
+    document.getElementById('pesertaTempatTglLahir').value = isEdit ? (peserta.tempat_tgl_lahir || '') : '';
+    document.getElementById('pesertaPekerjaan').value = isEdit ? (peserta.pekerjaan || '') : '';
+    document.getElementById('pesertaPendidikan').value = isEdit ? (peserta.pendidikan_terakhir || '') : '';
+    document.getElementById('pesertaAlamat').value = isEdit ? (peserta.alamat || '') : '';
+    document.getElementById('pesertaNoHP').value = isEdit ? (peserta.no_hp || '') : '';
+    document.getElementById('pesertaEmail').value = isEdit ? (peserta.email || '') : '';
+    document.getElementById('pesertaUtusan').value = isEdit ? (peserta.utusan || '') : '';
+    document.getElementById('pesertaPengalaman').value = isEdit ? (peserta.pengalaman_organisasi || '') : '';
+
+    const preview = document.getElementById('pesertaFotoPreview');
+    if (isEdit && peserta.fotoDriveId) {
+      preview.src = `https://drive.google.com/thumbnail?id=${peserta.fotoDriveId}`;
+      preview.style.display = 'block';
+    } else {
+      preview.style.display = 'none';
+      preview.src = '#';
+    }
+    document.getElementById('pesertaFoto').value = '';
+
+    const modal = new bootstrap.Modal(document.getElementById('pesertaModal'));
+    modal.show();
+
+    document.getElementById('simpanPesertaBtn').onclick = async function() {
+      const id = document.getElementById('pesertaId').value;
+      const nama_lengkap = document.getElementById('pesertaNamaLengkap').value.trim();
+      if (!nama_lengkap) {
+        document.getElementById('pesertaModalError').innerText = 'Nama lengkap wajib diisi!';
+        document.getElementById('pesertaModalError').style.display = 'block';
+        return;
+      }
+
+      const fotoFile = document.getElementById('pesertaFoto').files[0];
+      let fotoBase64 = null;
+      if (fotoFile) {
+        if (fotoFile.size > 5 * 1024 * 1024) {
+          document.getElementById('pesertaModalError').innerText = 'Ukuran foto maksimal 5 MB';
+          document.getElementById('pesertaModalError').style.display = 'block';
+          return;
+        }
+        const reader = new FileReader();
+        reader.readAsDataURL(fotoFile);
+        await new Promise((resolve) => {
+          reader.onload = () => {
+            fotoBase64 = reader.result;
+            resolve();
+          };
+        });
+      }
+
+      const params = {
+        action: isEdit ? 'updatePeserta' : 'submitPeserta',
+        id: id || undefined,
+        nama_lengkap,
+        tempat_tgl_lahir: document.getElementById('pesertaTempatTglLahir').value,
+        pekerjaan: document.getElementById('pesertaPekerjaan').value,
+        pendidikan_terakhir: document.getElementById('pesertaPendidikan').value,
+        alamat: document.getElementById('pesertaAlamat').value,
+        no_hp: document.getElementById('pesertaNoHP').value,
+        email: document.getElementById('pesertaEmail').value,
+        utusan: document.getElementById('pesertaUtusan').value,
+        pengalaman_organisasi: document.getElementById('pesertaPengalaman').value
+      };
+      if (fotoBase64) params.foto = fotoBase64;
+
+      try {
+        await callAppsScript(params, 'POST');
+        showToast(isEdit ? 'Data berhasil diperbarui' : 'Data berhasil ditambahkan', 'success');
+        modal.hide();
+        await refreshAdminPart('pesertaList');
+        loadAdminPeserta();
+      } catch (err) {
+        document.getElementById('pesertaModalError').innerText = err.message;
+        document.getElementById('pesertaModalError').style.display = 'block';
+      }
+    };
+  }
+
+  // =====================================================
+  //   FUNGSI EKSPOR CSV PESERTA (BARU)
+  // =====================================================
+  async function exportPesertaCSV() {
+    try {
+      const res = await callAppsScript({ action: 'exportPesertaCSV' }, 'GET');
+      if (res.success && res.csv) {
+        const blob = new Blob([res.csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.setAttribute('download', 'data_peserta.csv');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        showToast('Ekspor berhasil', 'success');
+      } else {
+        showToast('Gagal mengekspor data', 'danger');
+      }
+    } catch (e) {
+      showToast('Error: ' + e.message, 'danger');
+    }
+  }
+
+  // =====================================================
+  //   EVENT LISTENER UNTUK IMPOR CSV
+  // =====================================================
+  document.getElementById('importCsvSubmitBtn')?.addEventListener('click', async function() {
+    const fileInput = document.getElementById('importCsvFile');
+    const errorDiv = document.getElementById('importCsvError');
+    const progress = document.getElementById('importCsvProgress');
+
+    if (!fileInput.files.length) {
+      errorDiv.innerText = 'Pilih file CSV terlebih dahulu!';
+      errorDiv.style.display = 'block';
+      return;
+    }
+
+    const file = fileInput.files[0];
+    if (file.size > 5 * 1024 * 1024) { // 5 MB
+      errorDiv.innerText = 'Ukuran file maksimal 5 MB';
+      errorDiv.style.display = 'block';
+      return;
+    }
+
+    errorDiv.style.display = 'none';
+    progress.style.display = 'block';
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      const base64Data = e.target.result.split(',')[1]; // ambil base64 saja
+      try {
+        const res = await callAppsScript({
+          action: 'importPesertaCSV',
+          csvData: base64Data,
+          fileName: file.name
+        }, 'POST');
+        if (res.success) {
+          showToast(`Berhasil mengimpor ${res.count || 0} data`, 'success');
+          bootstrap.Modal.getInstance(document.getElementById('importPesertaModal')).hide();
+          fileInput.value = '';
+          await refreshAdminPart('pesertaList');
+          loadAdminPeserta(); // refresh tabel
+        } else {
+          throw new Error(res.message || 'Gagal impor');
+        }
+      } catch (err) {
+        errorDiv.innerText = 'Gagal: ' + err.message;
+        errorDiv.style.display = 'block';
+      } finally {
+        progress.style.display = 'none';
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // =====================================================
+  //   ADMIN: CRUD SKRINING QUESTIONS (dengan cache admin)
   // =====================================================
   async function loadAdminSkrining() {
     const container = document.getElementById('adminSkrining');
-    container.innerHTML = 'Memuat pertanyaan skrining...';
+    container.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Memuat...</span></div></div>`;
 
     try {
-      const questions = await fetchSkriningQuestions(false);
+      const data = await loadAdminData();
+      const questions = data.skriningQuestions || [];
 
       let html = `<div class="d-flex justify-content-between mb-3">
                     <h5>📋 Daftar Pertanyaan Skrining</h5>
@@ -2243,8 +2946,9 @@
           if (!confirm('Hapus pertanyaan ini?')) return;
           const id = this.dataset.id;
           await callAppsScript({ action: 'deleteSkriningQuestion', id }, 'POST');
-          invalidateCache();
+          await refreshAdminPart('skriningQuestions');
           loadAdminSkrining();
+          invalidateCache();
         });
       });
 
@@ -2322,21 +3026,23 @@
       if (isEdit) params.id = id;
 
       await callAppsScript(params, 'POST');
-      invalidateCache();
+      await refreshAdminPart('skriningQuestions');
       modal.hide();
       loadAdminSkrining();
+      invalidateCache();
     });
   }
 
   // =====================================================
-  //   ADMIN: CRUD PRETEST QUESTIONS
+  //   ADMIN: CRUD PRETEST QUESTIONS (dengan cache)
   // =====================================================
   async function loadAdminPretest() {
     const container = document.getElementById('adminPretest');
-    container.innerHTML = 'Memuat soal pretest...';
+    container.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>`;
 
     try {
-      const questions = await fetchPretestQuestions(false);
+      const data = await loadAdminData();
+      const questions = data.pretestQuestions || [];
 
       let html = `<div class="d-flex justify-content-between mb-3">
                     <h5>🧠 Daftar Soal Pretest</h5>
@@ -2383,8 +3089,9 @@
           if (!confirm('Hapus soal ini?')) return;
           const id = this.dataset.id;
           await callAppsScript({ action: 'deletePretestQuestion', id }, 'POST');
-          invalidateCache();
+          await refreshAdminPart('pretestQuestions');
           loadAdminPretest();
+          invalidateCache();
         });
       });
 
@@ -2459,21 +3166,23 @@
       if (isEdit) params.id = id;
 
       await callAppsScript(params, 'POST');
-      invalidateCache();
+      await refreshAdminPart('pretestQuestions');
       modal.hide();
       loadAdminPretest();
+      invalidateCache();
     });
   }
 
   // =====================================================
-  //   ADMIN: CRUD POSTTEST QUESTIONS
+  //   ADMIN: CRUD POSTTEST QUESTIONS (dengan cache)
   // =====================================================
   async function loadAdminPosttest() {
     const container = document.getElementById('adminPosttest');
-    container.innerHTML = 'Memuat soal posttest...';
+    container.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>`;
 
     try {
-      const questions = await fetchPosttestQuestions(false);
+      const data = await loadAdminData();
+      const questions = data.posttestQuestions || [];
 
       let html = `<div class="d-flex justify-content-between mb-3">
                     <h5>🎯 Daftar Soal Posttest</h5>
@@ -2520,8 +3229,9 @@
           if (!confirm('Hapus soal ini?')) return;
           const id = this.dataset.id;
           await callAppsScript({ action: 'deletePosttestQuestion', id }, 'POST');
-          invalidateCache();
+          await refreshAdminPart('posttestQuestions');
           loadAdminPosttest();
+          invalidateCache();
         });
       });
 
@@ -2596,21 +3306,23 @@
       if (isEdit) params.id = id;
 
       await callAppsScript(params, 'POST');
-      invalidateCache();
+      await refreshAdminPart('posttestQuestions');
       modal.hide();
       loadAdminPosttest();
+      invalidateCache();
     });
   }
 
   // =====================================================
-  //   ADMIN: SESI ABSEN + QR (FIXED)
+  //   ADMIN: SESI ABSEN (dengan cache)
   // =====================================================
   async function loadAdminSesi() {
     const container = document.getElementById('adminSesi');
-    container.innerHTML = 'Memuat sesi absen...';
+    container.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>`;
 
     try {
-      const sesiList = await fetchSesiAbsen(true);
+      const data = await loadAdminData();
+      const sesiList = data.sesiAbsen || [];
 
       let html = `<div class="d-flex justify-content-between mb-3">
                     <h5>📆 Daftar Sesi Absen</h5>
@@ -2667,8 +3379,9 @@
           if (!confirm('Hapus sesi ini?')) return;
           const id = this.dataset.id;
           await callAppsScript({ action: 'deleteSesiAbsen', id }, 'POST');
-          invalidateCache();
+          await refreshAdminPart('sesiAbsen');
           loadAdminSesi();
+          invalidateCache();
         });
       });
 
@@ -2762,19 +3475,15 @@
       if (password) params.password = password;
 
       await callAppsScript(params, 'POST');
-      invalidateCache();
+      await refreshAdminPart('sesiAbsen');
       modal.hide();
       loadAdminSesi();
+      invalidateCache();
     });
   }
 
-  // ===== FIXED: FUNGSI GENERATE QR SESI =====
   function generateQRSesi(sesiId, sesiNama, qrToken) {
     try {
-      if (typeof qrcodeGenerator !== 'function' && typeof qrcode !== 'function') {
-        throw new Error('QR Code library tidak ditemukan! Periksa koneksi internet.');
-      }
-      
       const qrLib = typeof qrcodeGenerator === 'function' ? qrcodeGenerator : qrcode;
       
       const baseUrl = window.location.origin + window.location.pathname;
@@ -2832,10 +3541,12 @@
   // =====================================================
   async function loadAdminQuizSettings() {
     const container = document.getElementById('adminQuizSettings');
-    container.innerHTML = 'Memuat pengaturan...';
+    container.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>`;
 
     try {
-      const settings = await fetchQuizSettings(false);
+      const data = await loadAdminData();
+      const settings = data.quizSettings || {};
+
       let html = `<div class="quiz-settings-card">
                     <h5 class="mb-4">⚙️ Tampilan Timer & Skor untuk Member</h5>
                     <div class="row">
@@ -2880,7 +3591,7 @@
           posttest_score
         }, 'POST');
 
-        invalidateCache();
+        await refreshAdminPart('quizSettings');
         showToast('Pengaturan berhasil disimpan!', 'success');
         loadAdminQuizSettings();
       });
@@ -2891,53 +3602,63 @@
   }
 
   // =====================================================
-  //   ADMIN: DATA SKRINING RESPONSES
+  //   ADMIN: DATA SKRINING RESPONSES (dengan cache + filter)
   // =====================================================
   async function loadAdminSkriningData() {
     const container = document.getElementById('adminSkriningData');
-    container.innerHTML = 'Memuat data skrining...';
+    container.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>`;
+
     try {
-      const res = await callAppsScript({ action: 'getSkriningResponses' }, 'GET');
-      if (res?.success && Array.isArray(res.data)) {
-        renderSkriningDataTable(res.data, container);
-      } else {
-        container.innerHTML = '<div class="alert alert-info">Belum ada data skrining.</div>';
+      const data = await loadAdminData();
+      const responses = data.skriningResponses || [];
+
+      if (!responses.length) {
+        container.innerHTML = '<p class="text-muted">Tidak ada data skrining.</p>';
+        return;
       }
+
+      let html = `<div class="mb-3">
+                    <input type="text" class="form-control filter-input" id="filterSkrining" placeholder="🔍 Cari nama / alamat...">
+                  </div>
+                  <div class="table-responsive" style="max-height:500px; overflow-y:auto;">
+                    <table class="table table-bordered table-sm table-striped table-hover">
+                      <thead><tr>
+                        <th>Waktu</th><th>Nama</th><th>Alamat</th><th>Info</th><th>Pengetahuan</th>
+                        <th>Qunut</th><th>Penyakit</th><th>Pernah</th><th>Alasan</th><th>Catatan</th>
+                        <th>Tanda Tangan</th><th>Detail</th>
+                      </tr></thead>
+                      <tbody id="skriningDataBody">`;
+      responses.forEach(row => {
+        html += `<tr class="data-row">
+          <td>${escapeHtml(row.timestamp || '')}</td>
+          <td class="nama">${escapeHtml(row.nama || '')}</td>
+          <td class="alamat">${escapeHtml(row.alamat || '')}</td>
+          <td>${escapeHtml(row.info || '')}</td>
+          <td>${escapeHtml(row.pengetahuan || '')}</td>
+          <td>${escapeHtml(row.qunut || '')}</td>
+          <td>${escapeHtml(row.penyakit || '')}</td>
+          <td>${escapeHtml(row.pernah || '')}</td>
+          <td>${escapeHtml(row.alasan || '')}</td>
+          <td>${escapeHtml(row.catatan || '')}</td>
+          <td>${row.signatureDriveId ? `<a href="https://drive.google.com/file/d/${row.signatureDriveId}/view" target="_blank">Lihat</a>` : '-'}</td>
+          <td><button class="btn btn-sm btn-outline-info" onclick='showSkriningDetail(${JSON.stringify(row)})'>🔍</button></td>
+        </tr>`;
+      });
+      html += `</tbody></table></div>`;
+      container.innerHTML = html;
+
+      document.getElementById('filterSkrining').addEventListener('input', function(e) {
+        const keyword = e.target.value.toLowerCase();
+        document.querySelectorAll('#skriningDataBody .data-row').forEach(row => {
+          const nama = row.querySelector('.nama')?.innerText.toLowerCase() || '';
+          const alamat = row.querySelector('.alamat')?.innerText.toLowerCase() || '';
+          row.style.display = (nama.includes(keyword) || alamat.includes(keyword)) ? '' : 'none';
+        });
+      });
+
     } catch (e) {
       container.innerHTML = `<div class="alert alert-danger">Gagal memuat: ${escapeHtml(e.message)}</div>`;
     }
-  }
-
-  function renderSkriningDataTable(data, container) {
-    if (!data.length) {
-      container.innerHTML = '<p class="text-muted">Tidak ada data skrining.</p>';
-      return;
-    }
-    let html = `<div class="table-responsive" style="max-height:500px; overflow-y:auto;">
-                  <table class="table table-bordered table-sm table-striped table-hover">
-                    <thead><tr>
-                      <th>Waktu</th><th>Nama</th><th>Alamat</th><th>Info</th><th>Pengetahuan</th>
-                      <th>Qunut</th><th>Penyakit</th><th>Pernah</th><th>Alasan</th><th>Catatan</th>
-                      <th>Tanda Tangan</th><th>Detail</th>
-                    </tr></thead><tbody>`;
-    data.forEach(row => {
-      html += `<tr>
-        <td>${escapeHtml(row.timestamp || '')}</td>
-        <td>${escapeHtml(row.nama || '')}</td>
-        <td>${escapeHtml(row.alamat || '')}</td>
-        <td>${escapeHtml(row.info || '')}</td>
-        <td>${escapeHtml(row.pengetahuan || '')}</td>
-        <td>${escapeHtml(row.qunut || '')}</td>
-        <td>${escapeHtml(row.penyakit || '')}</td>
-        <td>${escapeHtml(row.pernah || '')}</td>
-        <td>${escapeHtml(row.alasan || '')}</td>
-        <td>${escapeHtml(row.catatan || '')}</td>
-        <td>${row.signatureDriveId ? `<a href="https://drive.google.com/file/d/${row.signatureDriveId}/view" target="_blank">Lihat</a>` : '-'}</td>
-        <td><button class="btn btn-sm btn-outline-info" onclick='showSkriningDetail(${JSON.stringify(row)})'>🔍</button></td>
-      </tr>`;
-    });
-    html += `</tbody></table></div>`;
-    container.innerHTML = html;
   }
 
   window.showSkriningDetail = function(row) {
@@ -2963,66 +3684,111 @@
   };
 
   // =====================================================
-  //   ADMIN: DATA PRETEST RESPONSES
+  //   ADMIN: DATA PRETEST RESPONSES (dengan filter)
   // =====================================================
   async function loadAdminPretestData() {
     const container = document.getElementById('adminPretestData');
-    container.innerHTML = 'Memuat data pretest...';
+    container.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>`;
+
     try {
-      const res = await callAppsScript({ action: 'getPretestResponses' }, 'GET');
-      if (res?.success && Array.isArray(res.data)) {
-        renderQuizDataTable(res.data, container, 'pretest');
-      } else {
-        container.innerHTML = '<div class="alert alert-info">Belum ada data pretest.</div>';
+      const data = await loadAdminData();
+      const responses = data.pretestResponses || [];
+
+      if (!responses.length) {
+        container.innerHTML = '<p class="text-muted">Tidak ada data pretest.</p>';
+        return;
       }
+
+      let html = `<div class="mb-3">
+                    <input type="text" class="form-control filter-input" id="filterPretest" placeholder="🔍 Cari nama...">
+                  </div>
+                  <div class="table-responsive" style="max-height:500px; overflow-y:auto;">
+                    <table class="table table-bordered table-sm table-striped">
+                      <thead><tr><th>Waktu</th><th>Nama</th><th>Skor</th><th>Jawaban</th><th>Detail</th></tr></thead>
+                      <tbody id="pretestDataBody">`;
+      responses.forEach(row => {
+        let ringkasan = '';
+        try {
+          const jawaban = JSON.parse(row.answers || '[]');
+          const benar = jawaban.filter(a => a.correct).length;
+          ringkasan = `${benar}/${jawaban.length}`;
+        } catch { ringkasan = 'Error'; }
+        html += `<tr class="data-row">
+          <td>${escapeHtml(row.timestamp || '')}</td>
+          <td class="nama">${escapeHtml(row.nama || '')}</td>
+          <td>${row.score || 0}</td>
+          <td>${ringkasan}</td>
+          <td><button class="btn btn-sm btn-outline-info" onclick='showQuizDetail(${JSON.stringify(row)}, "pretest")'>🔍</button></td>
+        </tr>`;
+      });
+      html += `</tbody></table></div>`;
+      container.innerHTML = html;
+
+      document.getElementById('filterPretest').addEventListener('input', function(e) {
+        const keyword = e.target.value.toLowerCase();
+        document.querySelectorAll('#pretestDataBody .data-row').forEach(row => {
+          const nama = row.querySelector('.nama')?.innerText.toLowerCase() || '';
+          row.style.display = nama.includes(keyword) ? '' : 'none';
+        });
+      });
+
     } catch (e) {
       container.innerHTML = `<div class="alert alert-danger">Gagal memuat: ${escapeHtml(e.message)}</div>`;
     }
   }
 
   // =====================================================
-  //   ADMIN: DATA POSTTEST RESPONSES
+  //   ADMIN: DATA POSTTEST RESPONSES (dengan filter)
   // =====================================================
   async function loadAdminPosttestData() {
     const container = document.getElementById('adminPosttestData');
-    container.innerHTML = 'Memuat data posttest...';
+    container.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>`;
+
     try {
-      const res = await callAppsScript({ action: 'getPosttestResponses' }, 'GET');
-      if (res?.success && Array.isArray(res.data)) {
-        renderQuizDataTable(res.data, container, 'posttest');
-      } else {
-        container.innerHTML = '<div class="alert alert-info">Belum ada data posttest.</div>';
+      const data = await loadAdminData();
+      const responses = data.posttestResponses || [];
+
+      if (!responses.length) {
+        container.innerHTML = '<p class="text-muted">Tidak ada data posttest.</p>';
+        return;
       }
+
+      let html = `<div class="mb-3">
+                    <input type="text" class="form-control filter-input" id="filterPosttest" placeholder="🔍 Cari nama...">
+                  </div>
+                  <div class="table-responsive" style="max-height:500px; overflow-y:auto;">
+                    <table class="table table-bordered table-sm table-striped">
+                      <thead><tr><th>Waktu</th><th>Nama</th><th>Skor</th><th>Jawaban</th><th>Detail</th></tr></thead>
+                      <tbody id="posttestDataBody">`;
+      responses.forEach(row => {
+        let ringkasan = '';
+        try {
+          const jawaban = JSON.parse(row.answers || '[]');
+          const benar = jawaban.filter(a => a.correct).length;
+          ringkasan = `${benar}/${jawaban.length}`;
+        } catch { ringkasan = 'Error'; }
+        html += `<tr class="data-row">
+          <td>${escapeHtml(row.timestamp || '')}</td>
+          <td class="nama">${escapeHtml(row.nama || '')}</td>
+          <td>${row.score || 0}</td>
+          <td>${ringkasan}</td>
+          <td><button class="btn btn-sm btn-outline-info" onclick='showQuizDetail(${JSON.stringify(row)}, "posttest")'>🔍</button></td>
+        </tr>`;
+      });
+      html += `</tbody></table></div>`;
+      container.innerHTML = html;
+
+      document.getElementById('filterPosttest').addEventListener('input', function(e) {
+        const keyword = e.target.value.toLowerCase();
+        document.querySelectorAll('#posttestDataBody .data-row').forEach(row => {
+          const nama = row.querySelector('.nama')?.innerText.toLowerCase() || '';
+          row.style.display = nama.includes(keyword) ? '' : 'none';
+        });
+      });
+
     } catch (e) {
       container.innerHTML = `<div class="alert alert-danger">Gagal memuat: ${escapeHtml(e.message)}</div>`;
     }
-  }
-
-  function renderQuizDataTable(data, container, type) {
-    if (!data.length) {
-      container.innerHTML = '<p class="text-muted">Tidak ada data.</p>';
-      return;
-    }
-    let html = `<div class="table-responsive" style="max-height:500px; overflow-y:auto;">
-                  <table class="table table-bordered table-sm table-striped">
-                    <thead><tr><th>Waktu</th><th>Nama</th><th>Skor</th><th>Jawaban</th><th>Detail</th></tr></thead><tbody>`;
-    data.forEach(row => {
-      let ringkasan = '';
-      try {
-        const jawaban = JSON.parse(row.answers || '[]');
-        const benar = jawaban.filter(a => a.correct).length;
-        ringkasan = `${benar}/${jawaban.length}`;
-      } catch { ringkasan = 'Error'; }
-      html += `<tr>
-        <td>${escapeHtml(row.timestamp || '')}</td>
-        <td>${escapeHtml(row.nama || '')}</td>
-        <td>${row.score || 0}</td>
-        <td>${ringkasan}</td>
-        <td><button class="btn btn-sm btn-outline-info" onclick='showQuizDetail(${JSON.stringify(row)}, "${type}")'>🔍</button></td>
-      </tr>`;
-    });
-    html += `</tbody></table></div>`;
-    container.innerHTML = html;
   }
 
   window.showQuizDetail = function(row, type) {
@@ -3054,47 +3820,181 @@
   };
 
   // =====================================================
-  //   ADMIN: DATA ABSENSI RESPONSES
+  //   ADMIN: DATA ABSENSI RESPONSES (dengan filter)
   // =====================================================
   async function loadAdminAbsensiData() {
     const container = document.getElementById('adminAbsensiData');
-    container.innerHTML = 'Memuat data absensi...';
+    container.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>`;
+
     try {
-      const res = await callAppsScript({ action: 'getAbsensiResponses' }, 'GET');
-      if (res?.success && Array.isArray(res.data)) {
-        renderAbsensiDataTable(res.data, container);
-      } else {
-        container.innerHTML = '<div class="alert alert-info">Belum ada data absensi.</div>';
+      const data = await loadAdminData();
+      const responses = data.absensiResponses || [];
+
+      if (!responses.length) {
+        container.innerHTML = '<p class="text-muted">Tidak ada data absensi.</p>';
+        return;
       }
+
+      let html = `<div class="table-responsive" style="max-height:500px; overflow-y:auto;">
+                    <table class="table table-bordered table-sm table-striped">
+                      <thead><tr><th>Waktu</th><th>Nama</th><th>Sesi</th><th>Tanda Tangan</th></tr></thead>
+                      <tbody>`;
+      responses.forEach(row => {
+        html += `<tr>
+          <td>${escapeHtml(row.timestamp || '')}</td>
+          <td>${escapeHtml(row.nama || '')}</td>
+          <td>${escapeHtml(row.namaSesi || '')} (ID: ${row.sesiId})</td>
+          <td>${row.signatureDriveId ? `<a href="https://drive.google.com/file/d/${row.signatureDriveId}/view" target="_blank">Lihat</a>` : '-'}</td>
+        </tr>`;
+      });
+      html += `</tbody></table></div>`;
+      container.innerHTML = html;
+
     } catch (e) {
       container.innerHTML = `<div class="alert alert-danger">Gagal memuat: ${escapeHtml(e.message)}</div>`;
     }
   }
 
-  function renderAbsensiDataTable(data, container) {
-    if (!data.length) {
-      container.innerHTML = '<p class="text-muted">Tidak ada data absensi.</p>';
+  // =====================================================
+  //   ADMIN: MATERI (CRUD)
+  // =====================================================
+  async function loadAdminMateri() {
+    const container = document.getElementById('adminMateri');
+    if (!container) return;
+    container.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>`;
+
+    try {
+      const data = await loadAdminData();
+      const materi = data.materiList || [];
+
+      let html = `
+        <div class="d-flex justify-content-between mb-3">
+          <h5>📁 Daftar Materi</h5>
+          <button class="btn btn-success btn-sm" id="addMateriAdminBtn">➕ Unggah</button>
+        </div>
+      `;
+
+      if (!materi.length) {
+        html += '<p class="text-muted">Belum ada materi.</p>';
+      } else {
+        html += `<div class="table-responsive crud-table">
+          <table class="table table-bordered table-sm table-admin">
+            <thead><tr><th>ID</th><th>Judul</th><th>Deskripsi</th><th>Tipe</th><th>Diunggah</th><th>Aksi</th></tr></thead>
+            <tbody>`;
+        materi.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(m => {
+          html += `<tr>
+            <td>${m.id}</td>
+            <td>${escapeHtml(m.judul || '')}</td>
+            <td>${escapeHtml(m.deskripsi || '')}</td>
+            <td>${m.tipe?.toUpperCase()}</td>
+            <td>${new Date(m.timestamp).toLocaleDateString('id-ID')}</td>
+            <td>
+              <button class="btn btn-sm btn-danger delete-materi" data-id="${m.id}" data-fileid="${m.fileId}">🗑️</button>
+              <a href="https://drive.google.com/file/d/${m.fileId}/view" target="_blank" class="btn btn-sm btn-outline-primary">🔍</a>
+            </td>
+          </tr>`;
+        });
+        html += `</tbody></table></div>`;
+      }
+
+      container.innerHTML = html;
+
+      document.getElementById('addMateriAdminBtn')?.addEventListener('click', () => {
+        new bootstrap.Modal(document.getElementById('uploadMateriModal')).show();
+      });
+
+      document.querySelectorAll('.delete-materi').forEach(btn => {
+        btn.addEventListener('click', async function() {
+          if (!confirm('Hapus materi ini? File akan dipindah ke Trash.')) return;
+          const id = this.dataset.id;
+          const fileId = this.dataset.fileid;
+          try {
+            await callAppsScript({ action: 'deleteMateri', id, fileId }, 'POST');
+            await refreshAdminPart('materiList');
+            showToast('Materi berhasil dihapus', 'success');
+            loadAdminMateri();
+            if (document.getElementById('materiSection').style.display !== 'none') {
+              loadMateriList();
+            }
+          } catch (e) {
+            showToast('Gagal hapus: ' + e.message, 'danger');
+          }
+        });
+      });
+
+    } catch (e) {
+      container.innerHTML = `<div class="alert alert-danger">Gagal memuat: ${escapeHtml(e.message)}</div>`;
+    }
+  }
+
+  function readFileAsBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function submitMateri() {
+    const judul = document.getElementById('materiJudul').value.trim();
+    const deskripsi = document.getElementById('materiDeskripsi').value.trim();
+    const fileInput = document.getElementById('materiFile');
+    const errorDiv = document.getElementById('uploadMateriError');
+
+    if (!judul) {
+      errorDiv.innerText = 'Judul wajib diisi!';
+      errorDiv.style.display = 'block';
       return;
     }
-    let html = `<div class="table-responsive" style="max-height:500px; overflow-y:auto;">
-                  <table class="table table-bordered table-sm table-striped">
-                    <thead><tr><th>Waktu</th><th>Nama</th><th>Sesi</th><th>Tanda Tangan</th></tr></thead><tbody>`;
-    data.forEach(row => {
-      html += `<tr>
-        <td>${escapeHtml(row.timestamp || '')}</td>
-        <td>${escapeHtml(row.nama || '')}</td>
-        <td>${escapeHtml(row.namaSesi || '')} (ID: ${row.sesiId})</td>
-        <td>${row.signatureDriveId ? `<a href="https://drive.google.com/file/d/${row.signatureDriveId}/view" target="_blank">Lihat</a>` : '-'}</td>
-      </tr>`;
-    });
-    html += `</tbody></table></div>`;
-    container.innerHTML = html;
+    if (!fileInput.files.length) {
+      errorDiv.innerText = 'Pilih file PDF/PPT/PPTX!';
+      errorDiv.style.display = 'block';
+      return;
+    }
+
+    const file = fileInput.files[0];
+    const maxSize = 20 * 1024 * 1024; // 20 MB
+    if (file.size > maxSize) {
+      errorDiv.innerText = 'Ukuran file maksimal 20 MB!';
+      errorDiv.style.display = 'block';
+      return;
+    }
+
+    errorDiv.style.display = 'none';
+
+    try {
+      const base64 = await readFileAsBase64(file);
+
+      const params = {
+        action: 'addMateri',
+        judul,
+        deskripsi,
+        fileData: base64,
+        fileName: file.name,
+        uploadBy: isAdmin ? 'admin' : 'unknown'
+      };
+
+      await callAppsScript(params, 'POST');
+      showToast('Materi berhasil diunggah!', 'success');
+      
+      bootstrap.Modal.getInstance(document.getElementById('uploadMateriModal')).hide();
+      document.getElementById('materiJudul').value = '';
+      document.getElementById('materiDeskripsi').value = '';
+      document.getElementById('materiFile').value = '';
+      
+      await refreshAdminPart('materiList');
+      if (document.getElementById('materiSection').style.display !== 'none') loadMateriList();
+      if (document.getElementById('adminMateri').style.display !== 'none') loadAdminMateri();
+    } catch (e) {
+      errorDiv.innerText = 'Upload gagal: ' + e.message;
+      errorDiv.style.display = 'block';
+    }
   }
 
   // =====================================================
-  //   FUNGSI MATERI (PUBLIC & ADMIN)
+  //   FUNGSI MATERI (PUBLIC)
   // =====================================================
-  
   async function loadMateriList() {
     const container = document.getElementById('materiContainer');
     if (!container) return;
@@ -3174,148 +4074,17 @@
     }
   }
 
-  async function loadAdminMateri() {
-    const container = document.getElementById('adminMateri');
-    if (!container) return;
-    container.innerHTML = 'Memuat data materi...';
-
-    try {
-      const res = await callAppsScript({ action: 'getMateriList' }, 'GET');
-      const materi = res.success ? res.data || [] : [];
-
-      let html = `
-        <div class="d-flex justify-content-between mb-3">
-          <h5>📁 Daftar Materi</h5>
-          <button class="btn btn-success btn-sm" id="addMateriAdminBtn">➕ Unggah</button>
-        </div>
-      `;
-
-      if (!materi.length) {
-        html += '<p class="text-muted">Belum ada materi.</p>';
-      } else {
-        html += `<div class="table-responsive crud-table">
-          <table class="table table-bordered table-sm table-admin">
-            <thead><tr><th>ID</th><th>Judul</th><th>Deskripsi</th><th>Tipe</th><th>Diunggah</th><th>Aksi</th></tr></thead>
-            <tbody>`;
-        materi.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(m => {
-          html += `<tr>
-            <td>${m.id}</td>
-            <td>${escapeHtml(m.judul || '')}</td>
-            <td>${escapeHtml(m.deskripsi || '')}</td>
-            <td>${m.tipe?.toUpperCase()}</td>
-            <td>${new Date(m.timestamp).toLocaleDateString('id-ID')}</td>
-            <td>
-              <button class="btn btn-sm btn-danger delete-materi" data-id="${m.id}" data-fileid="${m.fileId}">🗑️</button>
-              <a href="https://drive.google.com/file/d/${m.fileId}/view" target="_blank" class="btn btn-sm btn-outline-primary">🔍</a>
-            </td>
-          </tr>`;
-        });
-        html += `</tbody></table></div>`;
-      }
-
-      container.innerHTML = html;
-
-      document.getElementById('addMateriAdminBtn')?.addEventListener('click', () => {
-        new bootstrap.Modal(document.getElementById('uploadMateriModal')).show();
-      });
-
-      document.querySelectorAll('.delete-materi').forEach(btn => {
-        btn.addEventListener('click', async function() {
-          if (!confirm('Hapus materi ini? File akan dipindah ke Trash.')) return;
-          const id = this.dataset.id;
-          const fileId = this.dataset.fileid;
-          try {
-            await callAppsScript({ action: 'deleteMateri', id, fileId }, 'POST');
-            showToast('Materi berhasil dihapus', 'success');
-            invalidateCache();
-            loadAdminMateri();
-            if (document.getElementById('materiSection').style.display !== 'none') {
-              loadMateriList();
-            }
-          } catch (e) {
-            showToast('Gagal hapus: ' + e.message, 'danger');
-          }
-        });
-      });
-
-    } catch (e) {
-      container.innerHTML = `<div class="alert alert-danger">Gagal memuat: ${escapeHtml(e.message)}</div>`;
-    }
-  }
-
-  function readFileAsBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
-
-  async function submitMateri() {
-    const judul = document.getElementById('materiJudul').value.trim();
-    const deskripsi = document.getElementById('materiDeskripsi').value.trim();
-    const fileInput = document.getElementById('materiFile');
-    const errorDiv = document.getElementById('uploadMateriError');
-
-    if (!judul) {
-      errorDiv.innerText = 'Judul wajib diisi!';
-      errorDiv.style.display = 'block';
-      return;
-    }
-    if (!fileInput.files.length) {
-      errorDiv.innerText = 'Pilih file PDF/PPT/PPTX!';
-      errorDiv.style.display = 'block';
-      return;
-    }
-
-    const file = fileInput.files[0];
-    const maxSize = 20 * 1024 * 1024; // 20 MB
-    if (file.size > maxSize) {
-      errorDiv.innerText = 'Ukuran file maksimal 20 MB!';
-      errorDiv.style.display = 'block';
-      return;
-    }
-
-    errorDiv.style.display = 'none';
-
-    try {
-      const base64 = await readFileAsBase64(file);
-
-      const params = {
-        action: 'addMateri',
-        judul,
-        deskripsi,
-        fileData: base64,
-        fileName: file.name,
-        uploadBy: isAdmin ? 'admin' : 'unknown'
-      };
-
-      await callAppsScript(params, 'POST');
-      showToast('Materi berhasil diunggah!', 'success');
-      
-      bootstrap.Modal.getInstance(document.getElementById('uploadMateriModal')).hide();
-      document.getElementById('materiJudul').value = '';
-      document.getElementById('materiDeskripsi').value = '';
-      document.getElementById('materiFile').value = '';
-      
-      invalidateCache();
-      if (document.getElementById('materiSection').style.display !== 'none') loadMateriList();
-      if (document.getElementById('adminMateri').style.display !== 'none') loadAdminMateri();
-    } catch (e) {
-      errorDiv.innerText = 'Upload gagal: ' + e.message;
-      errorDiv.style.display = 'block';
-    }
-  }
-
   // =====================================================
-  //   INISIALISASI
+  //   INISIALISASI (DIPERBAIKI: baca lastSection)
   // =====================================================
   window.onload = function() {
+    // 1. Muat status autentikasi terlebih dahulu
     loadAuthState();
+
+    // 2. Muat data publik (async)
     loadAllData().catch(console.warn);
 
-    // Event listener untuk menu di beranda (yang dapat diklik)
+    // 3. Event listener untuk menu beranda (dari dalam section)
     document.querySelectorAll('#berandaSection [data-section]').forEach(el => {
       el.addEventListener('click', function(e) {
         e.preventDefault();
@@ -3323,24 +4092,54 @@
       });
     });
 
+    // 4. Klik logo kembali ke beranda
+    document.querySelector('.navbar-brand').addEventListener('click', function(e) {
+      e.preventDefault();
+      navigateToSection('beranda');
+      const navbar = document.getElementById('navbarMain');
+      if (navbar.classList.contains('show')) {
+        bootstrap.Collapse.getInstance(navbar)?.hide();
+      }
+    });
+
+    // 5. Tutup navbar otomatis saat klik di luar
+    document.addEventListener('click', function(event) {
+      const navbar = document.getElementById('navbarMain');
+      const toggler = document.querySelector('.navbar-toggler');
+      if (!navbar || !toggler) return;
+      const isClickInside = navbar.contains(event.target) || toggler.contains(event.target);
+      if (!isClickInside && navbar.classList.contains('show')) {
+        const bsCollapse = bootstrap.Collapse.getInstance(navbar);
+        if (bsCollapse) bsCollapse.hide();
+      }
+    });
+
+    // 6. Tombol upload materi
     document.getElementById('simpanMateriBtn')?.addEventListener('click', submitMateri);
 
+    // 7. Reset iframe saat modal materi ditutup
     document.getElementById('previewMateriModal')?.addEventListener('hidden.bs.modal', function () {
       document.getElementById('previewMateriIframe').src = '';
       document.getElementById('previewMateriSpinner').style.display = 'flex';
     });
 
+    // 8. Tentukan halaman awal
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('sesi_id') && urlParams.has('token')) {
-      navigateToSection('absen');
-    } else {
-      navigateToSection('beranda');
-    }
-  };
+    let targetSection = 'beranda';
 
-  // =====================================================
-  //   END SCRIPT
-  // =====================================================
+    if (urlParams.has('sesi_id') && urlParams.has('token')) {
+      targetSection = 'absen';
+    } else {
+      const lastSection = localStorage.getItem('lastSection');
+      const validSections = ['beranda', 'pretest', 'posttest', 'absen', 'skrining', 'peserta', 'materi', 'admin'];
+      if (lastSection && validSections.includes(lastSection)) {
+        targetSection = lastSection;
+      }
+    }
+
+    // 9. Navigasi ke target
+    navigateToSection(targetSection);
+  };
 </script>
 </body>
 </html>
