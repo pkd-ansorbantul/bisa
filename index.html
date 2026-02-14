@@ -753,7 +753,7 @@
 <!-- ==================== BOOTSTRAP JS ==================== -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- ==================== SCRIPT UTAMA (LENGKAP + PERBAIKAN PERSISTENSI) ==================== -->
+<!-- ==================== SCRIPT UTAMA (LENGKAP + PERBAIKAN PERSISTENSI & QR) ==================== -->
 <script>
   // =====================================================
   //   KONFIGURASI & STATE (ASLI + OPTIMASI)
@@ -1241,7 +1241,7 @@
       loadAdminSesi();
       loadAdminQuizSettings();
       loadAdminMateri();
-      loadAdminPeserta(); // tambahkan ini
+      loadAdminPeserta();
 
       // Setup listener untuk tab data yang hanya dimuat saat pertama kali diklik
       const dataTabs = [
@@ -1249,7 +1249,6 @@
         { target: '#adminPretestData',  handler: loadAdminPretestData },
         { target: '#adminPosttestData', handler: loadAdminPosttestData },
         { target: '#adminAbsensiData',  handler: loadAdminAbsensiData }
-        // peserta sudah dimuat langsung di atas, jadi tidak perlu listener
       ];
       dataTabs.forEach(item => {
         const tabTrigger = document.querySelector(`button[data-bs-target="${item.target}"]`);
@@ -2316,7 +2315,7 @@
   }
 
   // =====================================================
-  //   ABSEN DIGITAL (ASLI + OPTIMASI)
+  //   ABSEN DIGITAL (ASLI + PERBAIKAN UNTUK QR)
   // =====================================================
   function saveAbsenFormState() {
     const nama = document.getElementById('namaAbsen')?.value || '';
@@ -2361,16 +2360,35 @@
     const container = document.getElementById('absenContainer');
     container.innerHTML = 'Memuat sesi...';
 
-    const sesiList = await fetchSesiAbsen(false);
+    // Cek parameter URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const sesiIdFromUrl = urlParams.get('sesi_id');
+    const tokenFromUrl = urlParams.get('token');
+    const isQRMode = !!(sesiIdFromUrl && tokenFromUrl);
+
+    // Jika mode QR, paksa refresh data sesi dari server (abaikan cache)
+    let sesiList;
+    if (isQRMode) {
+      sesiList = await fetchSesiAbsen(true); // force refresh
+    } else {
+      sesiList = await fetchSesiAbsen(false);
+    }
+
     if (!sesiList.length) {
       container.innerHTML = '<div class="alert alert-info">Belum ada sesi absen aktif.</div>';
       return;
     }
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const sesiIdFromUrl = urlParams.get('sesi_id');
-    const tokenFromUrl = urlParams.get('token');
-    const isQRMode = !!(sesiIdFromUrl && tokenFromUrl);
+    // Validasi: jika mode QR dan sesiId tidak ditemukan dalam list, tampilkan error
+    if (isQRMode) {
+      const foundSesi = sesiList.find(s => s.id == sesiIdFromUrl);
+      if (!foundSesi) {
+        container.innerHTML = `<div class="alert alert-danger">
+          <i class="bi bi-exclamation-triangle"></i> Sesi dengan ID ${sesiIdFromUrl} tidak ditemukan. Mungkin sesi telah dihapus atau token tidak valid.
+        </div>`;
+        return;
+      }
+    }
 
     let html = `<div class="mb-4 ${isQRMode ? 'qr-mode' : ''}">`;
 
@@ -2718,7 +2736,6 @@
         });
       });
 
-      // --- TAMBAHKAN EVENT LISTENER UNTUK IMPOR DAN EKSPOR CSV ---
       document.getElementById('importPesertaBtn')?.addEventListener('click', () => {
         new bootstrap.Modal(document.getElementById('importPesertaModal')).show();
       });
