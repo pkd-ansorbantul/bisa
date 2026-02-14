@@ -2366,6 +2366,11 @@
     const tokenFromUrl = urlParams.get('token');
     const isQRMode = !!(sesiIdFromUrl && tokenFromUrl);
 
+    // Jika mode QR, hapus semua state tersimpan agar form selalu bersih
+    if (isQRMode) {
+      clearAbsenFormState();
+    }
+
     // Jika mode QR, paksa refresh data sesi dari server (abaikan cache)
     let sesiList;
     if (isQRMode) {
@@ -2437,9 +2442,10 @@
     if (isQRMode) {
       const dropdown = document.getElementById('pilihSesiAbsen');
       if (dropdown) dropdown.value = sesiIdFromUrl;
+      // Tidak perlu restore karena sudah clear
+    } else {
+      restoreAbsenFormState();
     }
-
-    restoreAbsenFormState();
 
     document.getElementById('namaAbsen')?.addEventListener('input', saveAbsenFormState);
     document.getElementById('pilihSesiAbsen')?.addEventListener('change', saveAbsenFormState);
