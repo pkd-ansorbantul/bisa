@@ -859,51 +859,68 @@
   };
 
   // =====================================================
-  //   CALL APPS SCRIPT – VERSI PERBAIKAN (TIMEOUT 30s, CALLBACK AMAN)
+  //   CALL APPS SCRIPT – VERSI PERBAIKAN (CORS + JSONP FALLBACK)
   // =====================================================
   function callAppsScript(params, method = 'POST', timeout = 30000) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
+      // Untuk metode GET: coba fetch dengan mode cors terlebih dahulu
       if (method === 'GET') {
-        const callbackName = 'jsonp_callback_' + Date.now();
-        const script = document.createElement('script');
-        
-        let isResolved = false;
-        let timer = setTimeout(() => {
-          if (!isResolved) {
-            isResolved = true;
-            if (document.head.contains(script)) document.head.removeChild(script);
+        try {
+          const queryString = new URLSearchParams(params).toString();
+          const response = await fetch(`${scriptUrl}?${queryString}`, {
+            method: 'GET',
+            mode: 'cors', // default, server harus mengirim header CORS jika perlu
+            headers: { 'Accept': 'application/json' }
+          });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const data = await response.json();
+          return resolve(data);
+        } catch (fetchError) {
+          console.warn('Fetch GET gagal, fallback ke JSONP:', fetchError);
+          // Fallback ke JSONP
+          const callbackName = 'jsonp_callback_' + Date.now();
+          const script = document.createElement('script');
+          let isResolved = false;
+          let timer = setTimeout(() => {
+            if (!isResolved) {
+              isResolved = true;
+              if (document.head.contains(script)) document.head.removeChild(script);
+              delete window[callbackName];
+              reject(new Error('⏱️ Timeout: Server tidak merespon JSONP.'));
+            }
+          }, timeout);
+
+          window[callbackName] = function(data) {
+            if (!isResolved) {
+              isResolved = true;
+              clearTimeout(timer);
+              resolve(data || {});
+            }
             delete window[callbackName];
-            reject(new Error('⏱️ Timeout: Server tidak merespon. Periksa koneksi atau endpoint.'));
-          }
-        }, timeout);
-
-        window[callbackName] = function(data) {
-          if (!isResolved) {
-            isResolved = true;
-            clearTimeout(timer);
-            resolve(data || {});
-          }
-          delete window[callbackName];
-          if (document.head.contains(script)) document.head.removeChild(script);
-        };
-
-        script.onerror = (err) => {
-          if (!isResolved) {
-            isResolved = true;
-            clearTimeout(timer);
-            delete window[callbackName];
             if (document.head.contains(script)) document.head.removeChild(script);
-            reject(new Error('❌ Gagal memuat script JSONP. Pastikan endpoint mendukung JSONP.'));
-          }
-        };
+          };
 
-        const cleanParams = { ...params };
-        if (cleanParams.tandaTangan) delete cleanParams.tandaTangan;
+          script.onerror = (err) => {
+            if (!isResolved) {
+              isResolved = true;
+              clearTimeout(timer);
+              delete window[callbackName];
+              if (document.head.contains(script)) document.head.removeChild(script);
+              reject(new Error('❌ Gagal memuat script JSONP. Pastikan endpoint mendukung JSONP.'));
+            }
+          };
 
-        const queryString = new URLSearchParams({ ...cleanParams, callback: callbackName }).toString();
-        script.src = `${scriptUrl}?${queryString}`;
-        document.head.appendChild(script);
+          // Hapus parameter yang tidak perlu untuk GET (misalnya data gambar)
+          const cleanParams = { ...params };
+          delete cleanParams.tandaTangan;
+          delete cleanParams.signature;
+
+          const queryString = new URLSearchParams({ ...cleanParams, callback: callbackName }).toString();
+          script.src = `${scriptUrl}?${queryString}`;
+          document.head.appendChild(script);
+        }
       } else {
+        // Metode POST: gunakan fetch dengan no-cors (tidak bisa baca respons, hanya mengirim)
         fetch(scriptUrl, {
           method: 'POST',
           mode: 'no-cors',
