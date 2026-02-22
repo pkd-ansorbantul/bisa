@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profil Member · PKD GP Ansor Bantul</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="LOGO ANSOR.webp">
+  <!-- Font & Bootstrap -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    body {
+      background: #f8fafc;
+      font-family: 'Inter', sans-serif;
+      color: #0f172a;
+    }
+    .navbar {
+      background: rgba(255,255,255,0.8) !important;
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(203,213,225,0.3);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+    .navbar-brand img {
+      height: 40px;
+      width: auto;
+      margin-right: 12px;
+    }
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #0a3d62;
+      line-height: 1.2;
+    }
+    .brand-sub {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: #6c757d;
+      display: block;
+      margin-top: 2px;
+    }
+    .container-card {
+      max-width: 1200px;
+      background: white;
+      border-radius: 32px;
+      padding: 2rem;
+      margin: 30px auto;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+      border: 1px solid rgba(226,232,240,0.6);
+    }
+    .section-title {
+      font-weight: 650;
+      font-size: 1.75rem;
+      margin-bottom: 1.8rem;
+      border-left: 6px solid #2563eb;
+      padding-left: 1.2rem;
+    }
+    .profile-photo {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid #2563eb;
+      margin-bottom: 1rem;
+    }
+    .photo-placeholder {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      color: #94a3b8;
+      border: 3px dashed #cbd5e1;
+      margin-bottom: 1rem;
+    }
+    .score-card {
+      background: #f8fafc;
+      border-radius: 20px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid #e2e8f0;
+    }
+    .btn-rounded {
+      border-radius: 9999px;
+      padding: 0.6rem 2rem;
+      font-weight: 600;
+    }
+    .footer-modern {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-top: 3rem;
+      text-align: center;
+      padding: 1.5rem 0;
+      border-top: 1px solid #e2e8f0;
+      background: white;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="index.html">
+        <img src="LOGO ANSOR.webp" alt="GP Ansor">
+        <span>
+          <span class="brand-title">PKD GP Ansor</span>
+          <span class="brand-sub">Kabupaten Bantul</span>
+        </span>
+      </a>
+      <div class="d-flex align-items-center gap-2 ms-auto" id="navbarUserMenu"></div>
+    </div>
+  </nav>
+
+  <!-- Konten Utama -->
+  <div class="container container-card">
+    <h2 class="section-title"><i class="bi bi-person-badge me-2"></i>Profil Member</h2>
+
+    <div class="row">
+      <!-- Kolom Kiri: Foto dan Info Singkat -->
+      <div class="col-md-4 text-center mb-4">
+        <div id="photoContainer">
+          <img id="profilePhoto" src="#" alt="Foto Profil" class="profile-photo" style="display: none;">
+          <div id="photoPlaceholder" class="photo-placeholder">
+            <i class="bi bi-person-fill"></i>
+          </div>
+        </div>
+        <h4 id="memberName">-</h4>
+        <p id="memberEmail" class="text-muted"><i class="bi bi-envelope me-1"></i>-</p>
+        <p id="memberNohp" class="text-muted"><i class="bi bi-telephone me-1"></i>-</p>
+        <button class="btn btn-outline-primary btn-rounded mt-2" id="editProfileBtn" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+          <i class="bi bi-pencil-square me-2"></i>Edit Profil
+        </button>
+      </div>
+
+      <!-- Kolom Kanan: Tabs -->
+      <div class="col-md-8">
+        <ul class="nav nav-tabs mb-4" id="memberTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="scores-tab" data-bs-toggle="tab" data-bs-target="#scores" type="button" role="tab" aria-controls="scores" aria-selected="true">
+              <i class="bi bi-bar-chart me-2"></i>Nilai Saya
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">
+              <i class="bi bi-gear me-2"></i>Pengaturan Akun
+            </button>
+          </li>
+        </ul>
+
+        <div class="tab-content">
+          <!-- Tab Nilai -->
+          <div class="tab-pane fade show active" id="scores" role="tabpanel" aria-labelledby="scores-tab">
+            <div class="score-card">
+              <h5><i class="bi bi-pencil-square me-2 text-primary"></i>Riwayat Pretest</h5>
+              <div id="pretestScores">Memuat...</div>
+            </div>
+            <div class="score-card">
+              <h5><i class="bi bi-trophy me-2 text-warning"></i>Riwayat Posttest</h5>
+              <div id="posttestScores">Memuat...</div>
+            </div>
+          </div>
+
+          <!-- Tab Pengaturan -->
+          <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
+            <form id="settingsForm">
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Nama Lengkap</label>
+                <input type="text" class="form-control" id="settingNama" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Email</label>
+                <input type="email" class="form-control" id="settingEmail" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">No. HP</label>
+                <input type="text" class="form-control" id="settingNohp">
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Password Baru <span class="text-muted small">(kosongkan jika tidak ingin mengubah)</span></label>
+                <div class="input-group">
+                  <input type="password" class="form-control" id="settingPassword" placeholder="Minimal 6 karakter">
+                  <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('settingPassword')">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary btn-rounded px-5">Simpan Perubahan</button>
+            </form>
+            <hr class="my-4">
+            <button class="btn btn-outline-danger btn-rounded" id="logoutBtn">
+              <i class="bi bi-box-arrow-right me-2"></i>Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Edit Profil (opsional, bisa langsung di tab pengaturan, jadi modal tidak dipakai) -->
+  <!-- Tetapi kita buat modal sederhana jika ingin -->
+  <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Edit Profil</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>Gunakan tab <strong>Pengaturan Akun</strong> untuk mengubah data diri.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer-modern container">
+    <div class="d-flex justify-content-center align-items-center gap-2">
+      <i class="bi bi-c-circle"></i>
+      <span>Hak Cipta 2026 - Tim Instruktur GP Ansor Kabupaten Bantul</span>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // =====================================================
+    //   KONFIGURASI
+    // =====================================================
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbwzJdoG3eGJy70ZJvrAwG7mbaHZ69hUPDc9_kzBFMrc_bepO5dAVm927-vrJh9l4qLa/exec'; // GANTI DENGAN URL ANDA!
+
+    let userRole = null;
+    let userData = {};
+
+    // =====================================================
+    //   LOAD AUTH STATE
+    // =====================================================
+    function loadAuth() {
+      const serialized = sessionStorage.getItem('pkd_auth') || localStorage.getItem('pkd_auth');
+      if (serialized) {
+        try {
+          const state = JSON.parse(serialized);
+          userRole = state.role || null;
+          userData = state.data || {};
+        } catch (e) {}
+      }
+      if (userRole !== 'member') {
+        // Jika bukan member, redirect ke index
+        window.location.href = 'index.html';
+      }
+    }
+
+    // =====================================================
+    //   UPDATE NAVBAR
+    // =====================================================
+    function updateNavbar() {
+      const menu = document.getElementById('navbarUserMenu');
+      if (!menu) return;
+      if (userRole === 'member') {
+        menu.innerHTML = `
+          <span class="badge bg-light text-dark px-3 py-2 rounded-pill me-2">
+            <i class="bi bi-person-fill me-1"></i>Member
+          </span>
+          <div class="dropdown">
+            <button class="btn btn-outline-primary rounded-pill px-4 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-person-circle me-1"></i> ${escapeHtml(userData.nama || 'Member')}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="member.html"><i class="bi bi-person-badge me-2"></i>Profil Saya</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><button class="dropdown-item" id="logoutBtn"><i class="bi bi-box-arrow-right me-2"></i>Logout</button></li>
+            </ul>
+          </div>
+        `;
+        document.getElementById('logoutBtn')?.addEventListener('click', logout);
+      }
+    }
+
+    function escapeHtml(unsafe) {
+      if (!unsafe) return '';
+      return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    // =====================================================
+    //   LOGOUT
+    // =====================================================
+    function logout() {
+      sessionStorage.removeItem('pkd_auth');
+      localStorage.removeItem('pkd_auth');
+      window.location.href = 'index.html';
+    }
+
+    // =====================================================
+    //   PANGGIL API
+    // =====================================================
+    async function callAppsScript(params, method = 'GET') {
+      const queryString = new URLSearchParams(params).toString();
+      if (method === 'GET') {
+        try {
+          const res = await fetch(`${scriptUrl}?${queryString}`, { method: 'GET', mode: 'cors' });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return await res.json();
+        } catch (e) {
+          // Fallback JSONP
+          return new Promise((resolve, reject) => {
+            const callbackName = 'jsonp_' + Date.now();
+            window[callbackName] = (data) => { resolve(data); delete window[callbackName]; };
+            const script = document.createElement('script');
+            script.src = `${scriptUrl}?${queryString}&callback=${callbackName}`;
+            script.onerror = () => reject(new Error('Gagal terhubung ke server'));
+            document.head.appendChild(script);
+            setTimeout(() => reject(new Error('Timeout')), 10000);
+          });
+        }
+      } else {
+        // POST with no-cors
+        fetch(scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(params)
+        }).then(() => ({ success: true })).catch(err => { throw err; });
+      }
+    }
+
+    // =====================================================
+    //   LOAD DATA MEMBER
+    // =====================================================
+    async function loadMemberData() {
+      try {
+        const res = await callAppsScript({ action: 'getMemberData', username: userData.username }, 'GET');
+        if (res.success) {
+          const member = res.member;
+          const nama = member.nama_lengkap || '-';
+          const email = member.email || '-';
+          const nohp = member.no_hp || '-';
+
+          // Tampilkan data
+          document.getElementById('memberName').innerText = nama;
+          document.getElementById('memberEmail').innerHTML = `<i class="bi bi-envelope me-1"></i>${escapeHtml(email)}`;
+          document.getElementById('memberNohp').innerHTML = `<i class="bi bi-telephone me-1"></i>${escapeHtml(nohp)}`;
+
+          // Isi form settings
+          document.getElementById('settingNama').value = nama === '-' ? '' : nama;
+          document.getElementById('settingEmail').value = email === '-' ? '' : email;
+          document.getElementById('settingNohp').value = nohp === '-' ? '' : nohp;
+
+          // Foto
+          if (res.fotoDriveId) {
+            const fotoUrl = `https://drive.google.com/thumbnail?id=${res.fotoDriveId}`;
+            document.getElementById('profilePhoto').src = fotoUrl;
+            document.getElementById('profilePhoto').style.display = 'inline';
+            document.getElementById('photoPlaceholder').style.display = 'none';
+          } else {
+            document.getElementById('profilePhoto').style.display = 'none';
+            document.getElementById('photoPlaceholder').style.display = 'flex';
+          }
+
+          // Tampilkan skor pretest
+          let pretestHtml = '';
+          if (res.pretest && res.pretest.length > 0) {
+            res.pretest.forEach(p => {
+              const tgl = new Date(p.timestamp).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+              pretestHtml += `<div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                <span>${escapeHtml(tgl)}</span>
+                <span class="badge bg-primary rounded-pill">Skor: ${p.score}</span>
+              </div>`;
+            });
+          } else {
+            pretestHtml = '<p class="text-muted">Belum ada data pretest.</p>';
+          }
+          document.getElementById('pretestScores').innerHTML = pretestHtml;
+
+          // Posttest
+          let posttestHtml = '';
+          if (res.posttest && res.posttest.length > 0) {
+            res.posttest.forEach(p => {
+              const tgl = new Date(p.timestamp).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+              posttestHtml += `<div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                <span>${escapeHtml(tgl)}</span>
+                <span class="badge bg-warning text-dark rounded-pill">Skor: ${p.score}</span>
+              </div>`;
+            });
+          } else {
+            posttestHtml = '<p class="text-muted">Belum ada data posttest.</p>';
+          }
+          document.getElementById('posttestScores').innerHTML = posttestHtml;
+        } else {
+          alert('Gagal memuat data member');
+        }
+      } catch (e) {
+        console.error(e);
+        alert('Error: ' + e.message);
+      }
+    }
+
+    // =====================================================
+    //   UPDATE PROFIL
+    // =====================================================
+    document.getElementById('settingsForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const nama = document.getElementById('settingNama').value.trim();
+      const email = document.getElementById('settingEmail').value.trim();
+      const nohp = document.getElementById('settingNohp').value.trim();
+      const password = document.getElementById('settingPassword').value;
+
+      if (!nama || !email) {
+        alert('Nama dan email wajib diisi');
+        return;
+      }
+
+      const params = {
+        action: 'updateMemberProfile',
+        username: userData.username,
+        nama_lengkap: nama,
+        email: email,
+        no_hp: nohp
+      };
+      if (password) params.password = password;
+
+      try {
+        const res = await callAppsScript(params, 'POST');
+        if (res.success) {
+          alert('Profil berhasil diperbarui');
+          // Update userData di storage
+          userData.nama = nama;
+          userData.email = email;
+          userData.nohp = nohp;
+          persistAuth();
+          // Refresh tampilan
+          loadMemberData();
+          // Kosongkan field password
+          document.getElementById('settingPassword').value = '';
+        } else {
+          alert('Gagal memperbarui profil');
+        }
+      } catch (e) {
+        alert('Error: ' + e.message);
+      }
+    });
+
+    function persistAuth() {
+      const state = { role: userRole, data: userData };
+      sessionStorage.setItem('pkd_auth', JSON.stringify(state));
+      localStorage.setItem('pkd_auth', JSON.stringify(state));
+    }
+
+    // =====================================================
+    //   TOGGLE PASSWORD VISIBILITY
+    // =====================================================
+    window.togglePassword = function(inputId) {
+      const input = document.getElementById(inputId);
+      input.type = input.type === 'password' ? 'text' : 'password';
+    };
+
+    // =====================================================
+    //   INISIALISASI
+    // =====================================================
+    window.onload = function() {
+      loadAuth();
+      updateNavbar();
+      if (userRole === 'member') {
+        loadMemberData();
+      }
+    };
+  </script>
+</body>
+</html>

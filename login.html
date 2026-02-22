@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login · PKD GP Ansor Bantul</title>
+  <!-- Font & Bootstrap -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    body {
+      background: #f8fafc;
+      font-family: 'Inter', sans-serif;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+    }
+    .login-card {
+      max-width: 400px;
+      width: 100%;
+      background: white;
+      border-radius: 32px;
+      padding: 2rem;
+      box-shadow: 0 20px 35px -8px rgba(0,0,0,0.1);
+      border: 1px solid rgba(226,232,240,0.6);
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .logo img {
+      height: 60px;
+      margin-bottom: 0.5rem;
+    }
+    .btn-login {
+      border-radius: 9999px;
+      padding: 0.6rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="logo">
+      <img src="LOGO ANSOR.webp" alt="Logo Ansor">
+      <h4 class="fw-bold">Masuk ke Sistem</h4>
+      <p class="text-muted">Gunakan akun Admin atau Member</p>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Username</label>
+      <input type="text" id="username" class="form-control rounded-3" placeholder="Masukkan username" autocomplete="off">
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-semibold">Password</label>
+      <div class="input-group">
+        <input type="password" id="password" class="form-control rounded-start-3" placeholder="Masukkan password" autocomplete="off">
+        <button class="btn btn-outline-secondary rounded-end-3" type="button" onclick="togglePassword()">
+          <i class="bi bi-eye"></i>
+        </button>
+      </div>
+    </div>
+    <div id="errorMsg" class="text-danger small mb-3" style="display: none;"></div>
+    <button class="btn btn-primary w-100 btn-login" id="loginBtn">Login</button>
+    <div class="text-center mt-3">
+      <a href="index.html" class="text-decoration-none small">← Kembali ke Beranda</a>
+    </div>
+  </div>
+
+  <script>
+    // =====================================================
+    //   KONFIGURASI – GANTI DENGAN URL APPS SCRIPT ANDA!
+    // =====================================================
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbwzJdoG3eGJy70ZJvrAwG7mbaHZ69hUPDc9_kzBFMrc_bepO5dAVm927-vrJh9l4qLa/exec';
+
+    // Fungsi toggle visibility password
+    function togglePassword() {
+      const pwd = document.getElementById('password');
+      pwd.type = pwd.type === 'password' ? 'text' : 'password';
+    }
+
+    // =====================================================
+    //   PANGGIL APPS SCRIPT DENGAN FALLBACK JSONP
+    // =====================================================
+    async function callAppsScript(params) {
+      const queryString = new URLSearchParams(params).toString();
+      try {
+        const res = await fetch(`${scriptUrl}?${queryString}`, { method: 'GET', mode: 'cors' });
+        return await res.json();
+      } catch (e) {
+        // Fallback JSONP jika CORS gagal
+        return new Promise((resolve, reject) => {
+          const callbackName = 'jsonp_' + Date.now();
+          window[callbackName] = (data) => { resolve(data); delete window[callbackName]; };
+          const script = document.createElement('script');
+          script.src = `${scriptUrl}?${queryString}&callback=${callbackName}`;
+          script.onerror = () => reject(new Error('Gagal terhubung ke server'));
+          document.head.appendChild(script);
+          setTimeout(() => reject(new Error('Timeout')), 10000);
+        });
+      }
+    }
+
+    // =====================================================
+    //   HANDLER LOGIN
+    // =====================================================
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const errorDiv = document.getElementById('errorMsg');
+
+      if (!username || !password) {
+        errorDiv.innerText = 'Username dan password harus diisi!';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      // 1. Coba login sebagai admin
+      try {
+        const adminRes = await callAppsScript({ action: 'verifyAdmin', username, password });
+        if (adminRes.success && adminRes.role) {
+          // Simpan state admin
+          const authState = {
+            role: 'admin',
+            data: {
+              username: username,
+              nama: username // admin tidak memiliki nama lengkap
+            }
+          };
+          sessionStorage.setItem('pkd_auth', JSON.stringify(authState));
+          localStorage.setItem('pkd_auth', JSON.stringify(authState));
+          window.location.href = 'admin.html';
+          return;
+        }
+      } catch (e) {
+        // Abaikan, lanjut cek member
+      }
+
+      // 2. Coba login sebagai member
+      try {
+        const memberRes = await callAppsScript({ action: 'verifyMember', username, password });
+        if (memberRes.success && memberRes.role === 'member') {
+          const authState = {
+            role: 'member',
+            data: {
+              username: memberRes.username,
+              nama: memberRes.nama,
+              email: memberRes.email,
+              nohp: memberRes.nohp
+            }
+          };
+          sessionStorage.setItem('pkd_auth', JSON.stringify(authState));
+          localStorage.setItem('pkd_auth', JSON.stringify(authState));
+          window.location.href = 'member.html';
+          return;
+        }
+      } catch (e) {
+        // Abaikan
+      }
+
+      // 3. Jika keduanya gagal
+      errorDiv.innerText = 'Username atau password salah!';
+      errorDiv.style.display = 'block';
+    });
+
+    // =====================================================
+    //   CEK APAKAH SUDAH LOGIN – LANGSUNG REDIRECT
+    // =====================================================
+    (function() {
+      const auth = sessionStorage.getItem('pkd_auth') || localStorage.getItem('pkd_auth');
+      if (auth) {
+        try {
+          const state = JSON.parse(auth);
+          if (state.role === 'admin') {
+            window.location.href = 'admin.html';
+          } else if (state.role === 'member') {
+            window.location.href = 'member.html';
+          }
+        } catch (e) {}
+      }
+    })();
+  </script>
+</body>
+</html>
