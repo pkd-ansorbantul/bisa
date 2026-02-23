@@ -11,21 +11,40 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <style>
     * { font-family: 'Inter', system-ui, sans-serif; }
+    /* ===== Gaya navbar yang diselaraskan dengan index.html ===== */
+    .navbar-brand {
+      line-height: 1.2;
+    }
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #0a3d62;
+    }
+    .brand-sub {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: #6c757d;
+      display: block;
+      margin-top: 2px;
+      letter-spacing: 0.5px;
+    }
+    .navbar-brand img {
+      height: 45px;
+      width: auto;
+      margin-right: 12px;
+      transition: transform 0.3s ease;
+      will-change: transform;
+    }
+    .navbar-brand img:hover {
+      transform: scale(1.05);
+    }
+    /* ========================================================= */
     body {
       background: #f8fafc;
       color: #0f172a;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-    }
-    .navbar-brand {
-      font-weight: 700;
-      color: #0f172a !important;
-    }
-    .navbar-brand img {
-      max-height: 40px;
-      width: auto;
-      margin-right: 12px;
     }
     .container-card {
       max-width: 900px;
@@ -160,14 +179,14 @@
 </head>
 <body>
 
-<!-- Navbar sederhana -->
+<!-- Navbar (sama dengan about.html) -->
 <nav class="navbar navbar-expand-lg bg-white sticky-top shadow-sm">
   <div class="container">
     <a class="navbar-brand d-flex align-items-center" href="index.html">
-      <img src="LOGO ANSOR.webp" alt="GP Ansor">
+      <img src="LOGO ANSOR.webp" alt="GP Ansor" class="me-2">
       <span>
-        <span class="fw-bold">PKD GP Ansor</span><br>
-        <small class="text-muted">Kabupaten Bantul · Post-test</small>
+        <span class="brand-title">PKD GP Ansor</span>
+        <span class="brand-sub">Kabupaten Bantul</span>
       </span>
     </a>
     <a href="index.html" class="btn btn-outline-primary rounded-pill px-4 ms-auto">
@@ -207,7 +226,7 @@
   // =====================================================
   //   KONFIGURASI & STATE (khusus posttest)
   // =====================================================
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbwzJdoG3eGJy70ZJvrAwG7mbaHZ69hUPDc9_kzBFMrc_bepO5dAVm927-vrJh9l4qLa/exec'; // Ganti jika berbeda
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycby1BmHq5n77oLoW9r5xhY7b9H6Lvcoi5Jz79hqcbrnO0Y4VidFNmugVFSjcGyJ5f8If/exec'; // Ganti jika berbeda
 
   let posttestQuiz = null; // objek state kuis
 

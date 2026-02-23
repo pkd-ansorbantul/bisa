@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form isian untuk elemen SVG (1.svg & 2.svg)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+        body {
+            background: #f4f7fb;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .form-container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 20px 40px -12px rgba(0,20,40,0.25);
+            padding: 32px 36px;
+        }
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 500;
+            color: #1e2f4d;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            border-left: 6px solid #2b6c9e;
+            padding-left: 20px;
+        }
+        .subhead {
+            color: #3b4f6b;
+            margin-left: 26px;
+            margin-bottom: 36px;
+            font-weight: 300;
+            font-size: 1rem;
+        }
+        .svg-panels {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        .card {
+            flex: 1 1 400px;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 4px 16px rgba(0, 20, 40, 0.08);
+            padding: 24px 28px;
+            border: 1px solid #e2eaf1;
+            transition: box-shadow 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 12px 28px rgba(0,30,60,0.12);
+        }
+        .card h2 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 1.5rem;
+            color: #11324b;
+            margin-top: 0;
+            margin-bottom: 24px;
+            border-bottom: 2px dashed #b8cdde;
+            padding-bottom: 12px;
+        }
+        .card h2 span {
+            background: #e1edf7;
+            font-size: 0.9rem;
+            font-weight: 400;
+            padding: 2px 12px;
+            border-radius: 40px;
+            color: #1e4f73;
+        }
+        .field-group {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #1f4462;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        label i {
+            color: #5882b7;
+            font-style: normal;
+            font-size: 1.1rem;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            border: 1px solid #cbd6e3;
+            border-radius: 18px;
+            background: #f9fcff;
+            transition: 0.15s;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #2b6c9e;
+            box-shadow: 0 0 0 4px rgba(43,108,158,0.15);
+            background: #ffffff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 18px 0 12px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+        th {
+            background: #d9e6f2;
+            color: #11324b;
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            padding: 12px 8px;
+            border: 1px solid #b8c9db;
+        }
+        td {
+            padding: 10px 8px;
+            border: 1px solid #d3deea;
+            background: white;
+        }
+        td input {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 14px;
+            border: 1px solid #c0d0e1;
+            background: #ffffff;
+            font-size: 0.9rem;
+        }
+        .table-controls {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 6px;
+        }
+        .btn-add {
+            background: #eef3f9;
+            border: 1px dashed #2b6c9e;
+            color: #1e4f73;
+            padding: 8px 22px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-add:hover {
+            background: #d6e5f2;
+            border: 1px solid #2b6c9e;
+        }
+        .btn-add:active {
+            background: #b8d1e8;
+        }
+        .footer-note {
+            margin-top: 32px;
+            background: #edf3f9;
+            padding: 16px 24px;
+            border-radius: 26px;
+            color: #1d3c58;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .badge-svg {
+            background: #2b6c9e;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .preview-tip {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        hr {
+            border: none;
+            border-top: 2px dotted #c0d2e3;
+            margin: 24px 0 8px;
+        }
+        .example-hint {
+            color: #6a7f9b;
+            font-size: 0.8rem;
+            margin-top: 4px;
+            margin-left: 12px;
+        }
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <h1>📋 Isian untuk berkas SVG</h1>
+    <div class="subhead">Field di bawah mewakili teks yang dapat diganti di 1.svg dan 2.svg — kosongkan jika tidak diperlukan</div>
+
+    <div class="svg-panels">
+        <!-- Panel kiri : 1.svg -->
+        <div class="card">
+            <h2>📄 1.svg <span>header & tanda tangan</span></h2>
+
+            <div class="field-group">
+                <label><i>🏷️</i> Judul utama (ULINNUHA)</label>
+                <input type="text" id="judulUtama" placeholder="misal: ULINNUHA" value="ULINNUHA">
+            </div>
+
+            <div class="field-group">
+                <label><i>✅</i> Status (DINYATAKAN LULUS)</label>
+                <input type="text" id="statusLulus" placeholder="contoh: DINYATAKAN LULUS" value="DINYATAKAN LULUS">
+            </div>
+
+            <div class="field-group">
+                <label><i>👤</i> Nama Ketua</label>
+                <input type="text" id="namaKetua" placeholder="misal: Ahmad Bidik" value="Ahmad Bidik">
+                <div class="example-hint">↳ mengisi tempat "Ahmad Bidik" di SVG</div>
+            </div>
+
+            <div class="field-group">
+                <label><i>👥</i> Nama Sekretaris</label>
+                <input type="text" id="namaSekretaris" placeholder="contoh: Siti Aminah" value="">
+                <div class="example-hint">↳ isian untuk label "Sekretaris"</div>
+            </div>
+
+            <!-- Field tambahan jika ada "Ketua" kedua (misal jabatan di bawah) tapi kita anggap cukup -->
+            <div style="background:#f6faff; border-radius: 18px; padding: 10px 16px; margin-top: 12px; border-left: 4px solid #abc0d3;">
+                <span style="color:#2f5577; font-size:0.85rem;">🔍 terdeteksi dari SVG: teks "Ketua" dan "Sekretaris" sebagai label, sedangkan "Ahmad Bidik" sebagai contoh nama ketua.</span>
+            </div>
+        </div>
+
+        <!-- Panel kanan : 2.svg (tabel utusan) -->
+        <div class="card">
+            <h2>📄 2.svg <span>utusan & materi</span></h2>
+
+            <div class="field-group">
+                <label><i>📮</i> Utusan :</label>
+                <input type="text" id="utusan" placeholder="Nama utusan / institusi" value="">
+            </div>
+
+            <label style="margin-top: 20px;"><i>📚</i> Daftar materi & instruktur</label>
+            <table id="tabelMateri">
+                <thead>
+                    <tr>
+                        <th>NO</th>
+                        <th>MATERI</th>
+                        <th>INSTRUKTUR</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- baris awal sesuai contoh SVG -->
+                    <tr>
+                        <td style="text-align:center; width:50px;">1</td>
+                        <td><input type="text" class="materi-input" value="Orientasi Pengkaderan" placeholder="materi"></td>
+                        <td><input type="text" class="instruktur-input" placeholder="instruktur" value=""></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="table-controls">
+                <button class="btn-add" type="button" id="tambahBarisBtn">
+                    <span style="font-size:1.2rem;">+</span> tambah baris materi
+                </button>
+            </div>
+
+            <!-- keterangan tambahan -->
+            <div style="margin-top: 18px; background: #f4fafd; border-radius: 16px; padding: 12px;">
+                <span style="color:#1a4b6d; font-size:0.9rem;">✏️ Baris pertama sudah diisi dengan "Orientasi Pengkaderan" sesuai contoh di 2.svg. Anda bisa mengubah atau menambah baris.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- bagian ringkasan / nilai yang akan digunakan (optional) -->
+    <hr>
+    <div class="footer-note">
+        <div class="preview-tip">
+            <span class="badge-svg">✍️ isian langsung</span>
+            <span>semua field siap diisi — data ini nantinya dapat dipetakan ke elemen SVG</span>
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <span style="cursor:default;">🖼️ 1.svg</span>
+            <span style="cursor:default;">📋 2.svg</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // === MANAJEMEN TABEL DINAMIS (2.svg) ===
+        const tabelBody = document.getElementById('tableBody');
+        const btnTambah = document.getElementById('tambahBarisBtn');
+
+        // Fungsi untuk memperbarui nomor urut setelah penghapusan (jika kita ingin fitur hapus, tapi sederhana dulu)
+        function perbaruiNomor() {
+            const baris = tabelBody.querySelectorAll('tr');
+            baris.forEach((row, index) => {
+                const cellNomor = row.cells[0];
+                if (cellNomor) {
+                    cellNomor.textContent = (index + 1).toString();
+                }
+            });
+        }
+
+        // Tambah baris baru
+        btnTambah.addEventListener('click', function() {
+            const barisBaru = document.createElement('tr');
+
+            // Nomor (akan diperbarui nanti)
+            const cellNo = document.createElement('td');
+            cellNo.style.textAlign = 'center';
+            cellNo.style.width = '50px';
+            cellNo.textContent = '?'; // sementara
+
+            // Kolom materi (input)
+            const cellMateri = document.createElement('td');
+            const inputMateri = document.createElement('input');
+            inputMateri.type = 'text';
+            inputMateri.placeholder = 'materi';
+            inputMateri.classList.add('materi-input');
+            cellMateri.appendChild(inputMateri);
+
+            // Kolom instruktur (input)
+            const cellInstruktur = document.createElement('td');
+            const inputInstruktur = document.createElement('input');
+            inputInstruktur.type = 'text';
+            inputInstruktur.placeholder = 'instruktur';
+            inputInstruktur.classList.add('instruktur-input');
+            cellInstruktur.appendChild(inputInstruktur);
+
+            barisBaru.appendChild(cellNo);
+            barisBaru.appendChild(cellMateri);
+            barisBaru.appendChild(cellInstruktur);
+
+            tabelBody.appendChild(barisBaru);
+            perbaruiNomor();
+        });
+
+        // saat pertama kali load, pastikan nomor baris pertama = 1 (sudah)
+        // Jika ada penghapusan nanti (tidak diimplementasikan, tapi nomor akan tetap rapi jika kita menambah)
+        // optional: tambahkan kemampuan hapus baris? agar lebih lengkap, kita bisa tambah ikon silang di samping.
+        // Tapi mengikuti permintaan "mengisi setiap isian" kita cukup tambah baris.
+        // Namun agar lebih fleksibel, kita tambahkan tombol hapus di setiap baris (opsional). 
+        // Berhubung tidak disebutkan, kita akan sederhana saja: tambah baris tanpa hapus.
+        // Tapi user mungkin ingin menghapus. Lebih baik beri opsi hapus kecil.
+        // Tambahkan kolom kecil untuk hapus (opsional) agar tidak mengganggu.
+        // Kita akan sisipkan kolom tambahan di header? itu mengubah struktur tabel. Alternatif: tambah 'x' di kolom NO.
+        // Namun karena SVG asli hanya 3 kolom, kita tidak perlu merusak format. Kita bisa letakkan tombol hapus di dalam kolom instruktur? 
+        // Itu akan merepotkan. Untuk menjaga kesederhanaan, kita cukup beri kemampuan hapus dengan double klik baris (sederhana).
+        // Atau tambah tombol di luar tabel? lebih baik kita tambahkan fitur hapus dengan ikon di sebelah kanan input instruktur.
+        // Saya akan modifikasi sedikit: setiap baris memiliki ikon hapus di dalam sel instruktur (di sebelah input) agar tidak menambah kolom.
+        // Tapi instruktur bisa diisi teks panjang, jadi kurang cocok. Lebih baik tambah kolom kecil "🗑️" tanpa mengganggu. 
+        // Namun mengubah struktur tabel mungkin membuat tidak sesuai referensi SVG. Tapi karena ini hanya form isian, tidak masalah.
+        // Demi kemudahan, saya tambahkan kolom tipis "hapus" di paling kanan. Itu tidak akan mempengaruhi data isian.
+        // Kita ubah sedikit tabelnya: tambah <th>🗑️</th> di thead, dan sel hapus di tbody.
+        // Lakukan modifikasi saat inisialisasi.
+
+        // Ubah struktur tabel dengan kolom hapus.
+        const tabel = document.getElementById('tabelMateri');
+        const thead = tabel.querySelector('thead tr');
+        const hapusTh = document.createElement('th');
+        hapusTh.textContent = '🗑️';
+        hapusTh.style.width = '40px';
+        thead.appendChild(hapusTh);
+
+        // Untuk baris yang sudah ada (satu baris awal), tambahkan sel hapus
+        const barisAwal = tabelBody.querySelector('tr');
+        if (barisAwal) {
+            const cellHapus = document.createElement('td');
+            cellHapus.style.textAlign = 'center';
+            const btnHapus = document.createElement('span');
+            btnHapus.innerHTML = '✕';
+            btnHapus.style.cursor = 'pointer';
+            btnHapus.style.color = '#b00030';
+            btnHapus.style.fontWeight = 'bold';
+            btnHapus.style.fontSize = '1.2rem';
+            btnHapus.title = 'hapus baris';
+            btnHapus.onclick = function() {
+                if (tabelBody.children.length > 1) {
+                    barisAwal.remove();
+                    perbaruiNomor();
+                } else {
+                    alert('Minimal satu baris harus ada.');
+                }
+            };
+            cellHapus.appendChild(btnHapus);
+            barisAwal.appendChild(cellHapus);
+        }
+
+        // Modifikasi fungsi tambahBaris untuk juga menambah sel hapus
+        const tambahAsli = btnTambah.click;
+        btnTambah.removeEventListener('click', tambahAsli);
+        btnTambah.addEventListener('click', function() {
+            const barisBaru = document.createElement('tr');
+
+            // Nomor
+            const cellNo = document.createElement('td');
+            cellNo.style.textAlign = 'center';
+            cellNo.style.width = '50px';
+            cellNo.textContent = '?';
+
+            // Materi
+            const cellMateri = document.createElement('td');
+            const inputMateri = document.createElement('input');
+            inputMateri.type = 'text';
+            inputMateri.placeholder = 'materi';
+            inputMateri.classList.add('materi-input');
+            cellMateri.appendChild(inputMateri);
+
+            // Instruktur
+            const cellInstruktur = document.createElement('td');
+            const inputInstruktur = document.createElement('input');
+            inputInstruktur.type = 'text';
+            inputInstruktur.placeholder = 'instruktur';
+            inputInstruktur.classList.add('instruktur-input');
+            cellInstruktur.appendChild(inputInstruktur);
+
+            // Hapus
+            const cellHapus = document.createElement('td');
+            cellHapus.style.textAlign = 'center';
+            const btnHapus = document.createElement('span');
+            btnHapus.innerHTML = '✕';
+            btnHapus.style.cursor = 'pointer';
+            btnHapus.style.color = '#b00030';
+            btnHapus.style.fontWeight = 'bold';
+            btnHapus.style.fontSize = '1.2rem';
+            btnHapus.title = 'hapus baris';
+            btnHapus.onclick = function() {
+                if (tabelBody.children.length > 1) {
+                    barisBaru.remove();
+                    perbaruiNomor();
+                } else {
+                    alert('Minimal satu baris diperlukan.');
+                }
+            };
+            cellHapus.appendChild(btnHapus);
+
+            barisBaru.appendChild(cellNo);
+            barisBaru.appendChild(cellMateri);
+            barisBaru.appendChild(cellInstruktur);
+            barisBaru.appendChild(cellHapus);
+
+            tabelBody.appendChild(barisBaru);
+            perbaruiNomor();
+        });
+
+        // Perbarui nomor juga setelah hapus
+        function perbaruiNomor() {
+            const baris = tabelBody.querySelectorAll('tr');
+            baris.forEach((row, index) => {
+                const cellNomor = row.cells[0];
+                if (cellNomor) {
+                    cellNomor.textContent = (index + 1).toString();
+                }
+            });
+        }
+
+        // Perbaiki fungsi perbaruiNomor yang lama dengan yang baru
+        window.perbaruiNomor = perbaruiNomor;
+
+        // Supaya nomor awal sudah benar (1)
+        perbaruiNomor();
+
+        // ===== Tidak ada submit khusus, hanya form isian =====
+        // Untuk menjaga data, kita bisa tambahkan console log jika diperlukan
+        // tapi tidak diminta. Form ini langsung menampung semua nilai.
+
+        // Sedikit sentuhan: tampilkan nilai default dari 1.svg
+        // Semua sudah terisi.
+    })();
+</script>
+
+<!-- catatan: form ini tidak mengirim data ke server, hanya untuk mengisi field yang mewakili elemen SVG -->
+</body>
+</html>
