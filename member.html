@@ -234,7 +234,7 @@
     // =====================================================
     //   KONFIGURASI
     // =====================================================
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbwzJdoG3eGJy70ZJvrAwG7mbaHZ69hUPDc9_kzBFMrc_bepO5dAVm927-vrJh9l4qLa/exec'; // GANTI DENGAN URL ANDA!
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycby1BmHq5n77oLoW9r5xhY7b9H6Lvcoi5Jz79hqcbrnO0Y4VidFNmugVFSjcGyJ5f8If/exec'; // GANTI DENGAN URL ANDA!
 
     let userRole = null;
     let userData = {};
@@ -283,9 +283,15 @@
       }
     }
 
+    // Fungsi escapeHtml yang sudah diperbaiki (menangani null/undefined)
     function escapeHtml(unsafe) {
-      if (!unsafe) return '';
-      return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+      if (unsafe == null) return '';
+      return String(unsafe)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
     // =====================================================
