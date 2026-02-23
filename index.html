@@ -37,6 +37,11 @@
       height: 45px;
       width: auto;
       margin-right: 12px;
+      transition: transform 0.3s ease;
+      will-change: transform;
+    }
+    .navbar-brand img:hover {
+      transform: scale(1.05);
     }
     .nav-link.active {
       font-weight: 600;
@@ -75,12 +80,6 @@
       letter-spacing: -0.01em;
       color: #0f172a !important;
     }
-    .navbar-brand img { 
-      max-height: 40px; 
-      width: auto; 
-      transition: transform 0.2s;
-    }
-    .navbar-brand img:hover { transform: scale(1.02); }
     .nav-link {
       font-weight: 500;
       border-radius: 9999px;
@@ -132,6 +131,8 @@
       justify-content: center;
       border-radius: 30px;
       margin-bottom: 1rem;
+      transition: transform 0.3s ease, color 0.2s;
+      will-change: transform;
     }
 
     .btn-rounded {
@@ -150,7 +151,7 @@
       background: white;
     }
 
-    /* ========== GAYA CHATBOT AI (dengan rekomendasi) ========== */
+    /* ========== GAYA FAQ PANEL ========== */
     .chatbot-button {
       position: fixed;
       bottom: 30px;
@@ -167,7 +168,7 @@
       align-items: center;
       justify-content: center;
       font-size: 28px;
-      z-index: 1000;
+      z-index: 1032;
       transition: all 0.2s;
     }
     .chatbot-button:hover {
@@ -183,11 +184,12 @@
       background: white;
       border-radius: 24px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      z-index: 1001;
+      z-index: 1031;
       display: none;
       flex-direction: column;
       overflow: hidden;
       border: 1px solid #e2e8f0;
+      max-height: 80vh;
     }
     .chatbot-panel.show {
       display: flex;
@@ -200,6 +202,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-shrink: 0;
     }
     .chatbot-header button {
       background: none;
@@ -208,100 +211,140 @@
       font-size: 20px;
       cursor: pointer;
     }
-
-    /* Rekomendasi pertanyaan */
-    .chatbot-suggestions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding: 12px 16px;
-      background: #f1f5f9;
-      border-bottom: 1px solid #cbd5e1;
-      flex-shrink: 0;
-    }
-    .suggestion-btn {
-      background: white;
-      border: 1px solid #94a3b8;
-      border-radius: 999px;
-      padding: 6px 14px;
-      font-size: 0.85rem;
-      color: #0f172a;
-      cursor: pointer;
-      transition: all 0.15s;
-      white-space: nowrap;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    .suggestion-btn:hover {
-      background: #2563eb;
-      color: white;
-      border-color: #2563eb;
-    }
-
-    .chatbot-messages {
-      flex: 1;
-      min-height: 300px;
-      max-height: 400px;
-      overflow-y: auto;
+    .faq-content {
       padding: 16px;
+      overflow-y: auto;
+      max-height: 400px;
       background: #f8fafc;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
     }
-    .chatbot-message {
-      max-width: 80%;
-      padding: 10px 14px;
-      border-radius: 18px;
-      word-wrap: break-word;
-      font-size: 0.95rem;
-      line-height: 1.4;
+    .faq-item {
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px dashed #cbd5e1;
     }
-    .chatbot-message.user {
-      align-self: flex-end;
-      background: #2563eb;
-      color: white;
-      border-bottom-right-radius: 4px;
+    .faq-item:last-child {
+      border-bottom: none;
     }
-    .chatbot-message.bot {
-      align-self: flex-start;
-      background: #e9eef5;
+    .faq-item .fw-bold {
       color: #0f172a;
-      border-bottom-left-radius: 4px;
+      margin-bottom: 4px;
     }
-    .chatbot-input-area {
-      display: flex;
-      padding: 12px 16px;
-      border-top: 1px solid #cbd5e1;
+    .faq-item .text-muted {
+      font-size: 0.9rem;
+    }
+
+    /* ========== ANIMASI ELEGAN TAMBAHAN ========== */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .container-card {
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    /* Kartu menu */
+    .menu-card {
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      will-change: transform, box-shadow;
+      cursor: pointer;
+    }
+    .menu-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04) !important;
+    }
+    .menu-card:hover .feature-icon {
+      transform: scale(1.1) rotate(2deg);
+      color: #1d4ed8;
+    }
+
+    /* Garis bawah pada tautan navbar (untuk pengembangan) */
+    .nav-link {
+      position: relative;
+      transition: color 0.2s;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: #2563eb;
+      transition: width 0.3s ease, left 0.3s ease;
+      transform: translateX(-50%);
+    }
+    .nav-link:hover::after {
+      width: 70%;
+    }
+    .nav-link.active::after {
+      width: 70%;
       background: white;
     }
-    .chatbot-input-area input {
-      flex: 1;
-      padding: 10px 16px;
-      border: 1px solid #cbd5e1;
-      border-radius: 999px;
-      margin-right: 10px;
-      font-size: 0.95rem;
+
+    /* Tombol FAQ berdenyut */
+    .chatbot-button {
+      animation: pulse 2s infinite;
     }
-    .chatbot-input-area button {
-      background: #2563eb;
-      border: none;
-      color: white;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      cursor: pointer;
-      transition: background 0.2s;
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(37,99,235,0.7); }
+      70% { box-shadow: 0 0 0 12px rgba(37,99,235,0); }
+      100% { box-shadow: 0 0 0 0 rgba(37,99,235,0); }
     }
-    .chatbot-input-area button:hover {
-      background: #1d4ed8;
+    .chatbot-button:hover {
+      animation: none;
+      transform: scale(1.1);
     }
-    .chatbot-input-area button:disabled {
-      background: #94a3b8;
-      cursor: not-allowed;
+
+    /* Modal muncul dengan efek skala */
+    .modal.fade .modal-dialog {
+      transition: transform 0.3s ease-out, opacity 0.2s;
+      transform: scale(0.95);
+    }
+    .modal.show .modal-dialog {
+      transform: scale(1);
+    }
+
+    /* Toast notifikasi geser dari kanan */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1050;
+    }
+    .toast {
+      transition: transform 0.3s ease, opacity 0.3s;
+      transform: translateX(100%);
+    }
+    .toast.show {
+      transform: translateX(0);
+    }
+
+    /* Animasi logo besar di konten */
+    @keyframes gentle-float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    .content-logo {
+      animation: gentle-float 5s ease-in-out infinite;
+      filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.1));
+      transition: filter 0.3s ease, transform 0.3s ease;
+      will-change: transform, filter;
+      max-width: 200px;
+      opacity: 0.9;
+    }
+
+    .content-logo:hover {
+      filter: drop-shadow(0 15px 25px rgba(37, 99, 235, 0.3));
+      transform: scale(1.02);
     }
   </style>
 </head>
@@ -331,38 +374,6 @@
     </div>
   </div>
 </nav>
-
-<!-- ==================== MODAL LOGIN ==================== -->
-<div class="modal fade" id="loginModal" tabindex="-1" data-bs-backdrop="static">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow-lg">
-      <div class="modal-header bg-primary text-white border-0 rounded-top-4">
-        <h5 class="modal-title"><i class="bi bi-shield-lock me-2"></i>Login</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body p-4">
-        <div class="mb-3">
-          <label class="form-label fw-semibold">Username</label>
-          <input type="text" id="loginUsername" class="form-control rounded-3" placeholder="Masukkan username" autocomplete="off">
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-semibold">Password</label>
-          <div class="input-group">
-            <input type="password" id="loginPassword" class="form-control rounded-start-3" placeholder="Masukkan password" autocomplete="off">
-            <button class="btn btn-outline-secondary rounded-end-3" type="button" onclick="togglePasswordVisibility('loginPassword')">
-              <i class="bi bi-eye"></i>
-            </button>
-          </div>
-        </div>
-        <div id="loginError" class="text-danger mt-2 small" style="display: none;"></div>
-      </div>
-      <div class="modal-footer border-0">
-        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
-        <button type="button" class="btn btn-primary rounded-pill px-4" id="loginSubmit">Login</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- ==================== MODAL PREVIEW SKRINING (untuk halaman skrining) ==================== -->
 <div class="modal fade" id="previewSkriningModal" tabindex="-1" data-bs-backdrop="static">
@@ -566,49 +577,49 @@
         <div class="row g-4">
           <!-- Pre-test -->
           <div class="col-6 col-md-4 col-lg-6 col-xl-4">
-            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm" onclick="window.location.href='pretest.html'" style="cursor: pointer;" role="button">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="window.location.href='pretest.html'" role="button">
               <div class="feature-icon mb-3"><i class="bi bi-pencil-square"></i></div>
               <div><strong>Pre-test</strong><br><span class="text-muted small">Uji pengetahuan awal sebelum pelatihan.</span></div>
             </div>
           </div>
           <!-- Post-test -->
           <div class="col-6 col-md-4 col-lg-6 col-xl-4">
-            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm" onclick="window.location.href='posttest.html'" style="cursor: pointer;" role="button">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="window.location.href='posttest.html'" role="button">
               <div class="feature-icon mb-3"><i class="bi bi-trophy"></i></div>
               <div><strong>Post-test</strong><br><span class="text-muted small">Evaluasi setelah materi selesai.</span></div>
             </div>
           </div>
           <!-- Absen Digital -->
           <div class="col-6 col-md-4 col-lg-6 col-xl-4">
-            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm" onclick="window.location.href='absen.html'" style="cursor: pointer;" role="button">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="window.location.href='absen.html'" role="button">
               <div class="feature-icon mb-3"><i class="bi bi-qr-code"></i></div>
               <div><strong>Absen Digital</strong><br><span class="text-muted small">Scan QR atau masukkan password sesi.</span></div>
             </div>
           </div>
           <!-- Skrining -->
           <div class="col-6 col-md-4 col-lg-6 col-xl-4">
-            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm" onclick="window.location.href='skrining.html'" style="cursor: pointer;" role="button">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="window.location.href='skrining.html'" role="button">
               <div class="feature-icon mb-3"><i class="bi bi-clipboard-check"></i></div>
               <div><strong>Skrining</strong><br><span class="text-muted small">Form pendataan awal peserta.</span></div>
             </div>
           </div>
           <!-- Peserta -->
           <div class="col-6 col-md-4 col-lg-6 col-xl-4">
-            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm" onclick="window.location.href='peserta.html'" style="cursor: pointer;" role="button">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="window.location.href='peserta.html'" role="button">
               <div class="feature-icon mb-3"><i class="bi bi-person-badge"></i></div>
               <div><strong>Peserta</strong><br><span class="text-muted small">Isi data diri peserta PKD.</span></div>
             </div>
           </div>
           <!-- Materi -->
           <div class="col-6 col-md-4 col-lg-6 col-xl-4">
-            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm" onclick="window.location.href='materi.html'" style="cursor: pointer;" role="button">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="window.location.href='materi.html'" role="button">
               <div class="feature-icon mb-3"><i class="bi bi-file-earmark-pdf"></i></div>
               <div><strong>Materi</strong><br><span class="text-muted small">Akses materi pelatihan, tayangkan langsung.</span></div>
             </div>
           </div>
           <!-- Tentang Kami -->
           <div class="col-6 col-md-4 col-lg-6 col-xl-4">
-            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm" onclick="window.location.href='about.html'" style="cursor: pointer;" role="button">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="window.location.href='about.html'" role="button">
               <div class="feature-icon mb-3"><i class="bi bi-info-circle"></i></div>
               <div><strong>Tentang Kami</strong><br><span class="text-muted small">Informasi seputar PKD GP Ansor Bantul.</span></div>
             </div>
@@ -616,7 +627,8 @@
         </div>
       </div>
       <div class="col-lg-6 text-center">
-        <img src="LOGO ANSOR.webp" alt="Logo Ansor" style="max-width:200px; opacity:0.9;" class="mt-4 mt-lg-0">
+        <!-- Logo dengan animasi mengambang -->
+        <img src="LOGO ANSOR.webp" alt="Logo Ansor" class="content-logo mt-4 mt-lg-0">
         <div class="mt-3 text-muted">"Berdaya, Berkhidmat, Berkemajuan"</div>
       </div>
     </div>
@@ -631,37 +643,44 @@
     <i class="bi bi-c-circle"></i>
     <span>Hak Cipta 2026 - Tim Instruktur GP Ansor Kabupaten Bantul. Semua Hak Dilindungi</span>
   </div>
-  <!-- BADGE TOTAL KADER REAL TIME (dengan ID container) -->
-  <div class="mt-2" id="realtimeBadgeContainer">
-    <span class="badge bg-primary">Total Kader Terdaftar: <span id="totalPeserta">-</span></span>
-  </div>
+  <!-- BADGE TOTAL KADER TELAH DIHAPUS -->
 </footer>
 
-<!-- ==================== AI CHATBOT PUTER.JS (dengan rekomendasi) ==================== -->
-<script src="https://js.puter.com/v2/"></script>
+<!-- ==================== FAQ PANEL (menggantikan AI Chatbot) ==================== -->
 <div>
-  <button class="chatbot-button" id="chatbotToggleBtn" title="Tanya AI">
-    <i class="bi bi-chat-dots-fill"></i>
+  <button class="chatbot-button" id="chatbotToggleBtn" title="FAQ - Pusat Bantuan">
+    <i class="bi bi-question-circle-fill"></i>
   </button>
   <div class="chatbot-panel" id="chatbotPanel">
     <div class="chatbot-header">
-      <span><i class="bi bi-robot me-2"></i>AI Assistant (Puter)</span>
+      <span><i class="bi bi-question-circle me-2"></i>FAQ - Pusat Bantuan</span>
       <button id="chatbotCloseBtn"><i class="bi bi-x-lg"></i></button>
     </div>
-    <!-- ===== REKOMENDASI PERTANYAAN ===== -->
-    <div class="chatbot-suggestions" id="chatbotSuggestions">
-      <button class="suggestion-btn">📅 Kapan pretest?</button>
-      <button class="suggestion-btn">📝 Cara daftar PKD?</button>
-      <button class="suggestion-btn">📚 Materi apa saja?</button>
-      <button class="suggestion-btn">📞 Kontak panitia</button>
-      <button class="suggestion-btn">📍 Alamat sekretariat</button>
-    </div>
-    <div class="chatbot-messages" id="chatbotMessages">
-      <div class="chatbot-message bot">Halo! Saya asisten AI. Tanyakan apa pun seputar PKD.</div>
-    </div>
-    <div class="chatbot-input-area">
-      <input type="text" id="chatbotInput" placeholder="Ketik pesan...">
-      <button id="chatbotSendBtn"><i class="bi bi-send-fill"></i></button>
+    <div class="faq-content">
+      <div class="faq-item">
+        <div class="fw-bold">📅 Kapan pretest dilaksanakan?</div>
+        <div class="text-muted small">Pretest dilaksanakan secara online mulai 1 April 2026. Anda bisa mengaksesnya di menu "Pre‑test" setelah login.</div>
+      </div>
+      <div class="faq-item">
+        <div class="fw-bold">📝 Bagaimana cara mendaftar PKD?</div>
+        <div class="text-muted small">Pendaftaran dilakukan melalui form Skrining di menu "Skrining". Isi data diri dan tunggu konfirmasi.</div>
+      </div>
+      <div class="faq-item">
+        <div class="fw-bold">📚 Materi apa saja yang tersedia?</div>
+        <div class="text-muted small">Materi pelatihan meliputi kepemimpinan, keorganisasian, dan wawasan kebangsaan. Akses di menu "Materi".</div>
+      </div>
+      <div class="faq-item">
+        <div class="fw-bold">📞 Kontak panitia?</div>
+        <div class="text-muted small">Hubungi Bpk. Ahmad di 0812-3456-7890 atau datang ke sekretariat.</div>
+      </div>
+      <div class="faq-item">
+        <div class="fw-bold">📍 Alamat sekretariat?</div>
+        <div class="text-muted small">Jl. Imogiri Timur KM 10, Bantul.</div>
+      </div>
+      <div class="faq-item">
+        <div class="fw-bold">🔐 Bagaimana cara login?</div>
+        <div class="text-muted small">Klik tombol "Login" di pojok kanan atas, gunakan username dan password yang telah diberikan panitia.</div>
+      </div>
     </div>
   </div>
 </div>
@@ -669,7 +688,7 @@
 <!-- ==================== BOOTSTRAP JS ==================== -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- ==================== SCRIPT UTAMA (dengan chatbot lengkap) ==================== -->
+<!-- ==================== SCRIPT UTAMA ==================== -->
 <script>
   // =====================================================
   //   KONFIGURASI & STATE
@@ -825,17 +844,10 @@
         <span class="badge bg-light text-dark px-3 py-2 rounded-pill me-2">
           <i class="bi bi-person-circle me-1"></i>Guest
         </span>
-        <button class="btn btn-outline-primary rounded-pill px-4" id="loginBtn">
+        <a href="login.html" class="btn btn-outline-primary rounded-pill px-4" id="loginBtn">
           <i class="bi bi-shield-lock me-1"></i>Login
-        </button>
+        </a>
       `;
-      document.getElementById('loginBtn')?.addEventListener('click', () => {
-        const modal = new bootstrap.Modal(document.getElementById('loginModal'));
-        document.getElementById('loginUsername').value = '';
-        document.getElementById('loginPassword').value = '';
-        document.getElementById('loginError').style.display = 'none';
-        modal.show();
-      });
     }
 
     document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
@@ -855,61 +867,6 @@
     updateNavbarMenu();
     window.location.href = 'index.html';
   }
-
-  // =====================================================
-  //   LOGIN HANDLER
-  // =====================================================
-  document.getElementById('loginSubmit').addEventListener('click', async function() {
-    const username = document.getElementById('loginUsername').value.trim();
-    const password = document.getElementById('loginPassword').value.trim();
-    const errorDiv = document.getElementById('loginError');
-
-    if (!username || !password) {
-      errorDiv.innerText = 'Username dan password harus diisi!';
-      errorDiv.style.display = 'block';
-      return;
-    }
-
-    // Coba admin
-    try {
-      const adminRes = await callAppsScript({ action: 'verifyAdmin', username, password }, 'GET');
-      if (adminRes.success && adminRes.role) {
-        userRole = 'admin';
-        userData = { username, nama: username };
-        persistAuthState();
-        showToast('Login admin berhasil', 'success');
-        bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
-        updateNavbarMenu();
-        return;
-      }
-    } catch (e) {
-      console.warn('Login admin error', e);
-    }
-
-    // Coba member
-    try {
-      const memberRes = await callAppsScript({ action: 'verifyMember', username, password }, 'GET');
-      if (memberRes.success && memberRes.role === 'member') {
-        userRole = 'member';
-        userData = {
-          username: memberRes.username,
-          nama: memberRes.nama,
-          email: memberRes.email,
-          nohp: memberRes.nohp
-        };
-        persistAuthState();
-        showToast('Login member berhasil', 'success');
-        bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
-        updateNavbarMenu();
-        return;
-      }
-    } catch (e) {
-      console.warn('Login member error', e);
-    }
-
-    errorDiv.innerText = 'Username atau password salah!';
-    errorDiv.style.display = 'block';
-  });
 
   // =====================================================
   //   TOAST
@@ -941,148 +898,26 @@
   }
 
   // =====================================================
-  //   FUNGSI UPDATE TOTAL PESERTA (REAL TIME) DENGAN CEK PENGATURAN
-  // =====================================================
-  async function updateTotalPeserta() {
-    const el = document.getElementById('totalPeserta');
-    const container = document.getElementById('realtimeBadgeContainer');
-    if (!el || !container) {
-      console.warn('Elemen totalPeserta atau container tidak ditemukan');
-      return;
-    }
-    try {
-      // Cek pengaturan realtime
-      const settingRes = await callAppsScript({ action: 'getRealtimeSetting' }, 'GET');
-      if (settingRes.success && settingRes.enabled === false) {
-        container.style.display = 'none';
-        return;
-      } else {
-        container.style.display = 'block';
-      }
-      const res = await callAppsScript({ action: 'getTotalPeserta' }, 'GET');
-      console.log('Res getTotalPeserta:', res); // tambahkan log
-      if (res && res.success && typeof res.total === 'number') {
-        el.innerText = res.total;
-      } else {
-        el.innerText = '?';
-        console.error('Gagal mendapatkan total peserta:', res);
-      }
-    } catch (e) {
-      console.error('Error updateTotalPeserta:', e);
-      el.innerText = '?';
-      container.style.display = 'block'; // tetap tampilkan jika error
-    }
-  }
-
-  // =====================================================
-  //   CHATBOT PUTER (dengan rekomendasi pertanyaan)
+  //   FAQ PANEL (menggantikan chatbot)
   // =====================================================
   (function() {
     const toggleBtn = document.getElementById('chatbotToggleBtn');
     const panel = document.getElementById('chatbotPanel');
     const closeBtn = document.getElementById('chatbotCloseBtn');
-    const messagesDiv = document.getElementById('chatbotMessages');
-    const inputField = document.getElementById('chatbotInput');
-    const sendBtn = document.getElementById('chatbotSendBtn');
 
-    function addUserMessage(text) {
-      const msgDiv = document.createElement('div');
-      msgDiv.className = 'chatbot-message user';
-      msgDiv.innerText = text;
-      messagesDiv.appendChild(msgDiv);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
-
-    function addBotMessage(text) {
-      const msgDiv = document.createElement('div');
-      msgDiv.className = 'chatbot-message bot';
-      msgDiv.innerText = text;
-      messagesDiv.appendChild(msgDiv);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
-
-    // Fungsi utama mengirim pesan ke AI
-    async function sendMessageToPuter(message) {
-      sendBtn.disabled = true;
-      inputField.disabled = true;
-
-      const systemPrompt = `Anda adalah asisten AI resmi untuk PKD GP Ansor Kabupaten Bantul. Tugas Anda membantu peserta, calon peserta, dan pengunjung website.
-
-**Topik yang boleh dijawab:**
-- Informasi umum tentang PKD GP Ansor Bantul (jadwal, pendaftaran, materi, persyaratan)
-- Organisasi GP Ansor dan sejarahnya
-- Teknis penggunaan website (form skrining, absen, pretest/posttest, materi)
-- Kontak panitia, sekretariat, dan narahubung
-- Informasi seputar kegiatan PKD
-
-**Topik di luar itu**: tolak dengan sopan dan arahkan ke topik PKD.
-
-**Gaya bicara**: Gunakan bahasa Indonesia formal namun ramah. Panggil pengguna dengan "Anda". Berikan jawaban yang membantu, tidak menghakimi.
-
-**Informasi penting yang harus Anda ingat:**
-- Sekretariat: Jl. Imogiri Timur KM 10, Bantul
-- Kontak: 0812-3456-7890 (Bpk. Ahmad)
-- Website: pkd.ansorbantul.or.id (placeholder)
-- Pendaftaran PKD gelombang terakhir: 30 Maret 2026
-- Materi tersedia di menu "Materi" (PDF/PPT)
-
-**Contoh interaksi:**
-- Peserta: "Kapan pretest dilaksanakan?"
-- Asisten: "Pretest dilaksanakan secara online mulai 1 April 2026. Anda bisa mengaksesnya di menu 'Pre‑test' setelah login."
-
-Jika ada pertanyaan yang tidak bisa dijawab, katakan: "Maaf, saya belum memiliki informasi tersebut. Silakan hubungi panitia melalui kontak yang tersedia."`;
-
-      try {
-        if (typeof puter === 'undefined' || !puter.ai) {
-          throw new Error('Puter AI tidak tersedia. Pastikan Anda sudah login ke Puter.');
-        }
-        const response = await puter.ai.chat(message, {
-          model: 'gpt-3.5-turbo',
-          system: systemPrompt
-        });
-        addBotMessage(response);
-      } catch (error) {
-        addBotMessage(`❌ Error: ${error.message}. Periksa koneksi dan pastikan Anda sudah login ke Puter.`);
-      } finally {
-        sendBtn.disabled = false;
-        inputField.disabled = false;
-        inputField.focus();
-      }
-    }
-
-    // Fungsi kirim pesan (dari input atau tombol saran)
-    async function sendMessage(text) {
-      if (!text) return;
-      addUserMessage(text);
-      inputField.value = ''; // kosongkan input
-      await sendMessageToPuter(text);
-    }
-
-    // Event listener untuk tombol kirim
-    sendBtn.addEventListener('click', () => sendMessage(inputField.value.trim()));
-    inputField.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') sendMessage(inputField.value.trim());
-    });
-
-    // Event listener untuk tombol saran pertanyaan
-    document.querySelectorAll('.suggestion-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        // Ambil teks tanpa emoji (hapus karakter emoji di awal)
-        let question = btn.innerText.replace(/^[📅📝📚📞📍]\s*/, ''); 
-        sendMessage(question);
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function() {
+        panel.classList.toggle('show');
       });
-    });
-
-    toggleBtn.addEventListener('click', function() {
-      panel.classList.toggle('show');
-      if (panel.classList.contains('show')) inputField.focus();
-    });
-    closeBtn.addEventListener('click', function() {
-      panel.classList.remove('show');
-    });
+    }
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function() {
+        panel.classList.remove('show');
+      });
+    }
 
     document.addEventListener('click', function(e) {
-      if (!panel.contains(e.target) && !toggleBtn.contains(e.target) && panel.classList.contains('show')) {
+      if (panel && toggleBtn && !panel.contains(e.target) && !toggleBtn.contains(e.target) && panel.classList.contains('show')) {
         panel.classList.remove('show');
       }
     });
@@ -1093,8 +928,7 @@ Jika ada pertanyaan yang tidak bisa dijawab, katakan: "Maaf, saya belum memiliki
   // =====================================================
   window.onload = function() {
     loadAuthState();
-    updateTotalPeserta(); // Panggil pertama kali
-    setInterval(updateTotalPeserta, 30000); // Update setiap 30 detik
+    // Fitur total peserta real-time telah dihapus
   };
 </script>
 </body>
