@@ -19,7 +19,7 @@
       color: #0f172a;
       line-height: 1.6;
     }
-    /* Navbar style persis seperti beranda.html */
+    /* Navbar style persis seperti index.html */
     .navbar {
       background: rgba(255,255,255,0.8) !important;
       backdrop-filter: blur(12px);
@@ -31,13 +31,16 @@
       font-weight: 700;
       letter-spacing: -0.01em;
       color: #0f172a !important;
+      line-height: 1.2;
     }
     .navbar-brand img { 
-      max-height: 40px; 
+      max-height: 45px; 
       width: auto; 
-      transition: transform 0.2s;
+      transition: transform 0.3s ease;
+      will-change: transform;
+      margin-right: 12px;
     }
-    .navbar-brand img:hover { transform: scale(1.02); }
+    .navbar-brand img:hover { transform: scale(1.05); }
     .brand-title {
       font-size: 1.35rem;
       font-weight: 700;
@@ -51,6 +54,52 @@
       margin-top: 2px;
       letter-spacing: 0.5px;
     }
+    .nav-link {
+      font-weight: 500;
+      border-radius: 9999px;
+      padding: 0.5rem 1.2rem;
+      margin: 0 0.2rem;
+      color: #334155 !important;
+      transition: all 0.15s;
+      position: relative;
+    }
+    .nav-link:hover {
+      background: rgba(37,99,235,0.06);
+      color: #2563eb !important;
+    }
+    .nav-link.active {
+      background: #2563eb !important;
+      color: white !important;
+      box-shadow: 0 4px 10px rgba(37,99,235,0.2);
+    }
+    .nav-link i { margin-right: 6px; }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: #2563eb;
+      transition: width 0.3s ease, left 0.3s ease;
+      transform: translateX(-50%);
+    }
+    .nav-link:hover::after {
+      width: 70%;
+    }
+    .nav-link.active::after {
+      width: 70%;
+      background: white;
+    }
+    @media (max-width: 991px) {
+      .navbar-brand img {
+        height: 40px;
+      }
+      .brand-title {
+        font-size: 1.2rem;
+      }
+    }
+
     /* Style lain tetap */
     .container-card {
       max-width: 1000px;
@@ -60,7 +109,9 @@
       margin: 30px auto;
       box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
       border: 1px solid rgba(226,232,240,0.6);
+      transition: box-shadow 0.2s;
     }
+    .container-card:hover { box-shadow: 0 15px 30px -8px rgba(0,0,0,0.08); }
     .section-title {
       font-weight: 650;
       font-size: 1.75rem;
@@ -70,6 +121,7 @@
       padding-left: 1.2rem;
       letter-spacing: -0.01em;
     }
+
     .feature-icon {
       font-size: 2rem;
       color: #2563eb;
@@ -81,7 +133,10 @@
       justify-content: center;
       border-radius: 20px;
       margin-right: 1rem;
+      transition: transform 0.3s ease, color 0.2s;
+      will-change: transform;
     }
+
     .footer-modern {
       font-size: 0.85rem;
       color: #64748b;
@@ -91,26 +146,69 @@
       border-top: 1px solid #e2e8f0;
       background: white;
     }
+
     .team-card {
       border-radius: 24px;
-      transition: transform 0.2s;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      will-change: transform, box-shadow;
     }
     .team-card:hover {
-      transform: scale(1.02);
-      box-shadow: 0 12px 24px -8px rgba(0,0,0,0.1);
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04) !important;
     }
+    .team-card:hover .feature-icon {
+      transform: scale(1.1) rotate(2deg);
+      color: #1d4ed8;
+    }
+
     .contact-info i {
       color: #2563eb;
       margin-right: 8px;
+    }
+
+    /* Animasi elegan tambahan dari index */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .container-card {
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes gentle-float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    .content-logo {
+      animation: gentle-float 5s ease-in-out infinite;
+      filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.1));
+      transition: filter 0.3s ease, transform 0.3s ease;
+      will-change: transform, filter;
+      max-width: 220px;
+      opacity: 0.9;
+    }
+
+    .content-logo:hover {
+      filter: drop-shadow(0 15px 25px rgba(37, 99, 235, 0.3));
+      transform: scale(1.02);
     }
   </style>
 </head>
 <body>
 
-<!-- ==================== NAVBAR (SAMA DENGAN BERANDA) ==================== -->
+<!-- ==================== NAVBAR (SAMA DENGAN INDEX) ==================== -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
   <div class="container">
-    <a class="navbar-brand d-flex align-items-center" href="beranda.html">
+    <a class="navbar-brand d-flex align-items-center" href="index.html">
       <img src="LOGO ANSOR.webp" alt="GP Ansor" class="me-2">
       <span>
         <span class="brand-title">PKD GP Ansor</span>
@@ -122,13 +220,17 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarMain">
-      <!-- Menu navigasi lain TIDAK DITAMPILKAN, hanya tempat untuk menu user -->
+      <!-- Menu navigasi utama (kosong, hanya sebagai placeholder jika diperlukan) -->
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+        <!-- Kosong, karena navigasi menggunakan grid di beranda -->
+      </ul>
+      <!-- Tempat untuk status user (guest/admin/member) dan tombol login/logout -->
       <div class="d-flex align-items-center gap-2 ms-auto" id="navbarUserMenu"></div>
     </div>
   </div>
 </nav>
 
-<!-- ==================== KONTEN TENTANG KAMI (TETAP) ==================== -->
+<!-- ==================== KONTEN TENTANG KAMI ==================== -->
 <main class="container container-card">
   <h1 class="section-title"><i class="bi bi-people-fill me-2"></i>Tentang Kami</h1>
   
@@ -140,7 +242,8 @@
       <p>Kami percaya bahwa pemuda adalah agen perubahan. Melalui PKD, peserta dibekali dengan ilmu keaswajaan, kepemimpinan, keorganisasian, dan wawasan kebangsaan agar siap mengemban amanah di masyarakat.</p>
     </div>
     <div class="col-md-6 text-center">
-      <img src="LOGO ANSOR.webp" alt="Logo GP Ansor" style="max-width: 220px; opacity:0.9;" class="mt-3 mt-md-0">
+      <!-- Tambahkan class content-logo untuk animasi mengambang -->
+      <img src="LOGO ANSOR.webp" alt="Logo GP Ansor" class="content-logo mt-3 mt-md-0">
     </div>
   </div>
 
@@ -267,79 +370,115 @@
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- ==================== SCRIPT UNTUK MENU ADMIN (SEDERHANA) ==================== -->
+<!-- ==================== SCRIPT UNTUK STATUS USER (GUEST/ADMIN/MEMBER) ==================== -->
 <script>
-  // State autentikasi
-  let isAdmin = false;
+  // =====================================================
+  //   KONFIGURASI & STATE
+  // =====================================================
+  let userRole = null;        // null, 'admin', 'member'
+  let userData = {};          // { username, nama, email, nohp } untuk member, { username, nama } untuk admin
 
-  // Memuat status login dari sessionStorage / localStorage
+  // =====================================================
+  //   FUNGSI BANTU
+  // =====================================================
+  function escapeHtml(unsafe) {
+    if (!unsafe) return '';
+    return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  }
+
+  // =====================================================
+  //   PERSISTENSI AUTH
+  // =====================================================
+  function persistAuthState() {
+    const state = { role: userRole, data: userData };
+    sessionStorage.setItem('pkd_auth', JSON.stringify(state));
+    localStorage.setItem('pkd_auth', JSON.stringify(state));
+  }
+
   function loadAuthState() {
     let serialized = sessionStorage.getItem('pkd_auth') || localStorage.getItem('pkd_auth');
     if (serialized) {
       try {
         const state = JSON.parse(serialized);
-        isAdmin = state.isAdmin || false;
-      } catch (e) {}
+        userRole = state.role || null;
+        userData = state.data || {};
+      } catch (e) {
+        console.warn('Gagal parse auth state', e);
+      }
     }
     updateNavbarMenu();
   }
 
-  // Menyimpan status login
-  function persistAuthState() {
-    const state = { isAdmin: isAdmin };
-    sessionStorage.setItem('pkd_auth', JSON.stringify(state));
-    localStorage.setItem('pkd_auth', JSON.stringify(state));
-  }
-
-  // Logout
-  function logout() {
-    isAdmin = false;
-    persistAuthState();
-    // Hapus juga data lain jika diperlukan, lalu kembali ke beranda
-    window.location.href = 'beranda.html';
-  }
-
-  // Memperbarui tampilan menu user di navbar
+  // =====================================================
+  //   UPDATE NAVBAR MENU
+  // =====================================================
   function updateNavbarMenu() {
     const menu = document.getElementById('navbarUserMenu');
     if (!menu) return;
-
-    if (isAdmin) {
-      // Tampilan untuk admin: badge + dropdown
+    if (userRole === 'admin') {
       menu.innerHTML = `
         <span class="badge bg-light text-dark px-3 py-2 rounded-pill me-2">
           <i class="bi bi-shield-fill me-1"></i>Admin
         </span>
         <div class="dropdown">
-          <button class="btn btn-outline-primary rounded-pill px-4 dropdown-toggle" type="button" id="adminDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-shield-fill me-1"></i> Admin
+          <button class="btn btn-outline-primary rounded-pill px-4 dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle me-1"></i> ${escapeHtml(userData.nama || 'Admin')}
           </button>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="adminDropdown">
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
             <li><a class="dropdown-item" href="admin.html"><i class="bi bi-gear-wide me-2"></i>Panel Admin</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#" id="logoutBtn"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+            <li><button class="dropdown-item" id="logoutBtn"><i class="bi bi-box-arrow-right me-2"></i>Logout</button></li>
           </ul>
         </div>
       `;
-      // Pasang event listener untuk tombol logout
-      document.getElementById('logoutBtn')?.addEventListener('click', function(e) {
-        e.preventDefault();
-        logout();
-      });
+    } else if (userRole === 'member') {
+      menu.innerHTML = `
+        <span class="badge bg-light text-dark px-3 py-2 rounded-pill me-2">
+          <i class="bi bi-person-fill me-1"></i>Member
+        </span>
+        <div class="dropdown">
+          <button class="btn btn-outline-primary rounded-pill px-4 dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle me-1"></i> ${escapeHtml(userData.nama || 'Member')}
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <li><a class="dropdown-item" href="member.html"><i class="bi bi-person-badge me-2"></i>Profil Saya</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><button class="dropdown-item" id="logoutBtn"><i class="bi bi-box-arrow-right me-2"></i>Logout</button></li>
+          </ul>
+        </div>
+      `;
     } else {
-      // Tampilan untuk guest: badge guest + tombol login
       menu.innerHTML = `
         <span class="badge bg-light text-dark px-3 py-2 rounded-pill me-2">
           <i class="bi bi-person-circle me-1"></i>Guest
         </span>
-        <a href="login.html" class="btn btn-outline-primary rounded-pill px-4">
-          <i class="bi bi-shield-lock me-1"></i>Login Admin
+        <a href="login.html" class="btn btn-outline-primary rounded-pill px-4" id="loginBtn">
+          <i class="bi bi-shield-lock me-1"></i>Login
         </a>
       `;
     }
+
+    document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      logout();
+    });
   }
 
-  // Inisialisasi saat halaman selesai dimuat
+  // =====================================================
+  //   LOGOUT
+  // =====================================================
+  function logout() {
+    userRole = null;
+    userData = {};
+    sessionStorage.removeItem('pkd_auth');
+    localStorage.removeItem('pkd_auth');
+    updateNavbarMenu();
+    window.location.href = 'index.html';
+  }
+
+  // =====================================================
+  //   INISIALISASI
+  // =====================================================
   window.onload = function() {
     loadAuthState();
   };
