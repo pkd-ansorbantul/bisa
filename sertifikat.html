@@ -991,14 +991,16 @@ PKD Bantul 2026,"MTs N 8 Bantul","14-15 Februari 2026","Dlingo","Andi","Dito","A
     }
   }
 
-  // FUNGSI GENERATE QR DENGAN URL VERIFIKASI (DIUBAH)
+  // ========== FUNGSI GENERATE QR DENGAN URL YANG BENAR (FIX) ==========
   function generateVerificationQR() {
     const qrContainer = document.getElementById('qr-ketua-pc');
     if (!qrContainer) return;
     const nomor = document.getElementById('inputNomor')?.value || 'No. Sertifikat';
-    // Buat URL dengan parameter nomor (encoding)
-    const baseUrl = window.location.origin + '/verifikasi.html';
-    const verificationUrl = `${baseUrl}?nomor=${encodeURIComponent(nomor)}`;
+    
+    // Gunakan base URL yang benar sesuai struktur folder
+    const BASE_URL = 'https://pkd-ansorbantul.github.io';
+    const verificationUrl = `${BASE_URL}/bisa/verifikasi.html?nomor=${encodeURIComponent(nomor)}`;
+    
     try {
       const qr = qrcode(0, 'M');
       qr.addData(verificationUrl);
@@ -2429,11 +2431,11 @@ PKD Bantul 2026,"MTs N 8 Bantul","14-15 Februari 2026","Dlingo","Andi","Dito","A
           resultDiv.className = 'verification-result verification-valid';
           resultDiv.innerHTML = `
             <h6 class="text-success"><i class="bi bi-check-circle-fill"></i> Sertifikat Valid</h6>
-            <p><strong>Nama:</strong> ${escapeHtml(data.nama)}</p>
-            <p><strong>Nomor:</strong> ${escapeHtml(data.nomor)}</p>
-            <p><strong>Tanggal Pelaksanaan:</strong> ${escapeHtml(data.tanggal_pelaksanaan || '-')}</p>
-            <p><strong>Utusan:</strong> ${escapeHtml(data.utusan || '-')}</p>
-            <p><strong>Status:</strong> <span class="badge bg-success">Pernah Ikut</span></p>
+            <p><strong>Nama:</strong> ${escapeHtml(data.nama_peserta)}</p>
+            <p><strong>Nomor:</strong> ${escapeHtml(data.nomor_sertifikat)}</p>
+            <p><strong>Lokasi PKD:</strong> ${escapeHtml(data.lokasi || 'Kabupaten Bantul')}</p>
+            <p><strong>Tanggal Terbit:</strong> ${escapeHtml(data.createdAt || '-')}</p>
+            <a href="${escapeHtml(data.pdf_url)}" target="_blank" class="btn btn-sm btn-outline-success mt-2 rounded-pill"><i class="bi bi-file-pdf"></i> Lihat Sertifikat</a>
           `;
         } else {
           resultDiv.className = 'verification-result verification-invalid';
