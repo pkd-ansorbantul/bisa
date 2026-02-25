@@ -1,489 +1,2572 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form isian untuk elemen SVG (1.svg & 2.svg)</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
-        }
-        body {
-            background: #f4f7fb;
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .form-container {
-            max-width: 1200px;
-            width: 100%;
-            background: white;
-            border-radius: 28px;
-            box-shadow: 0 20px 40px -12px rgba(0,20,40,0.25);
-            padding: 32px 36px;
-        }
-        h1 {
-            font-size: 1.9rem;
-            font-weight: 500;
-            color: #1e2f4d;
-            margin-top: 0;
-            margin-bottom: 0.5rem;
-            border-left: 6px solid #2b6c9e;
-            padding-left: 20px;
-        }
-        .subhead {
-            color: #3b4f6b;
-            margin-left: 26px;
-            margin-bottom: 36px;
-            font-weight: 300;
-            font-size: 1rem;
-        }
-        .svg-panels {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-        }
-        .card {
-            flex: 1 1 400px;
-            background: #ffffff;
-            border-radius: 24px;
-            box-shadow: 0 4px 16px rgba(0, 20, 40, 0.08);
-            padding: 24px 28px;
-            border: 1px solid #e2eaf1;
-            transition: box-shadow 0.2s;
-        }
-        .card:hover {
-            box-shadow: 0 12px 28px rgba(0,30,60,0.12);
-        }
-        .card h2 {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 500;
-            font-size: 1.5rem;
-            color: #11324b;
-            margin-top: 0;
-            margin-bottom: 24px;
-            border-bottom: 2px dashed #b8cdde;
-            padding-bottom: 12px;
-        }
-        .card h2 span {
-            background: #e1edf7;
-            font-size: 0.9rem;
-            font-weight: 400;
-            padding: 2px 12px;
-            border-radius: 40px;
-            color: #1e4f73;
-        }
-        .field-group {
-            margin-bottom: 20px;
-        }
-        label {
-            font-weight: 500;
-            font-size: 0.9rem;
-            color: #1f4462;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 6px;
-        }
-        label i {
-            color: #5882b7;
-            font-style: normal;
-            font-size: 1.1rem;
-        }
-        input, textarea {
-            width: 100%;
-            padding: 12px 16px;
-            font-size: 0.95rem;
-            border: 1px solid #cbd6e3;
-            border-radius: 18px;
-            background: #f9fcff;
-            transition: 0.15s;
-        }
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: #2b6c9e;
-            box-shadow: 0 0 0 4px rgba(43,108,158,0.15);
-            background: #ffffff;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 18px 0 12px;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-        }
-        th {
-            background: #d9e6f2;
-            color: #11324b;
-            font-weight: 500;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            padding: 12px 8px;
-            border: 1px solid #b8c9db;
-        }
-        td {
-            padding: 10px 8px;
-            border: 1px solid #d3deea;
-            background: white;
-        }
-        td input {
-            width: 100%;
-            padding: 8px 10px;
-            border-radius: 14px;
-            border: 1px solid #c0d0e1;
-            background: #ffffff;
-            font-size: 0.9rem;
-        }
-        .table-controls {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 6px;
-        }
-        .btn-add {
-            background: #eef3f9;
-            border: 1px dashed #2b6c9e;
-            color: #1e4f73;
-            padding: 8px 22px;
-            border-radius: 40px;
-            font-weight: 500;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .btn-add:hover {
-            background: #d6e5f2;
-            border: 1px solid #2b6c9e;
-        }
-        .btn-add:active {
-            background: #b8d1e8;
-        }
-        .footer-note {
-            margin-top: 32px;
-            background: #edf3f9;
-            padding: 16px 24px;
-            border-radius: 26px;
-            color: #1d3c58;
-            font-size: 0.9rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .badge-svg {
-            background: #2b6c9e;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 40px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .preview-tip {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        hr {
-            border: none;
-            border-top: 2px dotted #c0d2e3;
-            margin: 24px 0 8px;
-        }
-        .example-hint {
-            color: #6a7f9b;
-            font-size: 0.8rem;
-            margin-top: 4px;
-            margin-left: 12px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>PKD GP Ansor Kabupaten Bantul · Sertifikat</title>
+
+  <!-- Favicon & Font Modern -->
+  <link rel="icon" type="image/png" href="LOGO ANSOR.webp">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5 + Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Leaflet & Chart.js (opsional) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  
+  <!-- QR Code Generator -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+  
+  <style>
+    /* ========== GAYA LENGKAP ========== */
+    /* ===== GAYA UMUM ===== */
+    .navbar-brand { line-height: 1.2; }
+    .brand-title { font-size: 1.35rem; font-weight: 700; color: #0a3d62; }
+    .brand-sub { font-size: 0.9rem; font-weight: 400; color: #6c757d; display: block; margin-top: 2px; letter-spacing: 0.5px; }
+    .navbar-brand img { height: 45px; width: auto; margin-right: 12px; }
+    .nav-link.active { font-weight: 600; color: #0a3d62 !important; }
+    .nav-link { color: #495057 !important; margin: 0 4px; }
+    .nav-link:hover { color: #0a3d62 !important; }
+    @media (max-width: 991px) { .navbar-brand img { height: 40px; } .brand-title { font-size: 1.2rem; } }
+    * { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+    body { background: #f8fafc; color: #0f172a; line-height: 1.6; }
+    .navbar { background: rgba(255,255,255,0.8) !important; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(203,213,225,0.3); box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+    .navbar-brand { font-weight: 700; letter-spacing: -0.01em; color: #0f172a !important; }
+    .navbar-brand img { max-height: 40px; width: auto; transition: transform 0.2s; }
+    .navbar-brand img:hover { transform: scale(1.02); }
+    .nav-link { font-weight: 500; border-radius: 9999px; padding: 0.5rem 1.2rem; margin: 0 0.2rem; color: #334155 !important; transition: all 0.15s; }
+    .nav-link:hover { background: rgba(37,99,235,0.06); color: #2563eb !important; }
+    .nav-link.active { background: #2563eb !important; color: white !important; box-shadow: 0 4px 10px rgba(37,99,235,0.2); }
+    .nav-link i { margin-right: 6px; }
+
+    .container-card { max-width: 1400px; background: white; border-radius: 32px; padding: 2rem 2rem; margin: 30px auto; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid rgba(226,232,240,0.6); transition: box-shadow 0.2s; }
+    .container-card:hover { box-shadow: 0 15px 30px -8px rgba(0,0,0,0.08); }
+    .section-title { font-weight: 650; font-size: 1.75rem; margin-bottom: 1.8rem; color: #0f172a; border-left: 6px solid #2563eb; padding-left: 1.2rem; letter-spacing: -0.01em; }
+
+    .signature-area { border: 2px dashed #cbd5e1; border-radius: 20px; background: white; padding: 12px; transition: border-color 0.2s; }
+    .signature-area:hover { border-color: #2563eb; }
+    canvas { width: 100%; height: auto; max-width: 300px; max-height: 150px; background: white; display: block; border-radius: 12px; margin: 0 auto; }
+    .signature-buttons { display: flex; gap: 12px; margin-top: 12px; justify-content: center; }
+    .btn-signature { border-radius: 9999px; padding: 0.4rem 1.6rem; font-size: 0.9rem; }
+
+    .card-kahoot { background: white; border: 1px solid #e2e8f0; border-radius: 28px; padding: 1.8rem; box-shadow: 0 6px 14px rgba(0,0,0,0.02); }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; background: #f1f5f9; padding: 14px 24px; border-radius: 60px; }
+    .timer-box { background: #0f172a; color: white; padding: 8px 22px; border-radius: 40px; font-weight: 600; font-size: 1.25rem; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    .score-box { background: #fbbf24; color: #0f172a; padding: 8px 22px; border-radius: 40px; font-weight: 700; }
+    .progress-box { font-weight: 600; color: #2563eb; }
+    .question-text { font-size: 1.5rem; font-weight: 700; margin-bottom: 30px; line-height: 1.4; color: #0f172a; }
+    .kahoot-options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 10px; }
+    .kahoot-option { display: flex !important; align-items: center; padding: 1rem 1.5rem !important; border: none !important; border-radius: 18px !important; color: white !important; font-weight: 600 !important; font-size: 1.1rem !important; transition: transform 0.12s, box-shadow 0.15s !important; box-shadow: 0 6px 12px rgba(0,0,0,0.12) !important; width: 100%; text-align: left; }
+    .kahoot-option:hover:not(:disabled) { transform: scale(1.01); box-shadow: 0 10px 18px rgba(0,0,0,0.18) !important; }
+    .kahoot-option.selected { outline: 4px solid #1e293b !important; outline-offset: 2px; transform: scale(0.98); }
+    .opt-red { background-color: #dc2626; }
+    .opt-blue { background-color: #2563eb; }
+    .opt-yellow { background-color: #eab308; color: #0f172a !important; }
+    .opt-green { background-color: #16a34a; }
+    .opt-default { background-color: #64748b; }
+
+    .btn-rounded { border-radius: 9999px; padding: 0.6rem 2rem; font-weight: 600; }
+
+    .footer-modern { font-size: 0.85rem; color: #64748b; margin-top: 3rem; text-align: center; padding: 1.5rem 0; border-top: 1px solid #e2e8f0; background: white; }
+    .footer-modern i { color: #2563eb; margin-right: 6px; }
+
+    .table-admin th { background-color: #f8fafc; font-weight: 600; }
+    .crud-table { max-height: 400px; overflow-y: auto; border-radius: 16px; }
+
+    .qr-canvas { display: block; margin: 0 auto; max-width: 256px; max-height: 256px; border: 1px solid #e2e8f0; border-radius: 16px; padding: 12px; background: white; }
+
+    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+    .toast { background: white; border-left: 5px solid; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15); border-radius: 16px; border: none; }
+    .toast-header { background: transparent; border-bottom: none; border-top-left-radius: 16px; border-top-right-radius: 16px; }
+    .toast.border-success { border-left-color: #28a745; }
+    .toast.border-danger { border-left-color: #dc3545; }
+
+    .feature-icon { font-size: 2.2rem; color: #2563eb; background: rgba(37,99,235,0.08); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 30px; margin-bottom: 1rem; }
+
+    @media (max-width: 576px) { .kahoot-options-grid { grid-template-columns: 1fr; } .quiz-header { flex-direction: column; gap: 10px; } .container-card { padding: 1.5rem; } }
+
+    /* ===== GAYA TAMBAHAN MATERI ===== */
+    .preview-materi-btn { transition: all 0.2s; }
+    .preview-materi-btn:hover { transform: scale(1.02); box-shadow: 0 6px 14px rgba(37,99,235,0.25); }
+    #previewMateriModal .modal-content { background: #0f172a; }
+
+    /* ===== SKELETON LOADING ===== */
+    .skeleton-loading { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: skeleton-wave 1.5s infinite; border-radius: 8px; height: 1.5em; width: 100%; }
+    @keyframes skeleton-wave { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* ===== TABEL DATA DENGAN FILTER ===== */
+    .filter-input { max-width: 300px; margin-bottom: 1rem; }
+
+    /* Admin tabs vertikal */
+    .nav-pills .nav-link { border-radius: 12px; padding: 0.6rem 1rem; margin-bottom: 4px; color: #334155; font-weight: 500; }
+    .nav-pills .nav-link i { font-size: 1.1rem; }
+    .nav-pills .nav-link.active { background-color: #2563eb; color: white !important; }
+    .sidebar-sticky { position: sticky; top: 80px; z-index: 1; }
+
+    /* ===== GAYA SERTIFIKAT ===== */
+    :root { --primary-blue: #1e3a8a; --light-blue: #5b9bd5; --gold: #d4af37; --border-color: #2563eb; }
+    .certificate-container { width: 1123px; height: 794px; background: white; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; margin-bottom: 30px; }
+    .certificate-border { width: 100%; height: 100%; position: relative; padding: 35px; }
+    .guilloche-border { position: absolute; top: 0; left: 0; right: 0; bottom: 0; border: 20px solid transparent; border-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cdefs%3E%3Cpattern id='gold-pattern' patternUnits='userSpaceOnUse' width='20' height='20'%3E%3Cpath d='M0 0 L20 20 M20 0 L0 20' stroke='%23d4af37' stroke-width='0.6' opacity='0.5' fill='none'/%3E%3Ccircle cx='10' cy='10' r='2.5' fill='%23d4af37' opacity='0.7'/%3E%3Crect width='20' height='20' fill='none' stroke='%23d4af37' stroke-width='0.4' opacity='0.8'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='20' height='20' fill='url(%23gold-pattern)'/%3E%3C/svg%3E") 30 repeat; pointer-events: none; filter: drop-shadow(0 0 5px rgba(212,175,55,0.6)); }
+    .inner-border { position: absolute; top: 22px; left: 22px; right: 22px; bottom: 22px; border: 2px solid #d4af37; box-shadow: 0 0 8px #d4af37, inset 0 0 5px rgba(212,175,55,0.3); pointer-events: none; }
+    .certificate-inner { width: 100%; height: 100%; padding: 25px 45px; position: relative; }
+    .guilloche-pattern { position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.05; background-image: repeating-linear-gradient(45deg, var(--primary-blue) 25%, transparent 25%, transparent 75%, var(--primary-blue) 75%, var(--primary-blue)); background-size: 20px 20px; pointer-events: none; }
+    .corner-decoration { position: absolute; width: 80px; height: 80px; z-index: 10; border-color: #d4af37; }
+    .corner-tl { top: 28px; left: 28px; border-left: 2px solid #d4af37; border-top: 2px solid #d4af37; border-radius: 0 0 30px 0; }
+    .corner-tl::after { content: ''; position: absolute; top: -4px; left: -4px; width: 10px; height: 10px; background: #d4af37; border-radius: 50%; box-shadow: 0 0 8px #d4af37; }
+    .corner-tr { top: 28px; right: 28px; border-right: 2px solid #d4af37; border-top: 2px solid #d4af37; border-radius: 0 0 0 30px; }
+    .corner-tr::after { content: ''; position: absolute; top: -4px; right: -4px; width: 10px; height: 10px; background: #d4af37; border-radius: 50%; box-shadow: 0 0 8px #d4af37; }
+    .corner-bl { bottom: 28px; left: 28px; border-left: 2px solid #d4af37; border-bottom: 2px solid #d4af37; border-radius: 0 30px 0 0; }
+    .corner-bl::after { content: ''; position: absolute; bottom: -4px; left: -4px; width: 10px; height: 10px; background: #d4af37; border-radius: 50%; box-shadow: 0 0 8px #d4af37; }
+    .corner-br { bottom: 28px; right: 28px; border-right: 2px solid #d4af37; border-bottom: 2px solid #d4af37; border-radius: 30px 0 0 0; }
+    .corner-br::after { content: ''; position: absolute; bottom: -4px; right: -4px; width: 10px; height: 10px; background: #d4af37; border-radius: 50%; box-shadow: 0 0 8px #d4af37; }
+
+    /* ===== SERTIFIKAT DEPAN ===== */
+    .cert-front .logo-container { position: absolute; top: 30px; right: 30px; display: flex; align-items: center; gap: 10px; z-index: 15; max-width: 350px; padding: 8px 12px; border-radius: 8px; }
+    .cert-front .logo-image { width: 85px; height: auto; object-fit: contain; flex-shrink: 0; }
+    .cert-front .logo-text { font-size: 0.7rem; font-weight: 700; color: var(--primary-blue); line-height: 1.3; text-transform: uppercase; letter-spacing: 0.3px; text-align: left; margin: 0; flex: 1; }
+    .cert-front .top-section { text-align: center; margin-bottom: 8px; }
+    .cert-front .certificate-title { font-family: 'Playfair Display', serif; font-size: 2.8rem; font-weight: 700; color: #000; letter-spacing: 6px; margin-bottom: 3px; }
+    .cert-front .certificate-number { font-size: 0.9rem; color: #000; font-weight: 400; letter-spacing: 1px; margin-bottom: 10px; }
+    .cert-front .bismillah-container { text-align: center; margin: 8px 0; }
+    .cert-front .bismillah { font-family: 'Amiri', serif; font-size: 2.5rem; font-weight: 700; color: var(--gold); display: inline-block; line-height: 1.2; text-shadow: 2px 2px 4px rgba(212,175,55,0.3); }
+    .cert-front .recipient-name { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--primary-blue); text-align: center; margin: 12px 0 8px; letter-spacing: 2px; }
+    .cert-front .statement { font-size: 1.1rem; font-weight: 700; color: var(--primary-blue); text-align: center; margin: 12px 0; text-transform: uppercase; letter-spacing: 2px; position: relative; }
+    .cert-front .statement::before, .cert-front .statement::after { content: ''; position: absolute; top: 50%; width: 25%; height: 1px; background: var(--light-blue); }
+    .cert-front .statement::before { left: 0; } .cert-front .statement::after { right: 0; }
+    .cert-front .certificate-body { text-align: center; font-size: 1rem; line-height: 1.7; color: #000; margin: 20px 0; padding: 0 80px; font-weight: 400; }
+    .cert-front .certificate-body strong { color: var(--primary-blue); font-weight: 600; }
+    .cert-front .date-section { text-align: center; margin: 15px 0 8px; font-size: 0.95rem; }
+    .cert-front .organization { text-align: center; font-weight: 400; color: #000; margin-bottom: 30px; font-size: 0.95rem; line-height: 1.5; }
+    .cert-front .signatures-wrapper { display: flex; justify-content: space-between; align-items: flex-start; padding: 0 60px; margin-top: 15px; }
+    .cert-front .signature-box { text-align: center; flex: 1; max-width: 200px; }
+    .cert-front .signature-image { min-height: 50px; margin-bottom: 5px; display: flex; justify-content: center; align-items: center; }
+    .cert-front .signature-image img { max-height: 50px; max-width: 150px; object-fit: contain; }
+    .cert-front .signature-name { font-weight: 600; color: var(--primary-blue); font-size: 1rem; border-bottom: 1px solid var(--light-blue); padding-bottom: 3px; display: inline-block; min-width: 160px; text-align: center; margin-top: 5px; }
+    .cert-front .signature-title { font-weight: 400; font-size: 0.95rem; color: var(--primary-blue); margin-top: 4px; }
+    .cert-front .acknowledgment-label { font-weight: 600; color: var(--primary-blue); font-size: 0.95rem; margin-bottom: 5px; padding-top: 45px; border-top: none; display: inline-block; min-width: 140px; text-align: center; }
+    .cert-front .acknowledgment-center { text-align: center; flex: 1; max-width: 320px; margin: 0 30px; }
+    .cert-front .acknowledgment-org { font-size: 0.9rem; margin-bottom: 5px; line-height: 1.4; }
+
+    /* ===== SERTIFIKAT BELAKANG ===== */
+    .cert-back .certificate-inner { padding: 15px 45px; }
+    .cert-back .photo-box { width: 105px; height: 140px; background: #f5f5f5; border: 2px solid var(--gold); border-radius: 6px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 4px 8px rgba(0,0,0,0.1); flex-shrink: 0; overflow: hidden; position: relative; }
+    .cert-back .photo-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
+    .cert-back .photo-placeholder { color: #aaa; text-align: center; font-size: 0.7rem; }
+    .cert-back .photo-placeholder i { font-size: 2.2rem; margin-bottom: 4px; color: #ccc; }
+    .cert-back .info-container { text-align: left; }
+    .cert-back .recipient-name { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--primary-blue); line-height: 1.2; margin-bottom: 5px; }
+    .cert-back .participant-detail { font-size: 1rem; font-weight: 400; color: #000; line-height: 1.6; }
+    .cert-back .participant-detail span { font-weight: 600; color: var(--primary-blue); }
+    .cert-back .center-wrapper { display: flex; justify-content: center; align-items: center; gap: 40px; margin: 20px 0 5px; flex-wrap: wrap; }
+    .cert-back .materi-wrapper { margin: 25px auto 10px; width: 95%; max-width: 1000px; }
+    .cert-back .materi-table { width: 100%; font-size: 0.8rem; border-collapse: collapse; border: 1px solid #999; background: white; table-layout: fixed; margin: 0 auto; word-wrap: break-word; line-height: 1.2; }
+    .cert-back .materi-table th { background-color: var(--primary-blue); color: white; font-weight: 600; padding: 6px 3px; text-align: center; border: 1px solid #2d4b9e; }
+    .cert-back .materi-table td { padding: 5px 6px; border: 1px solid #aaa; vertical-align: top; word-wrap: break-word; }
+    .cert-back .materi-table th:first-child, .cert-back .materi-table td:first-child { width: 5%; text-align: center; }
+    .cert-back .materi-table th:nth-child(2), .cert-back .materi-table td:nth-child(2) { width: 67%; }
+    .cert-back .materi-table th:nth-child(3), .cert-back .materi-table td:nth-child(3) { width: 28%; text-align: left; padding-left: 8px; }
+    .cert-back .instruktur-umum { width: 95%; max-width: 1000px; margin: 5px auto 5px auto; text-align: right; font-size: 1rem; font-weight: 600; color: #000; }
+    .cert-back .signature-image { min-height: 50px; margin-bottom: 5px; display: flex; justify-content: center; align-items: center; }
+    .cert-back .signature-image img { max-height: 50px; max-width: 150px; object-fit: contain; }
+    .cert-back .nama-instruktur { text-align: right; margin-top: 5px; padding-right: 100px; }
+    .cert-back .nama-instruktur strong { color: var(--primary-blue); font-size: 1rem; font-weight: 700; }
+
+    /* ===== FORM RINGKAS ===== */
+    .preview-form-panel { background: white; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 20px; margin-bottom: 20px; width: 100%; max-width: 1123px; }
+    .preview-form-panel .form-label { font-size: 0.75rem; margin-bottom: 2px; }
+    .preview-form-panel .form-control { font-size: 0.8rem; padding: 0.2rem 0.4rem; height: auto; }
+    .preview-control-bar { display: flex; justify-content: flex-start; gap: 8px; margin-bottom: 10px; width: 100%; max-width: 1123px; }
+    .preview-control-bar .btn { background-color: #2563eb; border-color: #2563eb; color: white; }
+    .preview-control-bar .btn:hover { background-color: #1e4bb3; }
+    /* Style untuk form materi dinamis */
+    .instructor-grid { display: flex; flex-direction: column; gap: 10px; }
+    .instructor-item { display: flex; align-items: center; gap: 10px; }
+    .instructor-item > div { flex: 1; }
+
+    /* ===== PRINT ===== */
+    @media print {
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      @page { size: A4 landscape; margin: 0; }
+      body { background: white; margin: 0 !important; padding: 0 !important; }
+      .navbar, .footer-modern, .sidebar-sticky, .section-title,
+      .nav-tabs, .tab-content > .tab-pane:not(.active), .print-btn,
+      .preview-form-panel, .preview-control-bar, .btn-print-sertifikat,
+      .btn-primary[data-bs-toggle="modal"], .col-md-3.col-lg-2 {
+        display: none !important;
+      }
+      .col-md-9.col-lg-10 {
+        width: 100% !important; flex: 0 0 100% !important;
+        padding: 0 !important; margin: 0 !important;
+      }
+      .container-card, .bg-white.p-4.rounded-4.shadow-sm {
+        background: none !important; box-shadow: none !important;
+        border: none !important; padding: 0 !important; margin: 0 !important;
+      }
+      .certificate-container {
+        width: 29.7cm;
+        height: 21cm;
+        margin: 0 auto;
+        page-break-inside: avoid;
+        box-sizing: border-box;
+        box-shadow: none;
+      }
+      .cert-front { page-break-after: always; }
+      .cert-back { page-break-after: auto; }
+    }
+
+    /* ===== SIDEBAR MINIMIZED MODE ===== */
+    .sidebar-minimized .col-md-3.col-lg-2 { flex: 0 0 auto; width: auto; max-width: 70px; }
+    .sidebar-minimized .col-md-9.col-lg-10 { flex: 1 0 0; width: auto; min-width: 0; }
+    .sidebar-minimized .sidebar-sticky .nav-link span, .sidebar-minimized .sidebar-sticky h6 span, .sidebar-minimized .sidebar-sticky hr, .sidebar-minimized .sidebar-sticky .filter-input, .sidebar-minimized .sidebar-sticky .btn:not(#toggleSidebarBtn) { display: none; }
+    .sidebar-minimized .sidebar-sticky .nav-link { padding: 0.6rem 0.8rem; text-align: center; }
+    .sidebar-minimized .sidebar-sticky .nav-link i { font-size: 1.4rem; margin-right: 0; }
+    .sidebar-minimized .sidebar-sticky h6 i { font-size: 1.5rem; }
+    .sidebar-minimized .sidebar-sticky #toggleSidebarBtn { margin-left: auto; display: block; }
+
+    /* ===== VERIFIKASI PANEL ===== */
+    .verification-result { margin-top: 20px; padding: 15px; border-radius: 10px; background-color: #f8f9fa; border-left: 4px solid #2563eb; }
+    .verification-valid { border-left-color: #28a745; background-color: #d4edda; }
+    .verification-invalid { border-left-color: #dc3545; background-color: #f8d7da; }
+
+    /* ===== PENINGKATAN MODERN (RESPONSIF & ELEGAN) ===== */
+    .container-card {
+      padding: 2.5rem;
+      border-radius: 40px;
+    }
+    .section-title {
+      font-size: 2rem;
+      border-left-width: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-title i {
+      font-size: 2.2rem;
+      color: #2563eb;
+    }
+    .sidebar-sticky .bg-light {
+      background: #ffffff !important;
+      border: 1px solid rgba(0,0,0,0.03);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.02);
+      border-radius: 24px;
+    }
+    .nav-pills .nav-link {
+      border-radius: 16px;
+      padding: 0.8rem 1rem;
+      margin-bottom: 6px;
+      transition: all 0.2s;
+    }
+    .nav-pills .nav-link i {
+      font-size: 1.3rem;
+      width: 24px;
+      text-align: center;
+    }
+    .nav-pills .nav-link:hover {
+      background: rgba(37,99,235,0.04);
+      transform: translateX(4px);
+    }
+    .bg-white.p-4.rounded-4.shadow-sm {
+      border-radius: 32px !important;
+      border: 1px solid rgba(0,0,0,0.02);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.03) !important;
+    }
+    .preview-form-panel {
+      border-radius: 24px;
+      border: none;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+      background: #ffffff;
+    }
+    .preview-form-panel .card-header {
+      background: linear-gradient(135deg, #2563eb, #1e4bb3);
+      border-radius: 20px 20px 0 0 !important;
+      padding: 1.2rem 1.5rem;
+    }
+    .preview-form-panel .card-header h5 {
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .preview-form-panel .form-control,
+    .preview-form-panel .form-select {
+      border-radius: 16px;
+      border: 1px solid #e9eef2;
+      padding: 0.6rem 1rem;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .preview-form-panel .form-control:focus,
+    .preview-form-panel .form-select:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
+    }
+    .preview-form-panel .form-label {
+      font-weight: 600;
+      color: #334155;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 6px;
+    }
+    .btn {
+      border-radius: 40px;
+      padding: 0.6rem 1.6rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .btn-sm {
+      padding: 0.4rem 1.2rem;
+      border-radius: 30px;
+    }
+    .btn-primary {
+      background: #2563eb;
+      border: none;
+      box-shadow: 0 6px 14px rgba(37,99,235,0.25);
+    }
+    .btn-primary:hover {
+      background: #1e4bb3;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(37,99,235,0.3);
+    }
+    .btn-outline-primary {
+      border: 1px solid #2563eb;
+      color: #2563eb;
+    }
+    .btn-outline-primary:hover {
+      background: #2563eb;
+      color: white;
+    }
+    .preview-control-bar {
+      background: white;
+      padding: 0.8rem 1.5rem;
+      border-radius: 60px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+      border: 1px solid #f1f5f9;
+    }
+    .preview-control-bar .btn {
+      background: transparent;
+      color: #334155;
+      border: 1px solid #e2e8f0;
+      box-shadow: none;
+    }
+    .preview-control-bar .btn:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+    .preview-control-bar .btn-primary {
+      background: #2563eb;
+      color: white;
+      border: none;
+    }
+    .accordion-item {
+      border: none;
+      background: transparent;
+    }
+    .accordion-button {
+      background: #f8fafc;
+      border-radius: 40px !important;
+      padding: 1rem 1.5rem;
+      font-weight: 600;
+      color: #1e293b;
+      box-shadow: none;
+    }
+    .accordion-button:not(.collapsed) {
+      background: #eef2ff;
+      color: #2563eb;
+    }
+    .accordion-button:focus {
+      box-shadow: none;
+    }
+    .accordion-body {
+      background: #ffffff;
+      border-radius: 24px;
+      margin-top: 8px;
+      padding: 1.5rem;
+      border: 1px solid #f1f5f9;
+    }
+    .materi-table {
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
+    .materi-table th {
+      background: #1e3a8a;
+      font-weight: 600;
+      padding: 12px 8px;
+    }
+    .materi-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    @media (max-width: 768px) {
+      .container-card { padding: 1.5rem; border-radius: 28px; }
+      .section-title { font-size: 1.6rem; }
+      .sidebar-sticky { position: static; margin-bottom: 1.5rem; }
+      .row.g-4 { flex-direction: column; }
+      .col-md-3.col-lg-2 { width: 100%; }
+      .preview-control-bar { flex-wrap: wrap; justify-content: center; }
+      .certificate-container { width: 100%; height: auto; aspect-ratio: 1123/794; }
+    }
+    .spinner-border { vertical-align: middle; }
+    .list-group-item { transition: background 0.2s; border: none; border-bottom: 1px solid #f1f5f9; }
+    .list-group-item:hover { background: #f8fafc; }
+  </style>
 </head>
 <body>
-<div class="form-container">
-    <h1>📋 Isian untuk berkas SVG</h1>
-    <div class="subhead">Field di bawah mewakili teks yang dapat diganti di 1.svg dan 2.svg — kosongkan jika tidak diperlukan</div>
 
-    <div class="svg-panels">
-        <!-- Panel kiri : 1.svg -->
-        <div class="card">
-            <h2>📄 1.svg <span>header & tanda tangan</span></h2>
+<!-- ==================== NAVBAR ==================== -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="index.html">
+      <img src="LOGO ANSOR.webp" alt="GP Ansor" class="me-2">
+      <span>
+        <span class="brand-title">PKD GP Ansor</span>
+        <span class="brand-sub">Kabupaten Bantul</span>
+      </span>
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+      aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="pretest.html"><i class="bi bi-pencil-square"></i>Pre-test</a></li>
+        <li class="nav-item"><a class="nav-link" href="posttest.html"><i class="bi bi-trophy"></i>Post-test</a></li>
+        <li class="nav-item"><a class="nav-link" href="absen.html"><i class="bi bi-qr-code"></i>Absen</a></li>
+        <li class="nav-item"><a class="nav-link" href="skrining.html"><i class="bi bi-clipboard-check"></i>Skrining</a></li>
+        <li class="nav-item"><a class="nav-link" href="peserta.html"><i class="bi bi-person-badge"></i>Peserta</a></li>
+        <li class="nav-item"><a class="nav-link" href="materi.html"><i class="bi bi-file-earmark-pdf"></i>Materi</a></li>
+        <li class="nav-item"><a class="nav-link active" href="sertifikat.html"><i class="bi bi-patch-check"></i>Sertifikat</a></li>
+        <li class="nav-item"><a class="nav-link" href="admin.html"><i class="bi bi-gear-wide"></i>Admin</a></li>
+      </ul>
+      <div class="d-flex align-items-center gap-2" id="navbarUserMenu"></div>
+    </div>
+  </div>
+</nav>
 
-            <div class="field-group">
-                <label><i>🏷️</i> Judul utama (ULINNUHA)</label>
-                <input type="text" id="judulUtama" placeholder="misal: ULINNUHA" value="ULINNUHA">
-            </div>
+<!-- ==================== KONTEN UTAMA DUA KOLOM ==================== -->
+<div class="container container-card">
+  <h2 class="section-title"><i class="bi bi-patch-check me-2"></i>Manajemen Sertifikat</h2>
 
-            <div class="field-group">
-                <label><i>✅</i> Status (DINYATAKAN LULUS)</label>
-                <input type="text" id="statusLulus" placeholder="contoh: DINYATAKAN LULUS" value="DINYATAKAN LULUS">
-            </div>
-
-            <div class="field-group">
-                <label><i>👤</i> Nama Ketua</label>
-                <input type="text" id="namaKetua" placeholder="misal: Ahmad Bidik" value="Ahmad Bidik">
-                <div class="example-hint">↳ mengisi tempat "Ahmad Bidik" di SVG</div>
-            </div>
-
-            <div class="field-group">
-                <label><i>👥</i> Nama Sekretaris</label>
-                <input type="text" id="namaSekretaris" placeholder="contoh: Siti Aminah" value="">
-                <div class="example-hint">↳ isian untuk label "Sekretaris"</div>
-            </div>
-
-            <!-- Field tambahan jika ada "Ketua" kedua (misal jabatan di bawah) tapi kita anggap cukup -->
-            <div style="background:#f6faff; border-radius: 18px; padding: 10px 16px; margin-top: 12px; border-left: 4px solid #abc0d3;">
-                <span style="color:#2f5577; font-size:0.85rem;">🔍 terdeteksi dari SVG: teks "Ketua" dan "Sekretaris" sebagai label, sedangkan "Ahmad Bidik" sebagai contoh nama ketua.</span>
-            </div>
+  <!-- LAYOUT DUA KOLOM: MENU KIRI (SIDEBAR) DAN KONTEN KANAN -->
+  <div class="row g-4">
+    <!-- Kolom kiri: menu vertikal -->
+    <div class="col-md-3 col-lg-2">
+      <div class="sidebar-sticky">
+        <div class="bg-light p-3 rounded-4 shadow-sm">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-bold mb-0"><i class="bi bi-grid me-2"></i><span>Menu Sertifikat</span></h6>
+            <button class="btn btn-sm btn-outline-secondary" id="toggleSidebarBtn" title="Minimize/Maximize sidebar">
+              <i class="bi bi-arrow-left-right"></i>
+            </button>
+          </div>
+          <div class="nav flex-column nav-pills" id="sertifikatTabs" role="tablist" aria-orientation="vertical">
+            <button class="nav-link active" id="preview-tab" data-bs-toggle="pill" data-bs-target="#previewPanel" type="button" role="tab" aria-controls="previewPanel" aria-selected="true">
+              <i class="bi bi-file-earmark-text me-2"></i><span>Preview</span>
+            </button>
+            <button class="nav-link" id="generate-tab" data-bs-toggle="pill" data-bs-target="#generatePanel" type="button" role="tab" aria-controls="generatePanel" aria-selected="false">
+              <i class="bi bi-gear-wide me-2"></i><span>Generate</span>
+            </button>
+            <button class="nav-link" id="template-tab" data-bs-toggle="pill" data-bs-target="#templatePanel" type="button" role="tab" aria-controls="templatePanel" aria-selected="false">
+              <i class="bi bi-file-earmark-text me-2"></i><span>Template</span>
+            </button>
+            <button class="nav-link" id="upload-tab" data-bs-toggle="pill" data-bs-target="#uploadPanel" type="button" role="tab" aria-controls="uploadPanel" aria-selected="false">
+              <i class="bi bi-cloud-upload me-2"></i><span>Upload Manual</span>
+            </button>
+            <!-- TAB VERIFIKASI -->
+            <button class="nav-link" id="verifikasi-tab" data-bs-toggle="pill" data-bs-target="#verifikasiPanel" type="button" role="tab" aria-controls="verifikasiPanel" aria-selected="false">
+              <i class="bi bi-shield-check me-2"></i><span>Verifikasi</span>
+            </button>
+          </div>
+          <hr class="my-2">
+          <a class="nav-link" href="admin.html"><i class="bi bi-arrow-left-circle me-2"></i>Kembali ke Admin</a>
         </div>
-
-        <!-- Panel kanan : 2.svg (tabel utusan) -->
-        <div class="card">
-            <h2>📄 2.svg <span>utusan & materi</span></h2>
-
-            <div class="field-group">
-                <label><i>📮</i> Utusan :</label>
-                <input type="text" id="utusan" placeholder="Nama utusan / institusi" value="">
-            </div>
-
-            <label style="margin-top: 20px;"><i>📚</i> Daftar materi & instruktur</label>
-            <table id="tabelMateri">
-                <thead>
-                    <tr>
-                        <th>NO</th>
-                        <th>MATERI</th>
-                        <th>INSTRUKTUR</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <!-- baris awal sesuai contoh SVG -->
-                    <tr>
-                        <td style="text-align:center; width:50px;">1</td>
-                        <td><input type="text" class="materi-input" value="Orientasi Pengkaderan" placeholder="materi"></td>
-                        <td><input type="text" class="instruktur-input" placeholder="instruktur" value=""></td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div class="table-controls">
-                <button class="btn-add" type="button" id="tambahBarisBtn">
-                    <span style="font-size:1.2rem;">+</span> tambah baris materi
-                </button>
-            </div>
-
-            <!-- keterangan tambahan -->
-            <div style="margin-top: 18px; background: #f4fafd; border-radius: 16px; padding: 12px;">
-                <span style="color:#1a4b6d; font-size:0.9rem;">✏️ Baris pertama sudah diisi dengan "Orientasi Pengkaderan" sesuai contoh di 2.svg. Anda bisa mengubah atau menambah baris.</span>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <!-- bagian ringkasan / nilai yang akan digunakan (optional) -->
-    <hr>
-    <div class="footer-note">
-        <div class="preview-tip">
-            <span class="badge-svg">✍️ isian langsung</span>
-            <span>semua field siap diisi — data ini nantinya dapat dipetakan ke elemen SVG</span>
+    <!-- Kolom kanan: konten tab -->
+    <div class="col-md-9 col-lg-10">
+      <div class="bg-white p-4 rounded-4 shadow-sm">
+        <div class="tab-content" id="sertifikatTabContent">
+          <!-- Panel Preview (akan diisi oleh JavaScript) -->
+          <div class="tab-pane fade show active" id="previewPanel" role="tabpanel" aria-labelledby="preview-tab"></div>
+          <!-- Panel Generate -->
+          <div class="tab-pane fade" id="generatePanel" role="tabpanel" aria-labelledby="generate-tab"></div>
+          <!-- Panel Template Sertifikat -->
+          <div class="tab-pane fade" id="templatePanel" role="tabpanel" aria-labelledby="template-tab"></div>
+          <!-- Panel Upload Manual -->
+          <div class="tab-pane fade" id="uploadPanel" role="tabpanel" aria-labelledby="upload-tab"></div>
+          <!-- Panel Verifikasi -->
+          <div class="tab-pane fade" id="verifikasiPanel" role="tabpanel" aria-labelledby="verifikasi-tab"></div>
         </div>
-        <div style="display: flex; gap: 12px;">
-            <span style="cursor:default;">🖼️ 1.svg</span>
-            <span style="cursor:default;">📋 2.svg</span>
-        </div>
+      </div>
     </div>
+  </div>
 </div>
 
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer-modern container">
+  <div class="d-flex justify-content-center align-items-center gap-2">
+    <i class="bi bi-c-circle"></i>
+    <span>Hak Cipta 2026 - Tim Instruktur GP Ansor Kabupaten Bantul. Semua Hak Dilindungi</span>
+  </div>
+</footer>
+
+<!-- ==================== MODAL LOGIN ==================== -->
+<div class="modal fade" id="adminLoginModal" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white border-0 rounded-top-4">
+        <h5 class="modal-title"><i class="bi bi-shield-lock me-2"></i>Login Admin</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Username</label>
+          <input type="text" id="adminUsername" class="form-control rounded-3" placeholder="Masukkan username" autocomplete="off">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Password</label>
+          <div class="input-group">
+            <input type="password" id="adminPassword" class="form-control rounded-start-3" placeholder="Masukkan password" autocomplete="off">
+            <button class="btn btn-outline-secondary rounded-end-3" type="button" onclick="togglePasswordVisibility('adminPassword')">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+        </div>
+        <div id="adminLoginError" class="text-danger mt-2 small" style="display: none;"></div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary rounded-pill px-4" id="adminLoginSubmit">Login</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL DETAIL ==================== -->
+<div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white border-0 rounded-top-4">
+        <h5 class="modal-title" id="detailModalLabel">Detail</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4" id="detailModalBody"></div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL TEMPLATE SERTIFIKAT ==================== -->
+<div class="modal fade" id="templateModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="templateModalLabel">Tambah/Edit Template Sertifikat</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="templateId">
+        <div class="mb-3">
+          <label class="form-label">Nama Template</label>
+          <input type="text" class="form-control" id="templateNama" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">ID Google Docs</label>
+          <input type="text" class="form-control" id="templateDocId" required>
+          <div class="form-text">Ambil dari URL dokumen: https://docs.google.com/document/d/XXXXXX/edit</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Konfigurasi (JSON) opsional</label>
+          <textarea class="form-control" id="templateConfig" rows="3">{"placeholder": "value"}</textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" id="simpanTemplateBtn">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL PRESET ==================== -->
+<div class="modal fade" id="presetModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title" id="presetModalLabel">Tambah/Edit Preset</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="presetId">
+        <div class="mb-3">
+          <label class="form-label">Nama Preset</label>
+          <input type="text" class="form-control" id="presetNama" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Konfigurasi (JSON)</label>
+          <textarea class="form-control" id="presetConfig" rows="6" placeholder='{"tempat":"MTs N 8 Bantul","tanggal":"14-15 Februari 2026", ...}'>{"tempat": "", "tanggal": "", "kapanewon": "", "ketua_pac": "", "sekretaris_pac": "", "ketua_pc": "", "instruktur_umum": ""}</textarea>
+          <div class="form-text">Gunakan format JSON. Contoh field yang umum: tempat, tanggal, kapanewon, ketua_pac, dll.</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-success" id="simpanPresetBtn">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL IMPORT PRESET DARI CSV ==================== -->
+<div class="modal fade" id="importPresetModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title">Import Preset dari CSV</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p class="small">Upload file CSV dengan format: baris pertama header (key), baris kedua nilai. Contoh:</p>
+        <pre class="bg-light p-2 rounded">nama_preset,tempat,tanggal,kapanewon,ketua_pac,sekretaris_pac,ketua_pc,instruktur_umum
+PKD Bantul 2026,"MTs N 8 Bantul","14-15 Februari 2026","Dlingo","Andi","Dito","Ahmad Sidik","Cahyo Galih"</pre>
+        <div class="mb-3">
+          <label class="form-label">Pilih File CSV</label>
+          <input type="file" class="form-control" id="importCsvFile" accept=".csv">
+        </div>
+        <div id="importPreview" class="small"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-info" id="prosesImportBtn" disabled>Proses & Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL UPLOAD MANUAL ==================== -->
+<div class="modal fade" id="uploadManualModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Upload Sertifikat</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="uploadPesertaId">
+        <div class="mb-3">
+          <label class="form-label">Nama Peserta</label>
+          <input type="text" class="form-control" id="uploadPesertaNama" readonly>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Nomor Sertifikat</label>
+          <input type="text" class="form-control" id="uploadNomorSertifikat" placeholder="Contoh: 001/PC-XI/SR-01.PKD/I/2026" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">File PDF Sertifikat</label>
+          <input type="file" class="form-control" id="uploadPdfFile" accept=".pdf" required>
+          <small class="text-muted">Maksimal 5MB</small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" id="submitUploadBtn">Upload</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TOAST ==================== -->
+<div class="toast-container">
+  <div id="notificationToast" class="toast border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
+    <div class="toast-header bg-white border-0">
+      <i class="bi me-2" id="toastIcon"></i>
+      <strong class="me-auto" id="toastTitle">Berhasil</strong>
+      <small>baru saja</small>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body" id="toastMessage"></div>
+  </div>
+</div>
+
+<!-- ==================== SCRIPT ==================== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 <script>
-    (function() {
-        // === MANAJEMEN TABEL DINAMIS (2.svg) ===
-        const tabelBody = document.getElementById('tableBody');
-        const btnTambah = document.getElementById('tambahBarisBtn');
+  // =====================================================
+  //   KONFIGURASI & FUNGSI GLOBAL
+  // =====================================================
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbzCgdl1FM1Ji4PbTFS3EwMCRqUxTqvwPf_AOrWBRHKyal4MhgUCd5A3xILjqfW7PCpY/exec'; // GANTI DENGAN URL ANDA
 
-        // Fungsi untuk memperbarui nomor urut setelah penghapusan (jika kita ingin fitur hapus, tapi sederhana dulu)
-        function perbaruiNomor() {
-            const baris = tabelBody.querySelectorAll('tr');
-            baris.forEach((row, index) => {
-                const cellNomor = row.cells[0];
-                if (cellNomor) {
-                    cellNomor.textContent = (index + 1).toString();
-                }
+  function escapeHtml(unsafe) {
+    if (unsafe == null) return '';
+    return String(unsafe)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  // State autentikasi
+  let userRole = null;
+  let userData = {};
+
+  // Variabel global untuk menyimpan data CSV dari preview
+  let csvParticipants = [];
+
+  function persistAuthState() {
+    const state = { role: userRole, data: userData };
+    sessionStorage.setItem('pkd_auth', JSON.stringify(state));
+    localStorage.setItem('pkd_auth', JSON.stringify(state));
+  }
+
+  function loadAuthState() {
+    let serialized = sessionStorage.getItem('pkd_auth');
+    if (!serialized) serialized = localStorage.getItem('pkd_auth');
+    if (serialized) {
+      try {
+        const state = JSON.parse(serialized);
+        userRole = state.role || null;
+        userData = state.data || {};
+      } catch (e) {}
+    }
+    updateNavbarMenu();
+  }
+
+  function updateNavbarMenu() {
+    const menu = document.getElementById('navbarUserMenu');
+    if (!menu) return;
+    if (userRole === 'admin') {
+      menu.innerHTML = `
+        <span class="badge bg-light text-dark px-3 py-2 rounded-pill me-2">
+          <i class="bi bi-shield-fill me-1"></i>Admin
+        </span>
+        <div class="dropdown">
+          <button class="btn btn-outline-primary rounded-pill px-4 dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+            <i class="bi bi-person-circle me-1"></i> ${escapeHtml(userData.nama || 'Admin')}
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="admin.html"><i class="bi bi-gear-wide me-2"></i>Panel Admin</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><button class="dropdown-item" id="logoutBtn"><i class="bi bi-box-arrow-right me-2"></i>Logout</button></li>
+          </ul>
+        </div>
+      `;
+    } else {
+      menu.innerHTML = `
+        <span class="badge bg-light text-dark px-3 py-2 rounded-pill me-2">
+          <i class="bi bi-person-circle me-1"></i>Guest
+        </span>
+        <button class="btn btn-outline-primary rounded-pill px-4" id="loginBtn">Login</button>
+      `;
+    }
+
+    document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      logout();
+    });
+    document.getElementById('loginBtn')?.addEventListener('click', () => {
+      new bootstrap.Modal(document.getElementById('adminLoginModal')).show();
+    });
+  }
+
+  function logout() {
+    userRole = null;
+    userData = {};
+    sessionStorage.removeItem('pkd_auth');
+    localStorage.removeItem('pkd_auth');
+    window.location.href = 'index.html';
+  }
+
+  window.togglePasswordVisibility = function(inputId) {
+    const input = document.getElementById(inputId);
+    input.type = input.type === 'password' ? 'text' : 'password';
+  };
+
+  // =====================================================
+  //   CALL APPS SCRIPT
+  // =====================================================
+  function callAppsScript(params, method = 'POST', timeout = 30000) {
+    return new Promise(async (resolve, reject) => {
+      if (method === 'GET') {
+        try {
+          const queryString = new URLSearchParams(params).toString();
+          const response = await fetch(`${scriptUrl}?${queryString}`, {
+            method: 'GET',
+            mode: 'cors',
+            headers: { 'Accept': 'application/json' }
+          });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const data = await response.json();
+          return resolve(data);
+        } catch (fetchError) {
+          console.warn('Fetch GET gagal, fallback ke JSONP:', fetchError);
+          const callbackName = 'jsonp_callback_' + Date.now();
+          const script = document.createElement('script');
+          let isResolved = false;
+          let timer = setTimeout(() => {
+            if (!isResolved) {
+              isResolved = true;
+              if (document.head.contains(script)) document.head.removeChild(script);
+              delete window[callbackName];
+              reject(new Error('⏱️ Timeout: Server tidak merespon JSONP.'));
+            }
+          }, timeout);
+
+          window[callbackName] = function(data) {
+            if (!isResolved) {
+              isResolved = true;
+              clearTimeout(timer);
+              resolve(data || {});
+            }
+            delete window[callbackName];
+            if (document.head.contains(script)) document.head.removeChild(script);
+          };
+
+          script.onerror = (err) => {
+            if (!isResolved) {
+              isResolved = true;
+              clearTimeout(timer);
+              delete window[callbackName];
+              if (document.head.contains(script)) document.head.removeChild(script);
+              reject(new Error('❌ Gagal memuat script JSONP.'));
+            }
+          };
+
+          const cleanParams = { ...params };
+          delete cleanParams.tandaTangan;
+          delete cleanParams.signature;
+          const queryString = new URLSearchParams({ ...cleanParams, callback: callbackName }).toString();
+          script.src = `${scriptUrl}?${queryString}`;
+          document.head.appendChild(script);
+        }
+      } else {
+        fetch(scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(params)
+        })
+          .then(() => resolve({ success: true, message: 'Request sent (no-cors)' }))
+          .catch(reject);
+      }
+    });
+  }
+
+  // =====================================================
+  //   TOAST
+  // =====================================================
+  function showToast(message, type = 'success') {
+    const toastEl = document.getElementById('notificationToast');
+    const toastMessage = document.getElementById('toastMessage');
+    const toastIcon = document.getElementById('toastIcon');
+    const toastTitle = document.getElementById('toastTitle');
+
+    toastMessage.innerText = message;
+
+    if (type === 'success') {
+      toastEl.classList.add('border-success');
+      toastEl.classList.remove('border-danger');
+      toastIcon.className = 'bi bi-check-circle-fill me-2 text-success';
+      toastTitle.innerText = 'Berhasil';
+      toastTitle.style.color = '#28a745';
+    } else {
+      toastEl.classList.add('border-danger');
+      toastEl.classList.remove('border-success');
+      toastIcon.className = 'bi bi-x-circle-fill me-2 text-danger';
+      toastTitle.innerText = 'Gagal';
+      toastTitle.style.color = '#dc3545';
+    }
+
+    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+    toast.show();
+  }
+
+  // =====================================================
+  //   FUNGSI PREVIEW SERTIFIKAT (LENGKAP)
+  // =====================================================
+  let materiList = [];
+
+  function initDefaultMateri() {
+    materiList = [
+      { nama: "Orientasi Pengkaderan", instruktur: "Nanang Zuhdi Santoso" },
+      { nama: "Ahlussunnah Wal Jama’ah I", instruktur: "Lupa" },
+      { nama: "Ke-Nahdlatul Ulama-an I", instruktur: "Dr. Attobari" },
+      { nama: "Organisasi dan Kepemimpinan", instruktur: "Wahdini" },
+      { nama: "Ke-GP Ansor-an I", instruktur: "Alan" },
+      { nama: "Dalil-dalil Amaliyah dan Tradisi Keagamaan NU", instruktur: "Mustaba" },
+      { nama: "Ke-Indonesia-an dan Ke-Bangsa-an", instruktur: "Tim Banser" },
+      { nama: "Pengenalan Aturan Organisasi GP Ansor", instruktur: "Danil" },
+      { nama: "Literasi Digital", instruktur: "Ulinnuha" },
+      { nama: "Analisis Sosial", instruktur: "Sucipto" },
+      { nama: "Rencana Kerja dan Tindak Lanjut", instruktur: "Cahyo Galih dkk" },
+      { nama: "Pembaitan", instruktur: "Tim Instruktur" }
+    ];
+  }
+
+  function renderMateriForm() {
+    const container = document.getElementById('materi-list');
+    if (!container) return;
+    let html = '';
+    materiList.forEach((item, index) => {
+      html += `
+        <div class="instructor-item d-flex align-items-center gap-2 mb-2" data-index="${index}">
+          <div style="flex:2">
+            <label class="small">Materi ${index+1}</label>
+            <input type="text" class="form-control form-control-sm materi-nama" value="${escapeHtml(item.nama)}" placeholder="Nama Materi">
+          </div>
+          <div style="flex:2">
+            <label class="small">Instruktur</label>
+            <input type="text" class="form-control form-control-sm materi-instruktur" value="${escapeHtml(item.instruktur)}" placeholder="Nama Instruktur">
+          </div>
+          <div style="flex:0 0 auto; align-self:flex-end;">
+            <button class="btn btn-sm btn-outline-danger hapus-materi" data-index="${index}"><i class="bi bi-trash"></i></button>
+          </div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+
+    container.querySelectorAll('.materi-nama').forEach((input, idx) => {
+      input.addEventListener('input', function() {
+        materiList[idx].nama = this.value;
+        renderMateriTable();
+      });
+    });
+    container.querySelectorAll('.materi-instruktur').forEach((input, idx) => {
+      input.addEventListener('input', function() {
+        materiList[idx].instruktur = this.value;
+        renderMateriTable();
+      });
+    });
+    container.querySelectorAll('.hapus-materi').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const index = parseInt(this.dataset.index);
+        if (materiList.length > 1) {
+          materiList.splice(index, 1);
+          renderMateriForm();
+          renderMateriTable();
+        } else {
+          alert('Minimal satu materi harus ada.');
+        }
+      });
+    });
+  }
+
+  function renderMateriTable() {
+    const tbody = document.getElementById('materi-table-body');
+    if (!tbody) return;
+    let rows = '';
+    materiList.forEach((item, idx) => {
+      rows += `
+        <tr>
+          <td>${idx+1}</td>
+          <td>${escapeHtml(item.nama)}</td>
+          <td>${escapeHtml(item.instruktur)}</td>
+        </tr>
+      `;
+    });
+    tbody.innerHTML = rows;
+  }
+
+  // Fungsi untuk mengupdate visibilitas QR
+  function updateQRVisibility() {
+    const qrContainer = document.getElementById('qr-ketua-pc');
+    const toggle = document.getElementById('toggleQR');
+    if (!qrContainer || !toggle) return;
+    if (toggle.checked) {
+      qrContainer.style.display = 'block';
+      generateVerificationQR(); // regenerasi QR
+    } else {
+      qrContainer.style.display = 'none';
+    }
+  }
+
+  function loadPreviewSertifikat() {
+    const container = document.getElementById('previewPanel');
+    if (!container) return;
+
+    const previewHTML = `
+      <!-- Control Bar -->
+      <div class="preview-control-bar d-print-none">
+        <button class="btn btn-sm" id="toggleFormPreview"><i class="fas fa-plus-square"></i> Tampilkan Form</button>
+        <button class="btn btn-sm" id="toggleDepanPreview"><i class="fas fa-file"></i> Sembunyikan Depan</button>
+        <button class="btn btn-sm" id="toggleBelakangPreview"><i class="fas fa-file"></i> Sembunyikan Belakang</button>
+        <button class="btn btn-sm btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Cetak</button>
+      </div>
+
+      <!-- FORM ISIAN (disembunyikan awalnya) -->
+      <div class="preview-form-panel d-print-none d-none">
+        <div class="card">
+          <div class="card-header bg-primary text-white py-2">
+            <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Form Data Sertifikat (otomatis update)</h5>
+          </div>
+          <div class="card-body">
+            <!-- Baris 1: Nomor, Nama, Kapanewon, TTL -->
+            <div class="row g-2 mb-2">
+              <div class="col-md-3">
+                <label class="form-label">Nomor Sertifikat</label>
+                <input type="text" class="form-control" id="inputNomor" value="001/PC-XI/SR-01.PKD/I/2026">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Nama Lengkap</label>
+                <input type="text" class="form-control" id="inputNama" value="ULINNUHA">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Kapanewon (Depan)</label>
+                <input type="text" class="form-control" id="inputKapanewon" value="Dlingo">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Tempat, Tgl Lahir</label>
+                <input type="text" class="form-control" id="inputTtl" value="Bantul, 3 Agustus 1999">
+              </div>
+            </div>
+            <!-- Baris 2: Tanggal Pelaksanaan, Tempat, Tgl Terbit, Utusan -->
+            <div class="row g-2 mb-2">
+              <div class="col-md-3">
+                <label class="form-label">Tanggal Pelaksanaan</label>
+                <input type="text" class="form-control" id="inputTglPelaksanaan" value="14 Februari sampai 15 Februari 2026">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Tempat Pelaksanaan</label>
+                <input type="text" class="form-control" id="inputTempat" value="MTs N 8 Bantul, D.I.Yogyakarta">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Tanggal Penerbitan</label>
+                <input type="text" class="form-control" id="inputTglTerbit" value="Bantul, 16 Februari 2026">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Utusan (Belakang)</label>
+                <input type="text" class="form-control" id="inputUtusan" value="PAC GP ANSOR DLINGO">
+              </div>
+            </div>
+            <!-- Baris 3: Tanda Tangan -->
+            <div class="row g-2 mb-2">
+              <div class="col-md-3">
+                <label class="form-label">Ketua PAC</label>
+                <input type="text" class="form-control" id="inputKetuaPAC" value="Andi">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Sekretaris PAC</label>
+                <input type="text" class="form-control" id="inputSekretarisPAC" value="Dito">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Ketua PC</label>
+                <input type="text" class="form-control" id="inputKetuaPC" value="Ahmad Sidik">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Instruktur Umum</label>
+                <input type="text" class="form-control" id="inputInstrukturUmum" value="Cahyo Galih">
+              </div>
+            </div>
+            <!-- Baris 4: Foto + Reset -->
+            <div class="row g-2 mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Foto 3x4 (opsional)</label>
+                <input type="file" class="form-control" id="inputFoto" accept="image/*">
+              </div>
+              <div class="col-md-6 d-flex align-items-end">
+                <button class="btn btn-outline-secondary" id="resetPreviewBtn"><i class="fas fa-undo"></i> Reset</button>
+              </div>
+            </div>
+
+            <!-- TAMBAHAN: Toggle QR Verifikasi -->
+            <div class="row g-2 mb-3">
+              <div class="col-md-12">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="toggleQR" checked>
+                  <label class="form-check-label" for="toggleQR">Tampilkan QR Verifikasi di Sertifikat</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- KONTENER DINAMIS UNTUK MATERI & INSTRUKTUR -->
+            <div class="mt-3">
+              <label class="form-label fw-bold">Instruktur per Materi (Belakang)</label>
+              <div id="materi-list" class="instructor-grid">
+                <!-- akan diisi JavaScript -->
+              </div>
+              <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="tambahMateriBtn">
+                <i class="bi bi-plus-circle"></i> Tambah Materi
+              </button>
+            </div>
+
+            <!-- Bagian Generate Multi Sertifikat dari CSV -->
+            <hr>
+            <div class="mt-3 p-3 border rounded bg-light">
+              <h6 class="fw-bold"><i class="bi bi-file-spreadsheet"></i> Generate Multi Sertifikat dari CSV</h6>
+              <div class="row g-2">
+                <div class="col-md-4">
+                  <label class="form-label">Template</label>
+                  <select class="form-select" id="previewTemplateSelect">
+                    <option value="">Memuat...</option>
+                  </select>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Preset</label>
+                  <select class="form-select" id="previewPresetSelect">
+                    <option value="">Memuat...</option>
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label">Nomor Awal</label>
+                  <input type="number" class="form-control" id="previewStartNumber" value="1" min="1">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                  <button class="btn btn-primary w-100" id="generateFromCsvBtn">Generate</button>
+                </div>
+              </div>
+              <div id="generateCsvResult" class="mt-3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accordion CSV dan Tanda Tangan -->
+      <div class="accordion d-print-none mb-3" id="extraFeaturesAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCSV" aria-expanded="false">
+              <i class="fas fa-upload me-2"></i> Data Peserta dari CSV
+            </button>
+          </h2>
+          <div id="collapseCSV" class="accordion-collapse collapse" data-bs-parent="#extraFeaturesAccordion">
+            <div class="accordion-body">
+              <div class="row g-2 mb-2">
+                <div class="col-md-6">
+                  <label class="form-label">Upload CSV (Nomor,Nama,TTL,Utusan,Foto opsional)</label>
+                  <input type="file" class="form-control" id="csvFileInput" accept=".csv">
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                  <button class="btn btn-outline-success me-2 btn-sm" id="loadCsvBtn"><i class="fas fa-upload"></i> Load</button>
+                  <span class="text-muted small" id="csvStatus"></span>
+                </div>
+              </div>
+              <div class="row g-2 mb-2">
+                <div class="col-md-5">
+                  <label class="form-label">Pilih Peserta</label>
+                  <select class="form-select" id="participantSelect" disabled>
+                    <option value="">-- Upload CSV dulu --</option>
+                  </select>
+                </div>
+                <div class="col-md-7 d-flex align-items-end gap-2">
+                  <button class="btn btn-outline-primary btn-sm" id="prevParticipantBtn" disabled><i class="fas fa-chevron-left"></i> Prev</button>
+                  <button class="btn btn-outline-primary btn-sm" id="nextParticipantBtn" disabled><i class="fas fa-chevron-right"></i> Next</button>
+                  <button class="btn btn-primary btn-sm" id="applyParticipantBtn" disabled><i class="fas fa-check"></i> Terapkan</button>
+                  <span id="participantIndex" class="ms-2 small"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Bagian Tanda Tangan -->
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTTD" aria-expanded="false">
+              <i class="fas fa-signature me-2"></i> Tanda Tangan
+            </button>
+          </h2>
+          <div id="collapseTTD" class="accordion-collapse collapse" data-bs-parent="#extraFeaturesAccordion">
+            <div class="accordion-body">
+              <div class="row g-2">
+                <div class="col-md-3">
+                  <label class="form-label">Ketua PAC (Andi)</label>
+                  <input type="file" class="form-control" id="fileKetuaPAC" accept="image/*">
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Sekretaris PAC (Dito)</label>
+                  <input type="file" class="form-control" id="fileSekretarisPAC" accept="image/*">
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Ketua PC (Ahmad Sidik)</label>
+                  <input type="file" class="form-control" id="fileKetuaPC" accept="image/*">
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Instruktur Umum (Cahyo Galih)</label>
+                  <input type="file" class="form-control" id="fileInstruktur" accept="image/*">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SERTIFIKAT DEPAN -->
+      <div class="certificate-container cert-front">
+        <div class="certificate-border">
+          <div class="guilloche-border"></div>
+          <div class="inner-border"></div>
+          <div class="certificate-inner">
+            <div class="guilloche-pattern"></div>
+            <div class="corner-decoration corner-tl"></div>
+            <div class="corner-decoration corner-tr"></div>
+            <div class="corner-decoration corner-bl"></div>
+            <div class="corner-decoration corner-br"></div>
+
+            <!-- Logo -->
+            <div class="logo-container">
+              <img src="LOGO ANSOR.webp" alt="Logo GP Ansor" class="logo-image" onerror="this.src='https://via.placeholder.com/85x85?text=Logo'">
+              <div class="logo-text">PIMPINAN CABANG <br>GERAKAN PEMUDA ANSOR <br>KABUPATEN BANTUL</div>
+            </div>
+
+            <div class="top-section">
+              <h1 class="certificate-title">SERTIFIKAT</h1>
+              <div class="certificate-number">NO <span id="cert-number">001/PC-XI/SR-01.PKD/I/2026</span></div>
+            </div>
+            <div class="bismillah-container">
+              <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+            </div>
+            <div class="recipient-name" id="recipient-name">ULINNUHA</div>
+            <div class="statement">DINYATAKAN LULUS</div>
+            <div class="certificate-body" id="certificate-body">
+              dalam Pelatihan Kaderisasi Dasar (PKD) Pimpinan Anak Cabang Gerakan Pemuda Ansor Kapanewon 
+              <span id="kapanewon-body">Dlingo</span> yang dilaksanakan pada tanggal 
+              <strong id="tanggal-pelaksanaan">14 Februari sampai 15 Februari 2026</strong> di 
+              <strong id="tempat">MTs N 8 Bantul, D.I.Yogyakarta</strong>
+            </div>
+            <div class="date-section" id="tanggal-penerbitan">Bantul, 16 Februari 2026</div>
+            <div class="organization" id="organization">
+              Pimpinan Anak Cabang Gerakan Pemuda Ansor<br>
+              Kapanewon <span id="kapanewon-org">Dlingo</span>
+            </div>
+
+            <div class="signatures-wrapper">
+              <div class="signature-box">
+                <div class="signature-image" id="signature-ketua-pac"></div>
+                <div class="signature-name" id="ttd-ketua-pac">Andi</div>
+                <div class="signature-title">Ketua</div>
+              </div>
+              <div class="acknowledgment-center">
+                <div class="acknowledgment-label">Mengetahui,</div>
+                <div class="acknowledgment-content">
+                  <div class="acknowledgment-org">
+                    Pimpinan Cabang Gerakan Pemuda Ansor<br>
+                    Kabupaten Bantul
+                  </div>
+                  <!-- QR Code verifikasi di samping kiri tanda tangan -->
+                  <div style="display: flex; align-items: center; gap: 10px; justify-content: center;">
+                    <div class="qr-ketua-pc" id="qr-ketua-pc" style="display: block;"></div>
+                    <div class="signature-image" id="signature-ketua-pc"></div>
+                  </div>
+                  <div class="signature-name" id="ttd-ketua-pc">Ahmad Sidik</div>
+                  <div class="signature-title">Ketua</div>
+                </div>
+              </div>
+              <div class="signature-box">
+                <div class="signature-image" id="signature-sekretaris-pac"></div>
+                <div class="signature-name" id="ttd-sekretaris-pac">Dito</div>
+                <div class="signature-title">Sekretaris</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SERTIFIKAT BELAKANG (dengan tbody dinamis) -->
+      <div class="certificate-container cert-back">
+        <div class="certificate-border">
+          <div class="guilloche-border"></div>
+          <div class="inner-border"></div>
+          <div class="certificate-inner">
+            <div class="guilloche-pattern"></div>
+            <div class="corner-decoration corner-tl"></div>
+            <div class="corner-decoration corner-tr"></div>
+            <div class="corner-decoration corner-bl"></div>
+            <div class="corner-decoration corner-br"></div>
+
+            <!-- Foto + Data Peserta -->
+            <div class="center-wrapper">
+              <div class="photo-box" id="photoBox">
+                <img id="fotoPreview" src="#" alt="Foto" style="display: none;">
+                <div class="photo-placeholder" id="photoPlaceholder">
+                  <i class="fas fa-user"></i>
+                  <span style="display: block; margin-top: 3px;">3x4</span>
+                </div>
+              </div>
+              <div class="info-container">
+                <div class="recipient-name" id="namaValue">ULINNUHA</div>
+                <div class="participant-detail">
+                  <span>Tempat, Tanggal Lahir :</span> <span id="ttlValue">Bantul, 3 Agustus 1999</span><br>
+                  <span>Utusan :</span> <span id="utusanValue">PAC GP ANSOR DLINGO</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tabel Materi & Instruktur (dinamis) -->
+            <div class="materi-wrapper">
+              <table class="materi-table">
+                <thead>
+                  <tr><th>NO</th><th>MATERI</th><th>INSTRUKTUR</th></tr>
+                </thead>
+                <tbody id="materi-table-body">
+                  <!-- akan diisi JavaScript -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Instruktur Umum -->
+            <div class="instruktur-umum">
+              Instruktur Pelatihan Kaderisasi Dasar
+              <div class="signature-image" id="signature-instruktur-umum"></div>
+              <div class="nama-instruktur"><strong id="instrukturNama">Cahyo Galih</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    container.innerHTML = previewHTML;
+
+    initDefaultMateri();
+    renderMateriForm();
+    renderMateriTable();
+
+    document.getElementById('tambahMateriBtn')?.addEventListener('click', function() {
+      materiList.push({ nama: 'Materi Baru', instruktur: 'Instruktur Baru' });
+      renderMateriForm();
+      renderMateriTable();
+    });
+
+    initCertificatePreview();
+    initCsvAndTtdFeatures();
+
+    async function loadTemplatePresetDropdowns() {
+      try {
+        const [templateRes, presetRes] = await Promise.all([
+          callAppsScript({ action: 'getCertificateTemplates' }, 'GET'),
+          callAppsScript({ action: 'getCertPresets' }, 'GET')
+        ]);
+        const templates = templateRes.data || [];
+        const presets = presetRes.data || [];
+
+        const templateSelect = document.getElementById('previewTemplateSelect');
+        const presetSelect = document.getElementById('previewPresetSelect');
+        if (templateSelect) {
+          templateSelect.innerHTML = '<option value="">-- Pilih Template --</option>' +
+            templates.map(t => `<option value="${t.id}">${escapeHtml(t.nama_template)}</option>`).join('');
+        }
+        if (presetSelect) {
+          presetSelect.innerHTML = '<option value="">-- Pilih Preset --</option>' +
+            presets.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
+        }
+      } catch (e) {
+        console.warn('Gagal memuat template/preset', e);
+      }
+    }
+
+    loadTemplatePresetDropdowns();
+
+    document.getElementById('generateFromCsvBtn')?.addEventListener('click', async function() {
+      const templateId = document.getElementById('previewTemplateSelect')?.value;
+      const presetId = document.getElementById('previewPresetSelect')?.value;
+      const startNumber = parseInt(document.getElementById('previewStartNumber')?.value) || 1;
+
+      if (!templateId) { alert('Pilih template terlebih dahulu'); return; }
+      if (!presetId) { alert('Pilih preset terlebih dahulu'); return; }
+      if (!csvParticipants || csvParticipants.length === 0) { alert('Tidak ada data CSV. Upload CSV terlebih dahulu.'); return; }
+
+      const participants = csvParticipants.map(p => ({
+        nama_lengkap: p.Nama || '',
+        utusan: p.Utusan || '',
+        tempat_tanggal_lahir: p.TTL || ''
+      }));
+
+      if (!confirm(`Generate ${participants.length} sertifikat dari data CSV?`)) return;
+
+      const btn = this;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Generating...';
+      btn.disabled = true;
+
+      try {
+        const res = await callAppsScript({
+          action: 'generateCertificates',
+          templateId: templateId,
+          presetId: presetId,
+          participants: JSON.stringify(participants),
+          startNumber: startNumber
+        }, 'POST');
+
+        if (res.success) {
+          const results = res.certificates || [];
+          let resultHtml = '<h6>Hasil Generate:</h6><ul class="list-group">';
+          results.forEach(r => {
+            resultHtml += `<li class="list-group-item d-flex justify-content-between align-items-center">
+              ${escapeHtml(r.nama)} - ${escapeHtml(r.nomor)}
+              <a href="${escapeHtml(r.pdfUrl)}" target="_blank" class="btn btn-sm btn-success">Unduh PDF</a>
+            </li>`;
+          });
+          resultHtml += '</ul>';
+          let resultDiv = document.getElementById('generateCsvResult');
+          if (!resultDiv) {
+            resultDiv = document.createElement('div');
+            resultDiv.id = 'generateCsvResult';
+            resultDiv.className = 'mt-3';
+            btn.parentElement.parentElement.appendChild(resultDiv);
+          }
+          resultDiv.innerHTML = resultHtml;
+          showToast('Sertifikat berhasil digenerate', 'success');
+        } else {
+          showToast('Gagal: ' + res.message, 'danger');
+        }
+      } catch (e) {
+        showToast('Error: ' + e.message, 'danger');
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    });
+  }
+
+  // =====================================================
+  //   INISIALISASI PREVIEW (auto-update, toggle, reset, foto)
+  // =====================================================
+  let certElements = {};
+
+  function initCertificatePreview() {
+    const textInputs = document.querySelectorAll('#previewPanel .preview-form-panel input[type="text"]');
+    const fotoInput = document.getElementById('inputFoto');
+    const resetBtn = document.getElementById('resetPreviewBtn');
+    const toggleQR = document.getElementById('toggleQR');
+
+    certElements.certNumber = document.getElementById('cert-number');
+    certElements.recipientNameFront = document.getElementById('recipient-name');
+    certElements.kapanewonBody = document.getElementById('kapanewon-body');
+    certElements.kapanewonOrg = document.getElementById('kapanewon-org');
+    certElements.tanggalPelaksanaan = document.getElementById('tanggal-pelaksanaan');
+    certElements.tempat = document.getElementById('tempat');
+    certElements.tanggalPenerbitan = document.getElementById('tanggal-penerbitan');
+    certElements.ttdKetuaPAC = document.getElementById('ttd-ketua-pac');
+    certElements.ttdSekretarisPAC = document.getElementById('ttd-sekretaris-pac');
+    certElements.ttdKetuaPC = document.getElementById('ttd-ketua-pc');
+    certElements.namaValue = document.getElementById('namaValue');
+    certElements.ttlValue = document.getElementById('ttlValue');
+    certElements.utusanValue = document.getElementById('utusanValue');
+    certElements.instrukturNama = document.getElementById('instrukturNama');
+    certElements.fotoPreview = document.getElementById('fotoPreview');
+    certElements.fotoPlaceholder = document.getElementById('photoPlaceholder');
+
+    textInputs.forEach(input => {
+      input.addEventListener('input', updateAllPreview);
+    });
+    if (fotoInput) fotoInput.addEventListener('change', handleFotoPreview);
+    if (resetBtn) resetBtn.addEventListener('click', resetAllPreview);
+
+    // Toggle QR
+    if (toggleQR) {
+      toggleQR.addEventListener('change', updateQRVisibility);
+      // Set initial visibility
+      updateQRVisibility();
+    }
+
+    // Toggle buttons
+    document.getElementById('toggleFormPreview')?.addEventListener('click', function() {
+      const form = document.querySelector('.preview-form-panel');
+      form.classList.toggle('d-none');
+      this.innerHTML = form.classList.contains('d-none') ? '<i class="fas fa-plus-square"></i> Tampilkan Form' : '<i class="fas fa-minus-square"></i> Sembunyikan Form';
+    });
+    document.getElementById('toggleDepanPreview')?.addEventListener('click', function() {
+      const depan = document.querySelector('.cert-front');
+      depan.classList.toggle('d-none');
+      this.innerHTML = depan.classList.contains('d-none') ? '<i class="fas fa-file"></i> Tampilkan Depan' : '<i class="fas fa-file"></i> Sembunyikan Depan';
+    });
+    document.getElementById('toggleBelakangPreview')?.addEventListener('click', function() {
+      const belakang = document.querySelector('.cert-back');
+      belakang.classList.toggle('d-none');
+      this.innerHTML = belakang.classList.contains('d-none') ? '<i class="fas fa-file"></i> Tampilkan Belakang' : '<i class="fas fa-file"></i> Sembunyikan Belakang';
+    });
+
+    updateAllPreview();
+  }
+
+  function updateAllPreview() {
+    const getVal = (id) => document.getElementById(id)?.value.trim() || '';
+
+    if (certElements.certNumber) certElements.certNumber.textContent = getVal('inputNomor') || '001/PC-XI/SR-01.PKD/I/2026';
+    if (certElements.recipientNameFront) certElements.recipientNameFront.textContent = getVal('inputNama') || 'ULINNUHA';
+    if (certElements.kapanewonBody) certElements.kapanewonBody.textContent = getVal('inputKapanewon') || 'Dlingo';
+    if (certElements.kapanewonOrg) certElements.kapanewonOrg.textContent = getVal('inputKapanewon') || 'Dlingo';
+    if (certElements.tanggalPelaksanaan) certElements.tanggalPelaksanaan.textContent = getVal('inputTglPelaksanaan') || '14 Februari sampai 15 Februari 2026';
+    if (certElements.tempat) certElements.tempat.textContent = getVal('inputTempat') || 'MTs N 8 Bantul, D.I.Yogyakarta';
+    if (certElements.tanggalPenerbitan) certElements.tanggalPenerbitan.textContent = getVal('inputTglTerbit') || 'Bantul, 16 Februari 2026';
+    if (certElements.ttdKetuaPAC) certElements.ttdKetuaPAC.textContent = getVal('inputKetuaPAC') || 'Andi';
+    if (certElements.ttdSekretarisPAC) certElements.ttdSekretarisPAC.textContent = getVal('inputSekretarisPAC') || 'Dito';
+    if (certElements.ttdKetuaPC) certElements.ttdKetuaPC.textContent = getVal('inputKetuaPC') || 'Ahmad Sidik';
+    if (certElements.namaValue) certElements.namaValue.textContent = getVal('inputNama') || 'ULINNUHA';
+    if (certElements.ttlValue) certElements.ttlValue.textContent = getVal('inputTtl') || 'Bantul, 3 Agustus 1999';
+    if (certElements.utusanValue) certElements.utusanValue.textContent = getVal('inputUtusan') || 'PAC GP ANSOR DLINGO';
+    if (certElements.instrukturNama) certElements.instrukturNama.textContent = getVal('inputInstrukturUmum') || 'Cahyo Galih';
+
+    // Generate QR hanya jika toggle aktif
+    const toggle = document.getElementById('toggleQR');
+    if (toggle && toggle.checked) {
+      generateVerificationQR();
+    }
+  }
+
+  function handleFotoPreview(e) {
+    const file = e.target.files[0];
+    if (file && certElements.fotoPreview && certElements.fotoPlaceholder) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        certElements.fotoPreview.src = ev.target.result;
+        certElements.fotoPreview.style.display = 'block';
+        certElements.fotoPlaceholder.style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    } else {
+      if (certElements.fotoPreview) certElements.fotoPreview.style.display = 'none';
+      if (certElements.fotoPlaceholder) certElements.fotoPlaceholder.style.display = 'flex';
+    }
+  }
+
+  function resetAllPreview() {
+    document.getElementById('inputNomor').value = '001/PC-XI/SR-01.PKD/I/2026';
+    document.getElementById('inputNama').value = 'ULINNUHA';
+    document.getElementById('inputKapanewon').value = 'Dlingo';
+    document.getElementById('inputTglPelaksanaan').value = '14 Februari sampai 15 Februari 2026';
+    document.getElementById('inputTempat').value = 'MTs N 8 Bantul, D.I.Yogyakarta';
+    document.getElementById('inputTglTerbit').value = 'Bantul, 16 Februari 2026';
+    document.getElementById('inputKetuaPAC').value = 'Andi';
+    document.getElementById('inputSekretarisPAC').value = 'Dito';
+    document.getElementById('inputKetuaPC').value = 'Ahmad Sidik';
+    document.getElementById('inputTtl').value = 'Bantul, 3 Agustus 1999';
+    document.getElementById('inputUtusan').value = 'PAC GP ANSOR DLINGO';
+    document.getElementById('inputInstrukturUmum').value = 'Cahyo Galih';
+
+    // Reset toggle QR ke default (checked)
+    const toggle = document.getElementById('toggleQR');
+    if (toggle) {
+      toggle.checked = true;
+      updateQRVisibility();
+    }
+
+    initDefaultMateri();
+    renderMateriForm();
+    renderMateriTable();
+
+    document.getElementById('inputFoto').value = '';
+    if (certElements.fotoPreview) {
+      certElements.fotoPreview.src = '#';
+      certElements.fotoPreview.style.display = 'none';
+      certElements.fotoPlaceholder.style.display = 'flex';
+    }
+
+    updateAllPreview();
+  }
+
+  function initCsvAndTtdFeatures() {
+    const csvFileInput = document.getElementById('csvFileInput');
+    const loadCsvBtn = document.getElementById('loadCsvBtn');
+    const csvStatus = document.getElementById('csvStatus');
+    const participantSelect = document.getElementById('participantSelect');
+    const prevParticipantBtn = document.getElementById('prevParticipantBtn');
+    const nextParticipantBtn = document.getElementById('nextParticipantBtn');
+    const applyParticipantBtn = document.getElementById('applyParticipantBtn');
+    const participantIndex = document.getElementById('participantIndex');
+
+    let participants = [];
+    let currentParticipantIndex = -1;
+
+    function parseCSV(text) {
+      const lines = text.trim().split('\n');
+      if (lines.length === 0) return [];
+      const headers = lines[0].split(',').map(h => h.trim());
+      const required = ['Nomor', 'Nama', 'TTL', 'Utusan'];
+      const missing = required.filter(r => !headers.includes(r));
+      if (missing.length > 0) {
+        alert(`CSV harus memiliki kolom: ${missing.join(', ')}`);
+        return [];
+      }
+      const data = [];
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const values = lines[i].split(',').map(v => v.trim());
+        const obj = {};
+        headers.forEach((h, idx) => { obj[h] = values[idx] || ''; });
+        data.push(obj);
+      }
+      return data;
+    }
+
+    if (loadCsvBtn) {
+      loadCsvBtn.addEventListener('click', () => {
+        const file = csvFileInput.files[0];
+        if (!file) { alert('Pilih file CSV terlebih dahulu.'); return; }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const text = e.target.result;
+          participants = parseCSV(text);
+          csvParticipants = participants;
+          if (participants.length === 0) {
+            csvStatus.textContent = 'Tidak ada data valid.';
+            participantSelect.disabled = true;
+            prevParticipantBtn.disabled = true;
+            nextParticipantBtn.disabled = true;
+            applyParticipantBtn.disabled = true;
+            return;
+          }
+          participantSelect.innerHTML = '';
+          participants.forEach((p, idx) => {
+            const option = document.createElement('option');
+            option.value = idx;
+            option.textContent = `${p.Nomor || '-'} - ${p.Nama || '-'}`;
+            participantSelect.appendChild(option);
+          });
+          participantSelect.disabled = false;
+          participantSelect.selectedIndex = 0;
+          currentParticipantIndex = 0;
+          updateParticipantNav();
+          csvStatus.textContent = `${participants.length} peserta dimuat.`;
+          prevParticipantBtn.disabled = false;
+          nextParticipantBtn.disabled = false;
+          applyParticipantBtn.disabled = false;
+          updateIndexDisplay();
+        };
+        reader.readAsText(file);
+      });
+    }
+
+    function updateParticipantNav() {
+      if (participants.length === 0) return;
+      prevParticipantBtn.disabled = (currentParticipantIndex <= 0);
+      nextParticipantBtn.disabled = (currentParticipantIndex >= participants.length - 1);
+      participantSelect.value = currentParticipantIndex;
+      updateIndexDisplay();
+    }
+
+    function updateIndexDisplay() {
+      if (participants.length > 0 && currentParticipantIndex >= 0) {
+        participantIndex.textContent = `${currentParticipantIndex + 1}/${participants.length}`;
+      } else {
+        participantIndex.textContent = '';
+      }
+    }
+
+    if (prevParticipantBtn) {
+      prevParticipantBtn.addEventListener('click', () => {
+        if (currentParticipantIndex > 0) {
+          currentParticipantIndex--;
+          participantSelect.value = currentParticipantIndex;
+          updateParticipantNav();
+        }
+      });
+    }
+
+    if (nextParticipantBtn) {
+      nextParticipantBtn.addEventListener('click', () => {
+        if (currentParticipantIndex < participants.length - 1) {
+          currentParticipantIndex++;
+          participantSelect.value = currentParticipantIndex;
+          updateParticipantNav();
+        }
+      });
+    }
+
+    if (participantSelect) {
+      participantSelect.addEventListener('change', () => {
+        currentParticipantIndex = parseInt(participantSelect.value, 10);
+        updateParticipantNav();
+      });
+    }
+
+    if (applyParticipantBtn) {
+      applyParticipantBtn.addEventListener('click', () => {
+        if (currentParticipantIndex < 0 || !participants[currentParticipantIndex]) return;
+        const p = participants[currentParticipantIndex];
+        document.getElementById('inputNomor').value = p.Nomor || '';
+        document.getElementById('inputNama').value = p.Nama || '';
+        document.getElementById('inputTtl').value = p.TTL || '';
+        document.getElementById('inputUtusan').value = p.Utusan || '';
+
+        if (p.Foto && p.Foto.trim() !== '') {
+          fetch(p.Foto)
+            .then(response => {
+              if (response.ok) {
+                certElements.fotoPreview.src = p.Foto;
+                certElements.fotoPreview.style.display = 'block';
+                certElements.fotoPlaceholder.style.display = 'none';
+              } else { throw new Error('Gambar tidak dapat diakses'); }
+            })
+            .catch(() => {
+              certElements.fotoPreview.src = '#';
+              certElements.fotoPreview.style.display = 'none';
+              certElements.fotoPlaceholder.style.display = 'flex';
             });
+        } else {
+          certElements.fotoPreview.src = '#';
+          certElements.fotoPreview.style.display = 'none';
+          certElements.fotoPlaceholder.style.display = 'flex';
         }
 
-        // Tambah baris baru
-        btnTambah.addEventListener('click', function() {
-            const barisBaru = document.createElement('tr');
+        updateAllPreview();
+      });
+    }
 
-            // Nomor (akan diperbarui nanti)
-            const cellNo = document.createElement('td');
-            cellNo.style.textAlign = 'center';
-            cellNo.style.width = '50px';
-            cellNo.textContent = '?'; // sementara
+    const signatureImages = {
+      ketuaPAC: document.getElementById('signature-ketua-pac'),
+      sekretarisPAC: document.getElementById('signature-sekretaris-pac'),
+      ketuaPC: document.getElementById('signature-ketua-pc'),
+      instruktur: document.getElementById('signature-instruktur-umum')
+    };
+    const fileInputs = {
+      ketuaPAC: document.getElementById('fileKetuaPAC'),
+      sekretarisPAC: document.getElementById('fileSekretarisPAC'),
+      ketuaPC: document.getElementById('fileKetuaPC'),
+      instruktur: document.getElementById('fileInstruktur')
+    };
+    function updateSignatureFromFile(fileInput, container) {
+      if (!container) return;
+      const file = fileInput.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          container.innerHTML = `<img src="${e.target.result}" style="max-height:50px; max-width:150px; object-fit:contain;">`;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        container.innerHTML = '';
+      }
+    }
+    for (const key in fileInputs) {
+      const input = fileInputs[key];
+      if (!input) continue;
+      input.addEventListener('change', function() {
+        updateSignatureFromFile(this, signatureImages[key]);
+      });
+    }
+  }
 
-            // Kolom materi (input)
-            const cellMateri = document.createElement('td');
-            const inputMateri = document.createElement('input');
-            inputMateri.type = 'text';
-            inputMateri.placeholder = 'materi';
-            inputMateri.classList.add('materi-input');
-            cellMateri.appendChild(inputMateri);
+  function generateVerificationQR() {
+    const qrContainer = document.getElementById('qr-ketua-pc');
+    if (!qrContainer) return;
+    const nomor = document.getElementById('inputNomor')?.value || 'No. Sertifikat';
+    const nama = document.getElementById('inputNama')?.value || 'Nama Peserta';
+    const qrText = `Sertifikat No: ${nomor} - ${nama}`;
+    try {
+      const qr = qrcode(0, 'M');
+      qr.addData(qrText);
+      qr.make();
+      const img = document.createElement('img');
+      img.src = qr.createDataURL(4, 0);
+      img.style.maxHeight = '50px';
+      img.style.maxWidth = '150px';
+      qrContainer.innerHTML = '';
+      qrContainer.appendChild(img);
+      qrContainer.style.display = 'block';
+    } catch (e) { console.warn('QR gagal:', e); }
+  }
 
-            // Kolom instruktur (input)
-            const cellInstruktur = document.createElement('td');
-            const inputInstruktur = document.createElement('input');
-            inputInstruktur.type = 'text';
-            inputInstruktur.placeholder = 'instruktur';
-            inputInstruktur.classList.add('instruktur-input');
-            cellInstruktur.appendChild(inputInstruktur);
+  async function loadGenerateSertifikatUI() {
+    const container = document.getElementById('generatePanel');
+    if (!container) return;
+    container.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>`;
 
-            barisBaru.appendChild(cellNo);
-            barisBaru.appendChild(cellMateri);
-            barisBaru.appendChild(cellInstruktur);
+    try {
+      const [pesertaRes, templateRes, presetRes] = await Promise.all([
+        callAppsScript({ action: 'getPesertaList' }, 'GET'),
+        callAppsScript({ action: 'getCertificateTemplates' }, 'GET'),
+        callAppsScript({ action: 'getCertPresets' }, 'GET')
+      ]);
 
-            tabelBody.appendChild(barisBaru);
-            perbaruiNomor();
+      const pesertaList = pesertaRes.data || [];
+      const templates = templateRes.data || [];
+      const presets = presetRes.data || [];
+
+      let html = `
+        <h5 class="mb-3">⚙️ Generate Sertifikat untuk Peserta</h5>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="mb-3"><input type="text" class="form-control" id="searchPesertaGenerate" placeholder="Cari nama peserta..."></div>
+            <div class="peserta-checkbox-list" id="pesertaCheckboxList"></div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="form-label">Pilih Template</label>
+              <select class="form-select" id="templateSelect">
+                <option value="">-- Pilih Template --</option>
+                ${templates.map(t => `<option value="${t.id}">${escapeHtml(t.nama_template)}</option>`).join('')}
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Pilih Preset</label>
+              <select class="form-select" id="presetSelect">
+                <option value="">-- Pilih Preset --</option>
+                ${presets.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('')}
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Nomor Awal</label>
+              <input type="number" class="form-control" id="startNumber" value="1" min="1">
+            </div>
+            <button class="btn btn-primary w-100" id="generateBtn" ${templates.length === 0 ? 'disabled' : ''}>Generate Sertifikat</button>
+          </div>
+        </div>
+        <div class="generate-result mt-4" id="generateResult"></div>
+      `;
+
+      container.innerHTML = html;
+
+      renderPesertaCheckboxList(pesertaList);
+      document.getElementById('searchPesertaGenerate').addEventListener('input', function(e) {
+        filterPesertaCheckbox(e.target.value.toLowerCase());
+      });
+      document.getElementById('generateBtn').addEventListener('click', async function() {
+        await handleGenerateSertifikat(pesertaList);
+      });
+
+    } catch (e) {
+      container.innerHTML = `<div class="alert alert-danger">Gagal memuat: ${escapeHtml(e.message)}</div>`;
+    }
+  }
+
+  function renderPesertaCheckboxList(pesertaList) {
+    const container = document.getElementById('pesertaCheckboxList');
+    if (!container) return;
+    let html = '';
+    pesertaList.forEach((p, idx) => {
+      const nama = escapeHtml(p.nama_lengkap || '');
+      const id = p.id;
+      html += `
+        <div class="peserta-checkbox-item" data-nama="${nama.toLowerCase()}">
+          <div class="form-check">
+            <input class="form-check-input peserta-checkbox" type="checkbox" value="${id}" id="peserta_${id}" data-nama="${nama}">
+            <label class="form-check-label" for="peserta_${id}">${nama} <small class="text-muted">(${escapeHtml(p.utusan || '-')})</small></label>
+          </div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  }
+
+  function filterPesertaCheckbox(keyword) {
+    const items = document.querySelectorAll('.peserta-checkbox-item');
+    items.forEach(item => {
+      const nama = item.dataset.nama;
+      item.style.display = nama.includes(keyword) ? '' : 'none';
+    });
+  }
+
+  async function handleGenerateSertifikat(pesertaList) {
+    const templateId = document.getElementById('templateSelect').value;
+    const presetId = document.getElementById('presetSelect').value;
+    const startNumber = parseInt(document.getElementById('startNumber').value) || 1;
+
+    if (!templateId) { alert('Pilih template terlebih dahulu'); return; }
+    if (!presetId) { alert('Pilih preset terlebih dahulu'); return; }
+
+    const selectedCheckboxes = document.querySelectorAll('.peserta-checkbox:checked');
+    if (selectedCheckboxes.length === 0) { alert('Pilih minimal satu peserta'); return; }
+
+    const selectedPeserta = [];
+    selectedCheckboxes.forEach(cb => {
+      const id = cb.value;
+      const peserta = pesertaList.find(p => p.id == id);
+      if (peserta) selectedPeserta.push(peserta);
+    });
+
+    if (!confirm(`Generate sertifikat untuk ${selectedPeserta.length} peserta?`)) return;
+
+    const generateBtn = document.getElementById('generateBtn');
+    const originalText = generateBtn.innerText;
+    generateBtn.innerText = 'Memproses...';
+    generateBtn.disabled = true;
+
+    try {
+      const res = await callAppsScript({
+        action: 'generateCertificates',
+        templateId: templateId,
+        presetId: presetId,
+        participants: JSON.stringify(selectedPeserta),
+        startNumber: startNumber
+      }, 'POST');
+
+      if (res.success) {
+        const results = res.certificates || [];
+        let resultHtml = '<h6>Hasil Generate:</h6><ul class="list-group">';
+        results.forEach(r => {
+          resultHtml += `<li class="list-group-item d-flex justify-content-between align-items-center">
+            ${escapeHtml(r.nama)} - ${escapeHtml(r.nomor)}
+            <a href="${escapeHtml(r.pdfUrl)}" target="_blank" class="btn btn-sm btn-success">Unduh PDF</a>
+          </li>`;
+        });
+        resultHtml += '</ul>';
+        document.getElementById('generateResult').innerHTML = resultHtml;
+        showToast('Sertifikat berhasil digenerate', 'success');
+      } else {
+        showToast('Gagal generate: ' + res.message, 'danger');
+      }
+    } catch (e) {
+      showToast('Error: ' + e.message, 'danger');
+    } finally {
+      generateBtn.innerText = originalText;
+      generateBtn.disabled = false;
+    }
+  }
+
+  async function loadTemplateManagement() {
+    const container = document.getElementById('templatePanel');
+    if (!container) return;
+    container.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>`;
+
+    try {
+      const [templateRes, presetRes] = await Promise.all([
+        callAppsScript({ action: 'getCertificateTemplates' }, 'GET'),
+        callAppsScript({ action: 'getCertPresets' }, 'GET')
+      ]);
+
+      const templates = templateRes.data || [];
+      const presets = presetRes.data || [];
+
+      let html = `
+        <div class="d-flex justify-content-between mb-3">
+          <h5>📄 Daftar Template Sertifikat</h5>
+          <button class="btn btn-success btn-sm" id="addTemplateBtn">➕ Tambah Template</button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm">
+            <thead><tr><th>ID</th><th>Nama Template</th><th>ID Google Docs</th><th>Konfigurasi</th><th>Dibuat</th><th>Aksi</th></tr></thead>
+            <tbody>
+      `;
+      templates.forEach(t => {
+        html += `<tr>
+          <td>${t.id}</td>
+          <td>${escapeHtml(t.nama_template)}</td>
+          <td><a href="https://docs.google.com/document/d/${t.doc_template_id}/edit" target="_blank">${t.doc_template_id}</a></td>
+          <td><pre class="small">${escapeHtml(JSON.stringify(t.config, null, 2))}</pre></td>
+          <td>${t.createdAt ? new Date(t.createdAt).toLocaleDateString() : ''}</td>
+          <td>
+            <button class="btn btn-sm btn-warning edit-template" data-id="${t.id}">✏️</button>
+            <button class="btn btn-sm btn-danger delete-template" data-id="${t.id}">🗑️</button>
+          </td>
+        </tr>`;
+      });
+      html += `</tbody></table></div>`;
+
+      html += `
+        <div class="mt-5">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5>📋 Preset Sertifikat (Data Statis)</h5>
+            <div>
+              <button class="btn btn-success btn-sm me-2" id="addPresetBtn">➕ Tambah Preset</button>
+              <button class="btn btn-info btn-sm" id="importPresetBtn"><i class="bi bi-file-spreadsheet"></i> Import dari CSV</button>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered table-sm">
+              <thead><tr><th>ID</th><th>Nama Preset</th><th>Konfigurasi</th><th>Aksi</th></tr></thead>
+              <tbody id="presetTableBody">
+      `;
+      if (presets.length === 0) {
+        html += `<tr><td colspan="4" class="text-center text-muted">Belum ada preset.</td></tr>`;
+      } else {
+        presets.forEach(p => {
+          html += `<tr>
+            <td>${p.id}</td>
+            <td>${escapeHtml(p.name)}</td>
+            <td><pre class="small">${escapeHtml(JSON.stringify(p.config, null, 2))}</pre></td>
+            <td>
+              <button class="btn btn-sm btn-warning edit-preset" data-id="${p.id}">✏️</button>
+              <button class="btn btn-sm btn-danger delete-preset" data-id="${p.id}">🗑️</button>
+            </td>
+          </tr>`;
+        });
+      }
+      html += `</tbody></table></div></div>`;
+
+      container.innerHTML = html;
+
+      document.getElementById('addTemplateBtn').addEventListener('click', () => showTemplateModal());
+      document.querySelectorAll('.edit-template').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const id = this.dataset.id;
+          const template = templates.find(t => t.id == id);
+          showTemplateModal(template);
+        });
+      });
+      document.querySelectorAll('.delete-template').forEach(btn => {
+        btn.addEventListener('click', async function() {
+          if (!confirm('Hapus template ini?')) return;
+          const id = this.dataset.id;
+          try {
+            await callAppsScript({ action: 'deleteCertificateTemplate', id }, 'POST');
+            showToast('Template dihapus', 'success');
+            loadTemplateManagement();
+            refreshGenerateTabTemplates();
+          } catch (e) {
+            showToast('Gagal: ' + e.message, 'danger');
+          }
+        });
+      });
+
+      document.getElementById('addPresetBtn').addEventListener('click', () => showPresetModal());
+      document.querySelectorAll('.edit-preset').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const id = this.dataset.id;
+          const preset = presets.find(p => p.id == id);
+          showPresetModal(preset);
+        });
+      });
+      document.querySelectorAll('.delete-preset').forEach(btn => {
+        btn.addEventListener('click', async function() {
+          if (!confirm('Hapus preset ini?')) return;
+          const id = this.dataset.id;
+          try {
+            await callAppsScript({ action: 'deleteCertPreset', id }, 'POST');
+            showToast('Preset dihapus', 'success');
+            loadTemplateManagement();
+            refreshGenerateTabPresets();
+          } catch (e) {
+            showToast('Gagal: ' + e.message, 'danger');
+          }
+        });
+      });
+
+      document.getElementById('importPresetBtn').addEventListener('click', () => {
+        const modal = new bootstrap.Modal(document.getElementById('importPresetModal'));
+        modal.show();
+        document.getElementById('importCsvFile').value = '';
+        document.getElementById('importPreview').innerHTML = '';
+        document.getElementById('prosesImportBtn').disabled = true;
+      });
+
+      document.getElementById('importCsvFile').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const text = ev.target.result;
+          const lines = text.trim().split('\n');
+          if (lines.length < 2) {
+            alert('CSV harus memiliki setidaknya baris header dan satu baris data.');
+            return;
+          }
+          const headers = lines[0].split(',').map(h => h.trim());
+          const values = lines[1].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+          const preview = {};
+          headers.forEach((h, i) => { preview[h] = values[i] || ''; });
+          document.getElementById('importPreview').innerHTML = `
+            <strong>Preview:</strong><br>
+            <pre class="bg-light p-2 rounded">${escapeHtml(JSON.stringify(preview, null, 2))}</pre>
+          `;
+          document.getElementById('prosesImportBtn').disabled = false;
+          document.getElementById('prosesImportBtn').dataset.headers = JSON.stringify(headers);
+          document.getElementById('prosesImportBtn').dataset.values = JSON.stringify(values);
+        };
+        reader.readAsText(file);
+      });
+
+      document.getElementById('prosesImportBtn').addEventListener('click', async function() {
+        const headers = JSON.parse(this.dataset.headers || '[]');
+        const values = JSON.parse(this.dataset.values || '[]');
+        if (headers.length === 0) return;
+
+        const namaPreset = values[0] || 'Preset from CSV';
+        const config = {};
+        headers.forEach((h, i) => {
+          if (i > 0) config[h] = values[i] || '';
         });
 
-        // saat pertama kali load, pastikan nomor baris pertama = 1 (sudah)
-        // Jika ada penghapusan nanti (tidak diimplementasikan, tapi nomor akan tetap rapi jika kita menambah)
-        // optional: tambahkan kemampuan hapus baris? agar lebih lengkap, kita bisa tambah ikon silang di samping.
-        // Tapi mengikuti permintaan "mengisi setiap isian" kita cukup tambah baris.
-        // Namun agar lebih fleksibel, kita tambahkan tombol hapus di setiap baris (opsional). 
-        // Berhubung tidak disebutkan, kita akan sederhana saja: tambah baris tanpa hapus.
-        // Tapi user mungkin ingin menghapus. Lebih baik beri opsi hapus kecil.
-        // Tambahkan kolom kecil untuk hapus (opsional) agar tidak mengganggu.
-        // Kita akan sisipkan kolom tambahan di header? itu mengubah struktur tabel. Alternatif: tambah 'x' di kolom NO.
-        // Namun karena SVG asli hanya 3 kolom, kita tidak perlu merusak format. Kita bisa letakkan tombol hapus di dalam kolom instruktur? 
-        // Itu akan merepotkan. Untuk menjaga kesederhanaan, kita cukup beri kemampuan hapus dengan double klik baris (sederhana).
-        // Atau tambah tombol di luar tabel? lebih baik kita tambahkan fitur hapus dengan ikon di sebelah kanan input instruktur.
-        // Saya akan modifikasi sedikit: setiap baris memiliki ikon hapus di dalam sel instruktur (di sebelah input) agar tidak menambah kolom.
-        // Tapi instruktur bisa diisi teks panjang, jadi kurang cocok. Lebih baik tambah kolom kecil "🗑️" tanpa mengganggu. 
-        // Namun mengubah struktur tabel mungkin membuat tidak sesuai referensi SVG. Tapi karena ini hanya form isian, tidak masalah.
-        // Demi kemudahan, saya tambahkan kolom tipis "hapus" di paling kanan. Itu tidak akan mempengaruhi data isian.
-        // Kita ubah sedikit tabelnya: tambah <th>🗑️</th> di thead, dan sel hapus di tbody.
-        // Lakukan modifikasi saat inisialisasi.
+        if (!confirm(`Simpan preset "${namaPreset}" dengan konfigurasi:\n${JSON.stringify(config, null, 2)}`)) return;
 
-        // Ubah struktur tabel dengan kolom hapus.
-        const tabel = document.getElementById('tabelMateri');
-        const thead = tabel.querySelector('thead tr');
-        const hapusTh = document.createElement('th');
-        hapusTh.textContent = '🗑️';
-        hapusTh.style.width = '40px';
-        thead.appendChild(hapusTh);
-
-        // Untuk baris yang sudah ada (satu baris awal), tambahkan sel hapus
-        const barisAwal = tabelBody.querySelector('tr');
-        if (barisAwal) {
-            const cellHapus = document.createElement('td');
-            cellHapus.style.textAlign = 'center';
-            const btnHapus = document.createElement('span');
-            btnHapus.innerHTML = '✕';
-            btnHapus.style.cursor = 'pointer';
-            btnHapus.style.color = '#b00030';
-            btnHapus.style.fontWeight = 'bold';
-            btnHapus.style.fontSize = '1.2rem';
-            btnHapus.title = 'hapus baris';
-            btnHapus.onclick = function() {
-                if (tabelBody.children.length > 1) {
-                    barisAwal.remove();
-                    perbaruiNomor();
-                } else {
-                    alert('Minimal satu baris harus ada.');
-                }
-            };
-            cellHapus.appendChild(btnHapus);
-            barisAwal.appendChild(cellHapus);
+        try {
+          await callAppsScript({
+            action: 'addCertPreset',
+            name: namaPreset,
+            config: JSON.stringify(config)
+          }, 'POST');
+          showToast('Preset berhasil ditambahkan', 'success');
+          bootstrap.Modal.getInstance(document.getElementById('importPresetModal')).hide();
+          loadTemplateManagement();
+          refreshGenerateTabPresets();
+        } catch (e) {
+          showToast('Gagal: ' + e.message, 'danger');
         }
+      });
 
-        // Modifikasi fungsi tambahBaris untuk juga menambah sel hapus
-        const tambahAsli = btnTambah.click;
-        btnTambah.removeEventListener('click', tambahAsli);
-        btnTambah.addEventListener('click', function() {
-            const barisBaru = document.createElement('tr');
+    } catch (e) {
+      container.innerHTML = `<div class="alert alert-danger">Gagal memuat: ${escapeHtml(e.message)}</div>`;
+    }
+  }
 
-            // Nomor
-            const cellNo = document.createElement('td');
-            cellNo.style.textAlign = 'center';
-            cellNo.style.width = '50px';
-            cellNo.textContent = '?';
+  function showTemplateModal(template = null) {
+    const isEdit = !!template;
+    document.getElementById('templateModalLabel').innerText = isEdit ? 'Edit Template' : 'Tambah Template';
+    document.getElementById('templateId').value = isEdit ? template.id : '';
+    document.getElementById('templateNama').value = isEdit ? template.nama_template : '';
+    document.getElementById('templateDocId').value = isEdit ? template.doc_template_id : '';
+    document.getElementById('templateConfig').value = isEdit ? JSON.stringify(template.config, null, 2) : '{"placeholder": "value"}';
 
-            // Materi
-            const cellMateri = document.createElement('td');
-            const inputMateri = document.createElement('input');
-            inputMateri.type = 'text';
-            inputMateri.placeholder = 'materi';
-            inputMateri.classList.add('materi-input');
-            cellMateri.appendChild(inputMateri);
+    const modal = new bootstrap.Modal(document.getElementById('templateModal'));
+    modal.show();
 
-            // Instruktur
-            const cellInstruktur = document.createElement('td');
-            const inputInstruktur = document.createElement('input');
-            inputInstruktur.type = 'text';
-            inputInstruktur.placeholder = 'instruktur';
-            inputInstruktur.classList.add('instruktur-input');
-            cellInstruktur.appendChild(inputInstruktur);
+    document.getElementById('simpanTemplateBtn').onclick = async function() {
+      const id = document.getElementById('templateId').value;
+      const nama = document.getElementById('templateNama').value.trim();
+      const docId = document.getElementById('templateDocId').value.trim();
+      let config = {};
+      try {
+        config = JSON.parse(document.getElementById('templateConfig').value);
+      } catch (e) {
+        alert('Konfigurasi harus berupa JSON valid');
+        return;
+      }
+      if (!nama || !docId) {
+        alert('Nama dan ID Google Docs wajib diisi');
+        return;
+      }
 
-            // Hapus
-            const cellHapus = document.createElement('td');
-            cellHapus.style.textAlign = 'center';
-            const btnHapus = document.createElement('span');
-            btnHapus.innerHTML = '✕';
-            btnHapus.style.cursor = 'pointer';
-            btnHapus.style.color = '#b00030';
-            btnHapus.style.fontWeight = 'bold';
-            btnHapus.style.fontSize = '1.2rem';
-            btnHapus.title = 'hapus baris';
-            btnHapus.onclick = function() {
-                if (tabelBody.children.length > 1) {
-                    barisBaru.remove();
-                    perbaruiNomor();
-                } else {
-                    alert('Minimal satu baris diperlukan.');
-                }
-            };
-            cellHapus.appendChild(btnHapus);
+      const params = {
+        nama_template: nama,
+        doc_template_id: docId,
+        config: JSON.stringify(config)
+      };
+      if (isEdit) {
+        params.action = 'updateCertificateTemplate';
+        params.id = id;
+      } else {
+        params.action = 'addCertificateTemplateManual';
+      }
 
-            barisBaru.appendChild(cellNo);
-            barisBaru.appendChild(cellMateri);
-            barisBaru.appendChild(cellInstruktur);
-            barisBaru.appendChild(cellHapus);
+      try {
+        await callAppsScript(params, 'POST');
+        showToast(isEdit ? 'Template diperbarui' : 'Template ditambahkan', 'success');
+        modal.hide();
+        loadTemplateManagement();
+        refreshGenerateTabTemplates();
+      } catch (err) {
+        alert('Gagal: ' + err.message);
+      }
+    };
+  }
 
-            tabelBody.appendChild(barisBaru);
-            perbaruiNomor();
-        });
+  function showPresetModal(preset = null) {
+    const isEdit = !!preset;
+    document.getElementById('presetModalLabel').innerText = isEdit ? 'Edit Preset' : 'Tambah Preset';
+    document.getElementById('presetId').value = isEdit ? preset.id : '';
+    document.getElementById('presetNama').value = isEdit ? preset.name : '';
+    document.getElementById('presetConfig').value = isEdit ? JSON.stringify(preset.config, null, 2) : '{"tempat": "", "tanggal": "", "kapanewon": "", "ketua_pac": "", "sekretaris_pac": "", "ketua_pc": "", "instruktur_umum": ""}';
 
-        // Perbarui nomor juga setelah hapus
-        function perbaruiNomor() {
-            const baris = tabelBody.querySelectorAll('tr');
-            baris.forEach((row, index) => {
-                const cellNomor = row.cells[0];
-                if (cellNomor) {
-                    cellNomor.textContent = (index + 1).toString();
-                }
-            });
+    const modal = new bootstrap.Modal(document.getElementById('presetModal'));
+    modal.show();
+
+    document.getElementById('simpanPresetBtn').onclick = async function() {
+      const id = document.getElementById('presetId').value;
+      const nama = document.getElementById('presetNama').value.trim();
+      let config = {};
+      try {
+        config = JSON.parse(document.getElementById('presetConfig').value);
+      } catch (e) {
+        alert('Konfigurasi harus berupa JSON valid');
+        return;
+      }
+      if (!nama) {
+        alert('Nama preset wajib diisi');
+        return;
+      }
+
+      const params = {
+        name: nama,
+        config: JSON.stringify(config)
+      };
+      if (isEdit) {
+        params.action = 'updateCertPreset';
+        params.id = id;
+      } else {
+        params.action = 'addCertPreset';
+      }
+
+      try {
+        await callAppsScript(params, 'POST');
+        showToast(isEdit ? 'Preset diperbarui' : 'Preset ditambahkan', 'success');
+        modal.hide();
+        loadTemplateManagement();
+        refreshGenerateTabPresets();
+      } catch (err) {
+        alert('Gagal: ' + err.message);
+      }
+    };
+  }
+
+  async function refreshGenerateTabTemplates() {
+    const generatePanel = document.getElementById('generatePanel');
+    if (generatePanel && generatePanel.classList.contains('show')) {
+      const select = document.getElementById('templateSelect');
+      if (select) {
+        try {
+          const res = await callAppsScript({ action: 'getCertificateTemplates' }, 'GET');
+          const templates = res.data || [];
+          select.innerHTML = '<option value="">-- Pilih Template --</option>' +
+            templates.map(t => `<option value="${t.id}">${escapeHtml(t.nama_template)}</option>`).join('');
+          const generateBtn = document.getElementById('generateBtn');
+          if (generateBtn) generateBtn.disabled = templates.length === 0;
+        } catch (e) { console.warn('Gagal refresh template dropdown', e); }
+      }
+    }
+  }
+
+  async function refreshGenerateTabPresets() {
+    const generatePanel = document.getElementById('generatePanel');
+    if (generatePanel && generatePanel.classList.contains('show')) {
+      const select = document.getElementById('presetSelect');
+      if (select) {
+        try {
+          const res = await callAppsScript({ action: 'getCertPresets' }, 'GET');
+          const presets = res.data || [];
+          select.innerHTML = '<option value="">-- Pilih Preset --</option>' +
+            presets.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
+        } catch (e) { console.warn('Gagal refresh preset dropdown', e); }
+      }
+    }
+  }
+
+  async function loadUploadManualUI() {
+    const container = document.getElementById('uploadPanel');
+    if (!container) return;
+    container.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>`;
+
+    try {
+      const [pesertaRes, uploadedRes] = await Promise.all([
+        callAppsScript({ action: 'getPesertaList' }, 'GET'),
+        callAppsScript({ action: 'getUploadedCertificates' }, 'GET')
+      ]);
+
+      const pesertaList = pesertaRes.data || [];
+      const uploadedCerts = uploadedRes.data || [];
+
+      const pesertaWithStatus = pesertaList.map(p => ({
+        ...p,
+        hasCert: uploadedCerts.some(c => c.peserta_id == p.id),
+        certData: uploadedCerts.find(c => c.peserta_id == p.id) || null
+      }));
+
+      renderUploadList(pesertaWithStatus, container);
+      document.getElementById('searchUploadInput').addEventListener('input', function(e) {
+        filterUploadList(e.target.value.toLowerCase());
+      });
+      setupUploadModal();
+
+    } catch (e) {
+      container.innerHTML = `<div class="alert alert-danger">Gagal memuat: ${escapeHtml(e.message)}</div>`;
+    }
+  }
+
+  function renderUploadList(pesertaList, container) {
+    const belum = pesertaList.filter(p => !p.hasCert);
+    const sudah = pesertaList.filter(p => p.hasCert);
+
+    let html = `
+      <div class="mb-3"><input type="text" class="form-control" id="searchUploadInput" placeholder="Cari nama peserta..."></div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card shadow-sm">
+            <div class="card-header bg-warning text-dark fw-bold">📋 Belum Terkirim</div>
+            <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
+              <ul class="list-group list-group-flush" id="belumUploadList">
+    `;
+    if (belum.length === 0) {
+      html += `<li class="list-group-item text-muted">Semua peserta sudah memiliki sertifikat.</li>`;
+    } else {
+      belum.forEach(p => {
+        html += `
+          <li class="list-group-item d-flex justify-content-between align-items-center" data-nama="${p.nama_lengkap.toLowerCase()}">
+            <div><strong>${escapeHtml(p.nama_lengkap)}</strong><br><small>${escapeHtml(p.utusan || '-')}</small></div>
+            <button class="btn btn-sm btn-primary btn-upload" data-id="${p.id}" data-nama="${escapeHtml(p.nama_lengkap)}"><i class="bi bi-cloud-upload"></i> Upload</button>
+          </li>
+        `;
+      });
+    }
+    html += `</ul></div></div></div>`;
+
+    html += `
+        <div class="col-md-6">
+          <div class="card shadow-sm">
+            <div class="card-header bg-success text-white fw-bold">✅ Telah Terkirim</div>
+            <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
+              <ul class="list-group list-group-flush" id="sudahUploadList">
+    `;
+    if (sudah.length === 0) {
+      html += `<li class="list-group-item text-muted">Belum ada sertifikat yang diupload.</li>`;
+    } else {
+      sudah.forEach(p => {
+        html += `
+          <li class="list-group-item d-flex justify-content-between align-items-center" data-nama="${p.nama_lengkap.toLowerCase()}">
+            <div><strong>${escapeHtml(p.nama_lengkap)}</strong><br><small>${escapeHtml(p.utusan || '-')}</small></div>
+            <div><a href="${p.certData.pdf_url}" target="_blank" class="btn btn-sm btn-outline-success"><i class="bi bi-file-pdf"></i> Lihat</a><span class="badge bg-success ms-2">Terkirim</span></div>
+          </li>
+        `;
+      });
+    }
+    html += `</ul></div></div></div></div>`;
+    html += `
+      <div class="mt-4 p-3 bg-light rounded-3">
+        <h6 class="fw-bold"><i class="bi bi-lightbulb"></i> Menu Lain yang Relevan</h6>
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="#" onclick="document.getElementById('generate-tab').click(); return false;" class="btn btn-sm btn-outline-primary"><i class="bi bi-gear"></i> Generate Sertifikat</a>
+          <a href="#" onclick="document.getElementById('template-tab').click(); return false;" class="btn btn-sm btn-outline-primary"><i class="bi bi-file-text"></i> Kelola Template</a>
+          <button class="btn btn-sm btn-outline-info" onclick="alert('Fitur Kirim Email akan segera hadir!')"><i class="bi bi-envelope"></i> Kirim Email</button>
+        </div>
+      </div>
+    `;
+    container.innerHTML = html;
+  }
+
+  function filterUploadList(keyword) {
+    const belumItems = document.querySelectorAll('#belumUploadList .list-group-item');
+    const sudahItems = document.querySelectorAll('#sudahUploadList .list-group-item');
+    belumItems.forEach(item => { const nama = item.dataset.nama; item.style.display = nama.includes(keyword) ? '' : 'none'; });
+    sudahItems.forEach(item => { const nama = item.dataset.nama; item.style.display = nama.includes(keyword) ? '' : 'none'; });
+  }
+
+  function setupUploadModal() {
+    const modalEl = document.getElementById('uploadManualModal');
+    const modal = new bootstrap.Modal(modalEl);
+
+    document.querySelectorAll('.btn-upload').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const id = this.dataset.id;
+        const nama = this.dataset.nama;
+        document.getElementById('uploadPesertaId').value = id;
+        document.getElementById('uploadPesertaNama').value = nama;
+        document.getElementById('uploadNomorSertifikat').value = '';
+        document.getElementById('uploadPdfFile').value = '';
+        modal.show();
+      });
+    });
+
+    document.getElementById('submitUploadBtn').onclick = async function() {
+      const pesertaId = document.getElementById('uploadPesertaId').value;
+      const nomor = document.getElementById('uploadNomorSertifikat').value.trim();
+      const fileInput = document.getElementById('uploadPdfFile');
+      if (!nomor || !fileInput.files[0]) { alert('Nomor sertifikat dan file PDF harus diisi'); return; }
+      if (fileInput.files[0].size > 5 * 1024 * 1024) { alert('Ukuran file maksimal 5MB'); return; }
+
+      const base64 = await fileToBase64(fileInput.files[0]);
+
+      const btn = this;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Mengupload...';
+      btn.disabled = true;
+
+      try {
+        const res = await callAppsScript({
+          action: 'uploadManualCertificate',
+          pesertaId: pesertaId,
+          nomorSertifikat: nomor,
+          fileData: base64
+        }, 'POST');
+
+        if (res.success) {
+          showToast('Sertifikat berhasil diupload', 'success');
+          modal.hide();
+          loadUploadManualUI();
+        } else {
+          showToast('Gagal: ' + res.message, 'danger');
         }
+      } catch (err) {
+        showToast('Error: ' + err.message, 'danger');
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    };
+  }
 
-        // Perbaiki fungsi perbaruiNomor yang lama dengan yang baru
-        window.perbaruiNomor = perbaruiNomor;
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
 
-        // Supaya nomor awal sudah benar (1)
-        perbaruiNomor();
+  async function loadVerifikasiUI() {
+    const container = document.getElementById('verifikasiPanel');
+    if (!container) return;
 
-        // ===== Tidak ada submit khusus, hanya form isian =====
-        // Untuk menjaga data, kita bisa tambahkan console log jika diperlukan
-        // tapi tidak diminta. Form ini langsung menampung semua nilai.
+    container.innerHTML = `
+      <h5 class="mb-3"><i class="bi bi-shield-check"></i> Verifikasi Keaslian Sertifikat</h5>
+      <div class="card">
+        <div class="card-body">
+          <div class="mb-3">
+            <label for="nomorSertifikatVerifikasi" class="form-label">Masukkan Nomor Sertifikat</label>
+            <div class="input-group">
+              <input type="text" class="form-control" id="nomorSertifikatVerifikasi" placeholder="Contoh: 001/PC-XI/SR-01.PKD/I/2026">
+              <button class="btn btn-primary" id="verifikasiBtn"><i class="bi bi-search"></i> Periksa</button>
+            </div>
+          </div>
+          <div id="verifikasiResult" class="verification-result" style="display: none;"></div>
+        </div>
+      </div>
+    `;
 
-        // Sedikit sentuhan: tampilkan nilai default dari 1.svg
-        // Semua sudah terisi.
-    })();
+    document.getElementById('verifikasiBtn').addEventListener('click', async function() {
+      const nomor = document.getElementById('nomorSertifikatVerifikasi').value.trim();
+      if (!nomor) { alert('Masukkan nomor sertifikat'); return; }
+
+      const resultDiv = document.getElementById('verifikasiResult');
+      resultDiv.style.display = 'none';
+      resultDiv.innerHTML = '';
+
+      try {
+        const res = await callAppsScript({ action: 'verifyCertificate', nomor: nomor }, 'GET');
+        if (res.success && res.data) {
+          const data = res.data;
+          resultDiv.className = 'verification-result verification-valid';
+          resultDiv.innerHTML = `
+            <h6 class="text-success"><i class="bi bi-check-circle-fill"></i> Sertifikat Valid</h6>
+            <p><strong>Nama:</strong> ${escapeHtml(data.nama)}</p>
+            <p><strong>Nomor:</strong> ${escapeHtml(data.nomor)}</p>
+            <p><strong>Tanggal Pelaksanaan:</strong> ${escapeHtml(data.tanggal_pelaksanaan || '-')}</p>
+            <p><strong>Utusan:</strong> ${escapeHtml(data.utusan || '-')}</p>
+            <p><strong>Status:</strong> <span class="badge bg-success">Pernah Ikut</span></p>
+          `;
+        } else {
+          resultDiv.className = 'verification-result verification-invalid';
+          resultDiv.innerHTML = `
+            <h6 class="text-danger"><i class="bi bi-x-circle-fill"></i> Sertifikat Tidak Ditemukan</h6>
+            <p>Nomor sertifikat <strong>${escapeHtml(nomor)}</strong> tidak terdaftar dalam sistem.</p>
+          `;
+        }
+      } catch (e) {
+        resultDiv.className = 'verification-result verification-invalid';
+        resultDiv.innerHTML = `<p class="text-danger">Error: ${escapeHtml(e.message)}</p>`;
+      }
+      resultDiv.style.display = 'block';
+    });
+  }
+
+  // =====================================================
+  //   FUNGSI UNTUK MENGINGAT TAB AKTIF
+  // =====================================================
+  function saveActiveTab(tabId) {
+    localStorage.setItem('activeSertifikatTab', tabId);
+  }
+
+  function restoreActiveTab() {
+    const activeTabId = localStorage.getItem('activeSertifikatTab');
+    if (!activeTabId) return; // default ke preview (sudah aktif)
+    const tab = document.getElementById(activeTabId);
+    if (tab) {
+      const tabInstance = new bootstrap.Tab(tab);
+      tabInstance.show();
+    }
+  }
+
+  window.onload = function() {
+    loadAuthState();
+
+    if (userRole !== 'admin') {
+      const loginModal = new bootstrap.Modal(document.getElementById('adminLoginModal'));
+      loginModal.show();
+    } else {
+      loadPreviewSertifikat();
+    }
+
+    // Event listener untuk tab (lazy load)
+    document.getElementById('generate-tab').addEventListener('shown.bs.tab', function (e) {
+      if (!this.dataset.loaded) {
+        loadGenerateSertifikatUI();
+        this.dataset.loaded = 'true';
+      }
+    });
+
+    document.getElementById('template-tab').addEventListener('shown.bs.tab', function (e) {
+      if (!this.dataset.loaded) {
+        loadTemplateManagement();
+        this.dataset.loaded = 'true';
+      }
+    });
+
+    document.getElementById('upload-tab').addEventListener('shown.bs.tab', function (e) {
+      if (!this.dataset.loaded) {
+        loadUploadManualUI();
+        this.dataset.loaded = 'true';
+      }
+    });
+
+    document.getElementById('verifikasi-tab').addEventListener('shown.bs.tab', function (e) {
+      if (!this.dataset.loaded) {
+        loadVerifikasiUI();
+        this.dataset.loaded = 'true';
+      }
+    });
+
+    // Tambahkan listener untuk menyimpan tab aktif
+    document.querySelectorAll('#sertifikatTabs .nav-link').forEach(tab => {
+      tab.addEventListener('shown.bs.tab', function() {
+        saveActiveTab(this.id);
+      });
+    });
+
+    // Restore tab aktif setelah semua listener terdaftar
+    restoreActiveTab();
+
+    document.getElementById('adminLoginSubmit').addEventListener('click', async function() {
+      const username = document.getElementById('adminUsername').value.trim();
+      const password = document.getElementById('adminPassword').value;
+      const errorDiv = document.getElementById('adminLoginError');
+      if (!username || !password) {
+        errorDiv.innerText = 'Username dan password harus diisi';
+        errorDiv.style.display = 'block';
+        return;
+      }
+      try {
+        const res = await callAppsScript({ action: 'verifyAdmin', username, password }, 'GET');
+        if (res.success) {
+          userRole = 'admin';
+          userData = { nama: username };
+          persistAuthState();
+          updateNavbarMenu();
+          bootstrap.Modal.getInstance(document.getElementById('adminLoginModal')).hide();
+          loadPreviewSertifikat();
+        } else {
+          errorDiv.innerText = res.message || 'Login gagal';
+          errorDiv.style.display = 'block';
+        }
+      } catch (err) {
+        errorDiv.innerText = 'Kesalahan: ' + err.message;
+        errorDiv.style.display = 'block';
+      }
+    });
+
+    const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
+    if (toggleSidebarBtn) {
+      toggleSidebarBtn.addEventListener('click', function() {
+        const row = document.querySelector('.row.g-4');
+        row.classList.toggle('sidebar-minimized');
+        const icon = this.querySelector('i');
+        if (icon.classList.contains('bi-arrow-left-right')) {
+          icon.classList.remove('bi-arrow-left-right');
+          icon.classList.add('bi-arrow-right-left');
+        } else {
+          icon.classList.remove('bi-arrow-right-left');
+          icon.classList.add('bi-arrow-left-right');
+        }
+      });
+    }
+
+    document.addEventListener('click', function(event) {
+      const navbar = document.getElementById('navbarMain');
+      const toggler = document.querySelector('.navbar-toggler');
+      if (!navbar || !toggler) return;
+      const isClickInside = navbar.contains(event.target) || toggler.contains(event.target);
+      if (!isClickInside && navbar.classList.contains('show')) {
+        const bsCollapse = bootstrap.Collapse.getInstance(navbar);
+        if (bsCollapse) bsCollapse.hide();
+      }
+    });
+  };
 </script>
-
-<!-- catatan: form ini tidak mengirim data ke server, hanya untuk mengisi field yang mewakili elemen SVG -->
 </body>
 </html>

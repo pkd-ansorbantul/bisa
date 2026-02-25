@@ -11,9 +11,8 @@
   <!-- Bootstrap 5 + Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <!-- Signature Pad & QR Generator (untuk halaman lain) -->
-  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+  <!-- Html5-Qrcode untuk scan QR -->
+  <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
   
   <style>
     /* ========== GAYA ASLI TETAP ========== */
@@ -264,7 +263,7 @@
       color: #1d4ed8;
     }
 
-    /* Garis bawah pada tautan navbar (untuk pengembangan) */
+    /* Garis bawah pada tautan navbar */
     .nav-link {
       position: relative;
       transition: color 0.2s;
@@ -346,6 +345,16 @@
       filter: drop-shadow(0 15px 25px rgba(37, 99, 235, 0.3));
       transform: scale(1.02);
     }
+
+    /* Badge total peserta */
+    .total-peserta-badge {
+      background: linear-gradient(135deg, #2563eb, #1e4bb3);
+      color: white;
+      padding: 0.5rem 1.5rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      box-shadow: 0 4px 10px rgba(37,99,235,0.3);
+    }
   </style>
 </head>
 <body>
@@ -365,32 +374,13 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarMain">
-      <!-- Menu navigasi utama (bisa ditambahkan jika diperlukan) -->
       <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-        <!-- Kosong, karena navigasi menggunakan grid di beranda -->
+        <!-- Menu navigasi utama (kosong) -->
       </ul>
-      <!-- Tempat untuk status user (guest/admin/member) dan tombol login/logout -->
       <div class="d-flex align-items-center gap-2 ms-auto" id="navbarUserMenu"></div>
     </div>
   </div>
 </nav>
-
-<!-- ==================== MODAL PREVIEW SKRINING (untuk halaman skrining) ==================== -->
-<div class="modal fade" id="previewSkriningModal" tabindex="-1" data-bs-backdrop="static">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content border-0 shadow-lg">
-      <div class="modal-header bg-primary text-white border-0 rounded-top-4">
-        <h5 class="modal-title"><i class="bi bi-eye-fill me-2"></i>Preview Data Skrining</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body p-4" id="previewSkriningBody"></div>
-      <div class="modal-footer border-0">
-        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal" id="previewEditBtn">✏️ Edit</button>
-        <button type="button" class="btn btn-success rounded-pill px-4" id="previewKirimBtn">📤 Kirim Skrining</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <!-- ==================== MODAL PREVIEW MATERI ==================== -->
 <div class="modal fade" id="previewMateriModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -436,116 +426,38 @@
   </div>
 </div>
 
-<!-- ==================== MODAL TAMBAH/EDIT PESERTA (hanya admin, tapi modal tetap ada) ==================== -->
-<div class="modal fade" id="pesertaModal" tabindex="-1">
-  <div class="modal-dialog modal-lg">
+<!-- ==================== MODAL VERIFIKASI SERTIFIKAT ==================== -->
+<div class="modal fade" id="verifyModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg">
       <div class="modal-header bg-primary text-white border-0 rounded-top-4">
-        <h5 class="modal-title" id="pesertaModalLabel">Tambah/Edit Peserta</h5>
+        <h5 class="modal-title"><i class="bi bi-patch-check-fill me-2"></i>Verifikasi Keaslian Sertifikat</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body p-4">
-        <input type="hidden" id="pesertaId">
+        <!-- Input manual nomor sertifikat -->
         <div class="mb-3">
-          <label class="form-label fw-bold">Foto</label>
-          <input type="file" class="form-control" id="pesertaFoto" accept="image/*">
-          <img id="pesertaFotoPreview" src="#" alt="Preview" style="max-width: 150px; display: none;" class="mt-2 rounded">
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">Nama Lengkap</label>
-          <input type="text" class="form-control" id="pesertaNamaLengkap" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">Tempat dan Tanggal Lahir</label>
-          <input type="text" class="form-control" id="pesertaTempatTglLahir">
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">Pekerjaan</label>
-          <input type="text" class="form-control" id="pesertaPekerjaan">
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">Pendidikan Terakhir</label>
-          <input type="text" class="form-control" id="pesertaPendidikan">
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">Alamat</label>
-          <textarea class="form-control" id="pesertaAlamat" rows="2"></textarea>
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">No HP</label>
-          <input type="tel" class="form-control" id="pesertaNoHP">
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">Email</label>
-          <input type="email" class="form-control" id="pesertaEmail">
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">Utusan</label>
-          <input type="text" class="form-control" id="pesertaUtusan">
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">Pengalaman Organisasi</label>
-          <textarea class="form-control" id="pesertaPengalaman" rows="3"></textarea>
-        </div>
-        <div id="pesertaModalError" class="text-danger small" style="display: none;"></div>
-      </div>
-      <div class="modal-footer border-0">
-        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
-        <button type="button" class="btn btn-primary rounded-pill px-4" id="simpanPesertaBtn">Simpan</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ==================== MODAL IMPOR CSV PESERTA ==================== -->
-<div class="modal fade" id="importPesertaModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content border-0 shadow-lg">
-      <div class="modal-header bg-primary text-white border-0 rounded-top-4">
-        <h5 class="modal-title"><i class="bi bi-file-earmark-arrow-up me-2"></i>Impor Data Peserta dari CSV</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body p-4">
-        <div class="mb-3">
-          <label class="form-label fw-bold">Pilih File CSV</label>
-          <input type="file" class="form-control" id="importCsvFile" accept=".csv" required>
-          <div class="form-text text-muted">
-            Format CSV harus memiliki header: 
-            <code>nama_lengkap, tempat_tgl_lahir, pekerjaan, pendidikan_terakhir, alamat, no_hp, email, utusan, pengalaman_organisasi</code> 
-            (kolom lain diabaikan).
+          <label class="form-label fw-semibold">Masukkan Nomor Sertifikat</label>
+          <div class="input-group">
+            <input type="text" class="form-control" id="certNumberInput" placeholder="Contoh: 001/PC-XI/SR-01.PKD/I/2026">
+            <button class="btn btn-primary" type="button" id="verifyByNumberBtn"><i class="bi bi-search"></i> Cek</button>
           </div>
         </div>
-        <div id="importCsvError" class="text-danger small" style="display: none;"></div>
-        <div id="importCsvProgress" class="progress mt-2" style="display: none;">
-          <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%">Memproses...</div>
-        </div>
-      </div>
-      <div class="modal-footer border-0">
-        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
-        <button type="button" class="btn btn-primary rounded-pill px-4" id="importCsvSubmitBtn">Upload</button>
-      </div>
-    </div>
-  </div>
-</div>
 
-<!-- ==================== MODAL QR SESI (untuk admin) ==================== -->
-<div class="modal fade" id="qrSesiModal" tabindex="-1" data-bs-backdrop="static">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow-lg">
-      <div class="modal-header bg-dark text-white border-0 rounded-top-4">
-        <h5 class="modal-title"><i class="bi bi-qr-code-scan me-2"></i>QR Code Absen Sesi</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body text-center p-4">
-        <div id="qrSesiCanvasContainer"></div>
-        <div id="qrSesiDataText" class="mt-3 small text-muted"></div>
-        <div class="alert alert-info mt-3 mb-0 rounded-4 border-0 bg-light">
-          <i class="bi bi-info-circle"></i> Scan QR ini untuk absen tanpa password.
+        <div class="text-center my-3 text-muted">— atau —</div>
+
+        <!-- Area scan QR -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Scan QR Code Sertifikat</label>
+          <div id="qr-reader" style="width: 100%; border: 2px dashed #ccc; border-radius: 16px; padding: 10px;"></div>
+          <div id="qr-reader-results" class="mt-2 small text-muted"></div>
         </div>
+
+        <!-- Hasil verifikasi -->
+        <div id="verifyResult" class="mt-4 p-3 rounded-3" style="display: none;"></div>
       </div>
       <div class="modal-footer border-0">
         <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
-        <button type="button" class="btn btn-primary rounded-pill px-4" id="downloadQRSesiBtn">💾 Download PNG</button>
       </div>
     </div>
   </div>
@@ -568,7 +480,11 @@
 <div id="contentArea">
   <!-- BERANDA SECTION -->
   <section id="berandaSection" class="container container-card">
-    <h2 class="section-title"><i class="bi bi-house-heart-fill me-2"></i>Selamat Datang di Sistem PKD</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="section-title mb-0"><i class="bi bi-house-heart-fill me-2"></i>Selamat Datang di Sistem PKD</h2>
+      <!-- Badge total peserta realtime akan ditempatkan di sini oleh JavaScript -->
+      <div id="totalPesertaBadge" class="total-peserta-badge d-none"></div>
+    </div>
     <div class="row align-items-center">
       <div class="col-lg-6">
         <p style="font-size:1.2rem; line-height:1.7;">Portal digital <strong>Pelatihan Kepemimpinan Dasar (PKD) GP Ansor Kabupaten Bantul</strong>.</p>
@@ -624,6 +540,13 @@
               <div><strong>Tentang Kami</strong><br><span class="text-muted small">Informasi seputar PKD GP Ansor Bantul.</span></div>
             </div>
           </div>
+          <!-- Verifikasi Sertifikat -->
+          <div class="col-6 col-md-4 col-lg-6 col-xl-4">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="openVerifyModal()" role="button">
+              <div class="feature-icon mb-3"><i class="bi bi-qr-code-scan"></i></div>
+              <div><strong>Verifikasi Sertifikat</strong><br><span class="text-muted small">Scan QR untuk cek keaslian sertifikat.</span></div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="col-lg-6 text-center">
@@ -643,10 +566,9 @@
     <i class="bi bi-c-circle"></i>
     <span>Hak Cipta 2026 - Tim Instruktur GP Ansor Kabupaten Bantul. Semua Hak Dilindungi</span>
   </div>
-  <!-- BADGE TOTAL KADER TELAH DIHAPUS -->
 </footer>
 
-<!-- ==================== FAQ PANEL (menggantikan AI Chatbot) ==================== -->
+<!-- ==================== FAQ PANEL ==================== -->
 <div>
   <button class="chatbot-button" id="chatbotToggleBtn" title="FAQ - Pusat Bantuan">
     <i class="bi bi-question-circle-fill"></i>
@@ -693,10 +615,11 @@
   // =====================================================
   //   KONFIGURASI & STATE
   // =====================================================
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbwzJdoG3eGJy70ZJvrAwG7mbaHZ69hUPDc9_kzBFMrc_bepO5dAVm927-vrJh9l4qLa/exec'; // GANTI DENGAN URL ANDA!
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbzCgdl1FM1Ji4PbTFS3EwMCRqUxTqvwPf_AOrWBRHKyal4MhgUCd5A3xILjqfW7PCpY/exec'; // GANTI DENGAN URL ANDA!
 
   let userRole = null;        // null, 'admin', 'member'
   let userData = {};          // { username, nama, email, nohp } untuk member, { username, nama } untuk admin
+  let realtimeEnabled = false; // status fitur realtime
 
   // =====================================================
   //   FUNGSI BANTU
@@ -705,11 +628,6 @@
     if (!unsafe) return '';
     return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
   }
-
-  window.togglePasswordVisibility = function(inputId) {
-    const input = document.getElementById(inputId);
-    input.type = input.type === 'password' ? 'text' : 'password';
-  };
 
   // =====================================================
   //   PANGGILAN APPS SCRIPT (dengan fallback JSONP)
@@ -844,7 +762,7 @@
         <span class="badge bg-light text-dark px-3 py-2 rounded-pill me-2">
           <i class="bi bi-person-circle me-1"></i>Guest
         </span>
-        <a href="login.html" class="btn btn-outline-primary rounded-pill px-4" id="loginBtn">
+        <a href="login.html" class="btn btn-outline-primary rounded-pill px-4">
           <i class="bi bi-shield-lock me-1"></i>Login
         </a>
       `;
@@ -898,7 +816,37 @@
   }
 
   // =====================================================
-  //   FAQ PANEL (menggantikan chatbot)
+  //   FUNGSI TOTAL PESERTA REALTIME
+  // =====================================================
+  async function updateTotalPeserta() {
+    if (!realtimeEnabled) return;
+    try {
+      const res = await callAppsScript({ action: 'getTotalPeserta' }, 'GET');
+      if (res.success) {
+        const badge = document.getElementById('totalPesertaBadge');
+        badge.classList.remove('d-none');
+        badge.innerHTML = `<i class="bi bi-people-fill me-1"></i> Total Kader: ${res.total}`;
+      }
+    } catch (e) {
+      console.warn('Gagal mengambil total peserta:', e);
+    }
+  }
+
+  async function loadRealtimeSetting() {
+    try {
+      const res = await callAppsScript({ action: 'getRealtimeSetting' }, 'GET');
+      realtimeEnabled = res.success && res.enabled;
+      if (realtimeEnabled) {
+        updateTotalPeserta();
+        setInterval(updateTotalPeserta, 30000); // update setiap 30 detik
+      }
+    } catch (e) {
+      console.warn('Gagal memuat pengaturan realtime:', e);
+    }
+  }
+
+  // =====================================================
+  //   FAQ PANEL
   // =====================================================
   (function() {
     const toggleBtn = document.getElementById('chatbotToggleBtn');
@@ -924,11 +872,93 @@
   })();
 
   // =====================================================
+  //   VERIFIKASI SERTIFIKAT
+  // =====================================================
+  let html5QrcodeScanner = null;
+
+  function openVerifyModal() {
+    const modal = new bootstrap.Modal(document.getElementById('verifyModal'));
+    modal.show();
+    // Inisialisasi QR scanner saat modal dibuka (beri sedikit delay agar DOM siap)
+    setTimeout(initQrScanner, 500);
+  }
+
+  function initQrScanner() {
+    if (html5QrcodeScanner) {
+      html5QrcodeScanner.clear(); // bersihkan scanner lama
+    }
+    html5QrcodeScanner = new Html5QrcodeScanner(
+      "qr-reader",
+      { fps: 10, qrbox: { width: 250, height: 250 } },
+      /* verbose= */ false
+    );
+    html5QrcodeScanner.render(onScanSuccess, onScanError);
+  }
+
+  function onScanSuccess(decodedText, decodedResult) {
+    // decodedText diharapkan berisi nomor sertifikat
+    html5QrcodeScanner.clear();
+    verifyCertificate(decodedText);
+  }
+
+  function onScanError(errorMessage) {
+    // biarkan saja, biasanya error karena tidak ada QR
+    console.log(errorMessage);
+  }
+
+  async function verifyCertificate(nomor) {
+    const resultDiv = document.getElementById('verifyResult');
+    resultDiv.style.display = 'none';
+    resultDiv.innerHTML = '';
+
+    if (!nomor) {
+      showToast('Masukkan nomor sertifikat', 'error');
+      return;
+    }
+
+    try {
+      const res = await callAppsScript({ action: 'verifyCertificate', nomor: nomor }, 'GET');
+      if (res.success && res.data) {
+        const data = res.data;
+        resultDiv.innerHTML = `
+          <div class="alert alert-success mb-0">
+            <h6 class="alert-heading fw-bold"><i class="bi bi-check-circle-fill me-2"></i>Sertifikat VALID</h6>
+            <hr>
+            <p class="mb-1"><strong>Nama:</strong> ${escapeHtml(data.nama_peserta)}</p>
+            <p class="mb-1"><strong>Nomor Sertifikat:</strong> ${escapeHtml(data.nomor_sertifikat)}</p>
+            <p class="mb-1"><strong>Lokasi PKD:</strong> ${escapeHtml(data.lokasi || 'Kabupaten Bantul')}</p>
+            <p class="mb-1"><strong>Tanggal Terbit:</strong> ${escapeHtml(data.createdAt || '-')}</p>
+            <a href="${escapeHtml(data.pdf_url)}" target="_blank" class="btn btn-sm btn-outline-success mt-2"><i class="bi bi-file-pdf"></i> Lihat Sertifikat</a>
+          </div>
+        `;
+      } else {
+        resultDiv.innerHTML = `<div class="alert alert-danger mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i>Sertifikat dengan nomor "${escapeHtml(nomor)}" tidak ditemukan.</div>`;
+      }
+      resultDiv.style.display = 'block';
+    } catch (e) {
+      showToast('Gagal memverifikasi: ' + e.message, 'error');
+    }
+  }
+
+  // Event listener untuk tombol cek manual
+  document.getElementById('verifyByNumberBtn')?.addEventListener('click', function() {
+    const nomor = document.getElementById('certNumberInput').value.trim();
+    verifyCertificate(nomor);
+  });
+
+  // Saat modal ditutup, hentikan scanner
+  document.getElementById('verifyModal')?.addEventListener('hidden.bs.modal', function () {
+    if (html5QrcodeScanner) {
+      html5QrcodeScanner.clear();
+    }
+  });
+
+  // =====================================================
   //   INISIALISASI
   // =====================================================
   window.onload = function() {
     loadAuthState();
-    // Fitur total peserta real-time telah dihapus
+    loadRealtimeSetting();
   };
 </script>
 </body>

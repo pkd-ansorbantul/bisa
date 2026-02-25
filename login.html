@@ -73,7 +73,7 @@
     // =====================================================
     //   KONFIGURASI – GANTI DENGAN URL APPS SCRIPT ANDA!
     // =====================================================
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbwzJdoG3eGJy70ZJvrAwG7mbaHZ69hUPDc9_kzBFMrc_bepO5dAVm927-vrJh9l4qLa/exec';
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbzCgdl1FM1Ji4PbTFS3EwMCRqUxTqvwPf_AOrWBRHKyal4MhgUCd5A3xILjqfW7PCpY/exec';
 
     // Fungsi toggle visibility password
     function togglePassword() {
@@ -104,18 +104,36 @@
     }
 
     // =====================================================
-    //   HANDLER LOGIN
+    //   HANDLER LOGIN DENGAN INDIKATOR LOADING
     // =====================================================
+    const loginBtn = document.getElementById('loginBtn');
+    const originalButtonText = loginBtn.innerHTML; // simpan teks asli tombol
+
+    function setLoading(state) {
+      if (state) {
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+      } else {
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = originalButtonText;
+      }
+    }
+
     document.getElementById('loginBtn').addEventListener('click', async () => {
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value.trim();
       const errorDiv = document.getElementById('errorMsg');
 
+      // Validasi input
       if (!username || !password) {
         errorDiv.innerText = 'Username dan password harus diisi!';
         errorDiv.style.display = 'block';
         return;
       }
+
+      // Mulai loading
+      setLoading(true);
+      errorDiv.style.display = 'none';
 
       // 1. Coba login sebagai admin
       try {
@@ -132,7 +150,7 @@
           sessionStorage.setItem('pkd_auth', JSON.stringify(authState));
           localStorage.setItem('pkd_auth', JSON.stringify(authState));
           window.location.href = 'admin.html';
-          return;
+          return; // redirect, hentikan eksekusi
         }
       } catch (e) {
         // Abaikan, lanjut cek member
@@ -154,7 +172,7 @@
           sessionStorage.setItem('pkd_auth', JSON.stringify(authState));
           localStorage.setItem('pkd_auth', JSON.stringify(authState));
           window.location.href = 'member.html';
-          return;
+          return; // redirect, hentikan eksekusi
         }
       } catch (e) {
         // Abaikan
@@ -163,6 +181,7 @@
       // 3. Jika keduanya gagal
       errorDiv.innerText = 'Username atau password salah!';
       errorDiv.style.display = 'block';
+      setLoading(false); // matikan loading karena gagal
     });
 
     // =====================================================

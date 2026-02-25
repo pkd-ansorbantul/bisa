@@ -8,18 +8,20 @@
   <!-- Favicon & Font Modern -->
   <link rel="icon" type="image/png" href="LOGO ANSOR.webp">
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-  <!-- Tambahan font untuk sertifikat -->
+  <!-- Tambahan font untuk sertifikat (tetap dipertahankan karena mungkin digunakan di komponen lain) -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
   <!-- Bootstrap 5 + Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <!-- Font Awesome untuk ikon sertifikat -->
+  <!-- Font Awesome untuk ikon sertifikat (tetap) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Chart.js untuk grafik kader -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <!-- Leaflet untuk peta interaktif -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- QR Code Generator -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
   
   <style>
     /* ========== GAYA ASLI TETAP ========== */
@@ -350,7 +352,7 @@
       z-index: 1;
     }
 
-    /* ===== GAYA SERTIFIKAT (dari satu.html) ===== */
+    /* ===== GAYA SERTIFIKAT (tetap ada karena mungkin dipakai di komponen lain) ===== */
     :root {
       --primary-blue: #1e3a8a;
       --light-blue: #5b9bd5;
@@ -617,7 +619,7 @@
       display: inline-block;
       min-width: 160px;
       text-align: center;
-      margin-top: 45px;
+      margin-top: 5px;
     }
     .cert-front .signature-title {
       font-weight: 400;
@@ -646,6 +648,22 @@
       font-size: 0.9rem;
       margin-bottom: 5px;
       line-height: 1.4;
+    }
+    .cert-front .signature-placeholder {
+      height: 55px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+    .cert-front .signature-placeholder img,
+    .cert-front .signature-placeholder canvas {
+      max-width: 120px;
+      max-height: 50px;
+    }
+    .cert-front .signature-placeholder canvas {
+      width: 50px;
+      height: 50px;
     }
 
     /* ===== SERTIFIKAT BELAKANG ===== */
@@ -766,18 +784,35 @@
       font-weight: 600;
       color: #000;
     }
+    .cert-back .instruktur-signature {
+      height: 55px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 5px;
+      padding-right: 100px;
+    }
+    .cert-back .instruktur-signature img,
+    .cert-back .instruktur-signature canvas {
+      max-width: 120px;
+      max-height: 50px;
+    }
+    .cert-back .instruktur-signature canvas {
+      width: 50px;
+      height: 50px;
+    }
     .cert-back .nama-instruktur {
       text-align: right;
-      margin-top: 40px;
-      padding-right: 90px;
+      margin-top: 5px;
+      padding-right: 100px;
     }
     .cert-back .nama-instruktur strong {
       color: var(--primary-blue);
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 700;
     }
 
-    /* ===== FORM RINGKAS UNTUK PREVIEW ===== */
+    /* ===== FORM RINGKAS UNTUK PREVIEW (tidak dipakai di admin.html, tetapi gaya tetap) ===== */
     .preview-form-panel {
       background: white;
       border-radius: 10px;
@@ -785,13 +820,20 @@
       padding: 20px;
       margin-bottom: 20px;
     }
+    .preview-form-panel .accordion-button {
+      padding: 8px 12px;
+      font-size: 0.9rem;
+    }
+    .preview-form-panel .accordion-body {
+      padding: 12px;
+    }
     .preview-form-panel .form-label {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       margin-bottom: 2px;
     }
     .preview-form-panel .form-control {
-      font-size: 0.85rem;
-      padding: 0.25rem 0.5rem;
+      font-size: 0.8rem;
+      padding: 0.2rem 0.4rem;
       height: auto;
     }
 
@@ -957,7 +999,7 @@
     }
     .chart-container {
       position: relative;
-      height: 300px;   /* diperbesar dari 300px */
+      height: 300px;
       width: 100%;
       margin-top: 20px;
     }
@@ -991,6 +1033,27 @@
       max-height: 40px;
       border-radius: 4px;
       cursor: pointer;
+    }
+
+    /* ===== GAYA UNTUK GENERATE SERTIFIKAT (tetap ada karena CSS tidak mengganggu) ===== */
+    .peserta-checkbox-list {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .peserta-checkbox-item {
+      padding: 8px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .peserta-checkbox-item:last-child {
+      border-bottom: none;
+    }
+    .generate-result {
+      margin-top: 20px;
+      max-height: 300px;
+      overflow-y: auto;
     }
   </style>
 </head>
@@ -1067,8 +1130,13 @@
               <button class="nav-link" id="kader-tab" data-bs-toggle="pill" data-bs-target="#adminKader" type="button" role="tab" aria-controls="adminKader" aria-selected="false">
                 <i class="bi bi-people-fill me-2"></i><span>Kader</span>
               </button>
-              <button class="nav-link" id="sertifikat-tab" data-bs-toggle="pill" data-bs-target="#adminSertifikat" type="button" role="tab" aria-controls="adminSertifikat" aria-selected="false">
+              <!-- LINK KE SERTIFIKAT.HTML (bukan tab) -->
+              <a class="nav-link" href="sertifikat.html">
                 <i class="bi bi-patch-check me-2"></i><span>Sertifikat</span>
+              </a>
+              <!-- TAB BARU: INFORMASI -->
+              <button class="nav-link" id="info-tab" data-bs-toggle="pill" data-bs-target="#adminInfo" type="button" role="tab" aria-controls="adminInfo" aria-selected="false">
+                <i class="bi bi-info-circle me-2"></i><span>Informasi</span>
               </button>
               <hr class="my-2">
               <button class="nav-link" id="absensiData-tab" data-bs-toggle="pill" data-bs-target="#adminAbsensiData" type="button" role="tab" aria-controls="adminAbsensiData" aria-selected="false">
@@ -1144,13 +1212,16 @@
             <!-- Peserta -->
             <div class="tab-pane fade" id="adminPeserta" role="tabpanel" aria-labelledby="peserta-tab">Memuat...</div>
 
-            <!-- TAB KADER (BARU) - Tampilan interaktif dan informatif -->
+            <!-- TAB KADER -->
             <div class="tab-pane fade" id="adminKader" role="tabpanel" aria-labelledby="kader-tab">
               <!-- Konten akan diisi oleh JavaScript saat tab diaktifkan -->
             </div>
 
-            <!-- Sertifikat -->
-            <div class="tab-pane fade" id="adminSertifikat" role="tabpanel" aria-labelledby="sertifikat-tab">Memuat...</div>
+            <!-- TAB INFORMASI -->
+            <div class="tab-pane fade" id="adminInfo" role="tabpanel" aria-labelledby="info-tab">
+              <!-- Konten akan diisi oleh JavaScript -->
+            </div>
+
             <!-- Data Absensi -->
             <div class="tab-pane fade" id="adminAbsensiData" role="tabpanel" aria-labelledby="absensiData-tab">Memuat...</div>
             <!-- Rekap Absensi -->
@@ -1170,6 +1241,10 @@
                 <li class="nav-item" role="presentation">
                   <button class="nav-link" id="cert-presets-tab" data-bs-toggle="tab" data-bs-target="#certPresets" type="button" role="tab">📜 Certifikat Presets</button>
                 </li>
+                <!-- Template Sertifikat -->
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="cert-templates-tab" data-bs-toggle="tab" data-bs-target="#certTemplates" type="button" role="tab">📄 Template Sertifikat</button>
+                </li>
                 <li class="nav-item" role="presentation">
                   <button class="nav-link" id="members-tab" data-bs-toggle="tab" data-bs-target="#members" type="button" role="tab">👤 Member Users</button>
                 </li>
@@ -1182,6 +1257,8 @@
                 <div class="tab-pane fade" id="menuPasswords" role="tabpanel">Memuat...</div>
                 <div class="tab-pane fade" id="adminUsers" role="tabpanel">Memuat...</div>
                 <div class="tab-pane fade" id="certPresets" role="tabpanel">Memuat...</div>
+                <!-- Template Sertifikat panel -->
+                <div class="tab-pane fade" id="certTemplates" role="tabpanel">Memuat...</div>
                 <div class="tab-pane fade" id="members" role="tabpanel" aria-labelledby="members-tab">Memuat...</div>
                 <div class="tab-pane fade" id="realtimeSettings" role="tabpanel" aria-labelledby="realtime-tab">Memuat...</div>
               </div>
@@ -1201,7 +1278,7 @@
   </div>
 </footer>
 
-<!-- ==================== MODAL LOGIN (tetap ada untuk kompatibilitas, tapi jarang digunakan karena admin langsung login) ==================== -->
+<!-- ==================== MODAL LOGIN ==================== -->
 <div class="modal fade" id="adminLoginModal" tabindex="-1" data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg">
@@ -1273,7 +1350,7 @@
   </div>
 </div>
 
-<!-- ==================== MODAL UPLOAD MATERI (ADMIN) ==================== -->
+<!-- ==================== MODAL UPLOAD MATERI ==================== -->
 <div class="modal fade" id="uploadMateriModal" tabindex="-1" data-bs-backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content border-0 shadow-lg">
@@ -1333,7 +1410,7 @@
   </div>
 </div>
 
-<!-- ==================== MODAL DETAIL ADMIN ==================== -->
+<!-- ==================== MODAL DETAIL ==================== -->
 <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content border-0 shadow-lg">
@@ -1349,7 +1426,7 @@
   </div>
 </div>
 
-<!-- ==================== MODAL EDIT/TAMBAH PESERTA (ADMIN) ==================== -->
+<!-- ==================== MODAL PESERTA ==================== -->
 <div class="modal fade" id="pesertaModal" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content border-0 shadow-lg">
@@ -1410,7 +1487,7 @@
   </div>
 </div>
 
-<!-- ==================== MODAL IMPOR CSV PESERTA ==================== -->
+<!-- ==================== MODAL IMPOR CSV ==================== -->
 <div class="modal fade" id="importPesertaModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content border-0 shadow-lg">
@@ -1441,7 +1518,7 @@
   </div>
 </div>
 
-<!-- ==================== MODAL SKRINING QUESTION (ADMIN) ==================== -->
+<!-- ==================== MODAL SKRINING ==================== -->
 <div class="modal fade" id="skriningModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content border-0 shadow-lg">
@@ -1479,7 +1556,7 @@
   </div>
 </div>
 
-<!-- ==================== MODAL PRETEST QUESTION (ADMIN) ==================== -->
+<!-- ==================== MODAL PRETEST ==================== -->
 <div class="modal fade" id="pretestModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content border-0 shadow-lg">
@@ -1514,7 +1591,7 @@
   </div>
 </div>
 
-<!-- ==================== MODAL POSTTEST QUESTION (ADMIN) ==================== -->
+<!-- ==================== MODAL POSTTEST ==================== -->
 <div class="modal fade" id="posttestModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content border-0 shadow-lg">
@@ -1549,7 +1626,7 @@
   </div>
 </div>
 
-<!-- ==================== MODAL SESI ABSEN (ADMIN) ==================== -->
+<!-- ==================== MODAL SESI ==================== -->
 <div class="modal fade" id="sesiModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content border-0 shadow-lg">
@@ -1590,7 +1667,7 @@
   </div>
 </div>
 
-<!-- ==================== MODAL UNTUK ADMIN USERS (TAMBAH/EDIT) ==================== -->
+<!-- ==================== MODAL ADMIN USER ==================== -->
 <div class="modal fade" id="adminUserModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content border-0 shadow-lg">
@@ -1624,7 +1701,7 @@
   </div>
 </div>
 
-<!-- ==================== MODAL UNTUK MENU PASSWORD ==================== -->
+<!-- ==================== MODAL MENU PASSWORD ==================== -->
 <div class="modal fade" id="menuPasswordModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content border-0 shadow-lg">
@@ -1651,7 +1728,7 @@
   </div>
 </div>
 
-<!-- ==================== MODAL UNTUK PRESET SERTIFIKAT ==================== -->
+<!-- ==================== MODAL PRESET SERTIFIKAT ==================== -->
 <div class="modal fade" id="certPresetModal" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content border-0 shadow-lg">
@@ -1702,7 +1779,7 @@
   </div>
 </div>
 
-<!-- ==================== MODAL UNTUK MEMBER USERS (BARU) ==================== -->
+<!-- ==================== MODAL MEMBER ==================== -->
 <div class="modal fade" id="memberModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content border-0 shadow-lg">
@@ -1742,7 +1819,88 @@
   </div>
 </div>
 
-<!-- ==================== TOAST NOTIFICATION ==================== -->
+<!-- ==================== MODAL INFORMASI ==================== -->
+<div class="modal fade" id="infoModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="infoModalLabel">Tambah/Edit Informasi</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="infoId">
+        <div class="mb-3">
+          <label class="form-label">Jenis</label>
+          <select class="form-select" id="infoJenis">
+            <option value="flyer">Flyer (gambar utama)</option>
+            <option value="galeri">Galeri Foto</option>
+            <option value="video">Video (tautan YouTube)</option>
+            <option value="timeline">Timeline Acara</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Judul</label>
+          <input type="text" class="form-control" id="infoJudul">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Deskripsi</label>
+          <textarea class="form-control" id="infoDeskripsi" rows="2"></textarea>
+        </div>
+        <div class="mb-3" id="infoUrlGroup">
+          <label class="form-label">URL (untuk video)</label>
+          <input type="url" class="form-control" id="infoUrl" placeholder="https://www.youtube.com/watch?v=...">
+        </div>
+        <div class="mb-3" id="infoFileGroup">
+          <label class="form-label">File Gambar (untuk flyer/galeri)</label>
+          <input type="file" class="form-control" id="infoFile" accept="image/*">
+          <img id="infoPreview" src="#" style="max-width: 150px; display: none;" class="mt-2 rounded">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Urutan</label>
+          <input type="number" class="form-control" id="infoUrutan" value="0">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" id="simpanInfoBtn">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL TEMPLATE SERTIFIKAT ==================== -->
+<div class="modal fade" id="templateModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="templateModalLabel">Tambah/Edit Template Sertifikat</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="templateId">
+        <div class="mb-3">
+          <label class="form-label">Nama Template</label>
+          <input type="text" class="form-control" id="templateNama" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">ID Google Docs</label>
+          <input type="text" class="form-control" id="templateDocId" required>
+          <div class="form-text">Ambil dari URL dokumen: https://docs.google.com/document/d/XXXXXX/edit</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Konfigurasi (JSON) opsional</label>
+          <textarea class="form-control" id="templateConfig" rows="3">{"placeholder": "value"}</textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" id="simpanTemplateBtn">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TOAST ==================== -->
 <div class="toast-container">
   <div id="notificationToast" class="toast border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
     <div class="toast-header bg-white border-0">
@@ -1760,12 +1918,12 @@
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 
-<!-- ==================== SCRIPT UTAMA (SEMUA FUNGSI) ==================== -->
+<!-- ==================== SCRIPT UTAMA ==================== -->
 <script>
   // =====================================================
-  //   KONFIGURASI & STATE
+  //   KONFIGURASI & STATE (TETAP SAMA DENGAN ASLI)
   // =====================================================
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbwzJdoG3eGJy70ZJvrAwG7mbaHZ69hUPDc9_kzBFMrc_bepO5dAVm927-vrJh9l4qLa/exec'; // GANTI DENGAN URL DEPLOY ANDA!
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbzCgdl1FM1Ji4PbTFS3EwMCRqUxTqvwPf_AOrWBRHKyal4MhgUCd5A3xILjqfW7PCpY/exec'; // GANTI DENGAN URL DEPLOY ANDA!
   const CACHE_DURATION = 3600000; // 1 jam untuk data publik
   const ADMIN_CACHE_DURATION = 30000; // 30 detik untuk data admin
   const CACHE_KEY = 'pkd_global_cache';
@@ -1801,12 +1959,12 @@
   let isLoadingAll = false;
   let pendingAllDataPromise = null;
 
-  // State autentikasi baru (menggantikan isAdmin)
+  // State autentikasi
   let userRole = null;
   let userData = {};
 
   // =====================================================
-  //   FUNGSI ESCAPE HTML YANG AMAN
+  //   FUNGSI ESCAPE HTML
   // =====================================================
   function escapeHtml(unsafe) {
     if (unsafe == null) return '';
@@ -1875,7 +2033,6 @@
         </div>
       `;
     } else {
-      // Seharusnya tidak terjadi karena sudah redirect
       menu.innerHTML = `
         <span class="badge bg-light text-dark px-3 py-2 rounded-pill me-2">
           <i class="bi bi-person-circle me-1"></i>Guest
@@ -2061,55 +2218,6 @@
     return pendingAllDataPromise;
   }
 
-  async function fetchSkriningQuestions(forceRefresh = false) {
-    const all = await loadAllData(forceRefresh);
-    return all.skriningQuestions || [];
-  }
-
-  async function fetchPretestQuestions(forceRefresh = false) {
-    const all = await loadAllData(forceRefresh);
-    return all.pretestQuestions || [];
-  }
-
-  async function fetchPosttestQuestions(forceRefresh = false) {
-    const all = await loadAllData(forceRefresh);
-    return all.posttestQuestions || [];
-  }
-
-  async function fetchSesiAbsen(forceRefresh = false) {
-    const all = await loadAllData(forceRefresh);
-    return all.sesiAbsen || [];
-  }
-
-  async function fetchQuizSettings(forceRefresh = false) {
-    const all = await loadAllData(forceRefresh);
-    return all.quizSettings || {};
-  }
-
-  async function fetchAbsensiList(forceRefresh = false) {
-    const all = await loadAllData(forceRefresh);
-    return all.absensiList || [];
-  }
-
-  async function fetchMateriList(forceRefresh = false) {
-    const all = await loadAllData(forceRefresh);
-    return all.materiList || [];
-  }
-
-  function invalidateCache() {
-    globalCache = {
-      skriningQuestions: null,
-      pretestQuestions: null,
-      posttestQuestions: null,
-      sesiAbsen: null,
-      quizSettings: null,
-      absensiList: null,
-      materiList: null,
-      lastFetch: 0
-    };
-    localStorage.removeItem(CACHE_KEY);
-  }
-
   // =====================================================
   //   FUNGSI UNTUK ADMIN CACHE
   // =====================================================
@@ -2179,134 +2287,8 @@
     }
   }
 
-  async function refreshAdminPart(part) {
-    let data;
-    switch(part) {
-      case 'skriningQuestions':
-        data = await callAppsScript({ action: 'getSkriningQuestions' }, 'GET').then(r => r.data || []);
-        adminDataCache.skriningQuestions = data;
-        break;
-      case 'pretestQuestions':
-        data = await callAppsScript({ action: 'getPretestQuestions' }, 'GET').then(r => r.data || []);
-        adminDataCache.pretestQuestions = data;
-        break;
-      case 'posttestQuestions':
-        data = await callAppsScript({ action: 'getPosttestQuestions' }, 'GET').then(r => r.data || []);
-        adminDataCache.posttestQuestions = data;
-        break;
-      case 'sesiAbsen':
-        data = await callAppsScript({ action: 'getSesiAbsen' }, 'GET').then(r => r.data || []);
-        adminDataCache.sesiAbsen = data;
-        break;
-      case 'materiList':
-        data = await callAppsScript({ action: 'getMateriList' }, 'GET').then(r => r.data || []);
-        adminDataCache.materiList = data;
-        break;
-      case 'quizSettings':
-        data = await callAppsScript({ action: 'getQuizSettings' }, 'GET').then(r => r.data || {});
-        adminDataCache.quizSettings = data;
-        break;
-      case 'skriningResponses':
-        data = await callAppsScript({ action: 'getSkriningResponses' }, 'GET').then(r => r.success ? r.data : []);
-        adminDataCache.skriningResponses = data;
-        break;
-      case 'pretestResponses':
-        data = await callAppsScript({ action: 'getPretestResponses' }, 'GET').then(r => r.success ? r.data : []);
-        adminDataCache.pretestResponses = data;
-        break;
-      case 'posttestResponses':
-        data = await callAppsScript({ action: 'getPosttestResponses' }, 'GET').then(r => r.success ? r.data : []);
-        adminDataCache.posttestResponses = data;
-        break;
-      case 'absensiResponses':
-        data = await callAppsScript({ action: 'getAbsensiResponses' }, 'GET').then(r => r.success ? r.data : []);
-        adminDataCache.absensiResponses = data;
-        break;
-      case 'pesertaList':
-        data = await callAppsScript({ action: 'getPesertaList' }, 'GET').then(r => r.success ? r.data : []);
-        adminDataCache.pesertaList = data;
-        break;
-      case 'memberList':
-        data = await callAppsScript({ action: 'getMemberList' }, 'GET').then(r => r.success ? r.data : []);
-        adminDataCache.memberList = data;
-        break;
-      default:
-        return;
-    }
-    adminDataCache.lastFetch = Date.now();
-  }
-
   // =====================================================
-  //   TOAST
-  // =====================================================
-  function showToast(message, type = 'success') {
-    const toastEl = document.getElementById('notificationToast');
-    const toastMessage = document.getElementById('toastMessage');
-    const toastIcon = document.getElementById('toastIcon');
-    const toastTitle = document.getElementById('toastTitle');
-
-    toastMessage.innerText = message;
-
-    if (type === 'success') {
-      toastEl.classList.add('border-success');
-      toastEl.classList.remove('border-danger');
-      toastIcon.className = 'bi bi-check-circle-fill me-2 text-success';
-      toastTitle.innerText = 'Berhasil';
-      toastTitle.style.color = '#28a745';
-    } else {
-      toastEl.classList.add('border-danger');
-      toastEl.classList.remove('border-success');
-      toastIcon.className = 'bi bi-x-circle-fill me-2 text-danger';
-      toastTitle.innerText = 'Gagal';
-      toastTitle.style.color = '#dc3545';
-    }
-
-    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-    toast.show();
-  }
-
-  // =====================================================
-  //   LOGIN / LOGOUT ADMIN (untuk kompatibilitas modal)
-  // =====================================================
-  document.getElementById('adminLoginSubmit').addEventListener('click', async function() {
-    const username = document.getElementById('adminUsername').value.trim();
-    const password = document.getElementById('adminPassword').value.trim();
-    const errorDiv = document.getElementById('adminLoginError');
-
-    if (!username || !password) {
-      errorDiv.innerText = 'Username dan password harus diisi!';
-      errorDiv.style.display = 'block';
-      return;
-    }
-
-    try {
-      const res = await callAppsScript({
-        action: 'verifyAdmin',
-        username: username,
-        password: password
-      }, 'GET');
-
-      if (res.success && res.role) {
-        userRole = 'admin';
-        userData = { username, nama: username };
-        persistAuthState();
-        showToast('Login admin berhasil', 'success');
-
-        const modal = bootstrap.Modal.getInstance(document.getElementById('adminLoginModal'));
-        modal.hide();
-        window.location.reload();
-      } else {
-        errorDiv.innerText = 'Username atau password salah!';
-        errorDiv.style.display = 'block';
-      }
-    } catch (err) {
-      errorDiv.innerText = 'Kesalahan koneksi: ' + err.message;
-      errorDiv.style.display = 'block';
-    }
-  });
-
-  // =====================================================
-  //   FUNGSI ADMIN UNTUK SKRINING QUESTIONS (ke #skriningQuestions)
+  //   FUNGSI ADMIN SKRINING
   // =====================================================
   async function loadAdminSkriningQuestions() {
     const container = document.getElementById('skriningQuestions');
@@ -2413,7 +2395,7 @@
   }
 
   // =====================================================
-  //   FUNGSI ADMIN UNTUK PRETEST QUESTIONS (ke #pretestQuestions)
+  //   FUNGSI ADMIN PRETEST
   // =====================================================
   async function loadAdminPretestQuestions() {
     const container = document.getElementById('pretestQuestions');
@@ -2520,7 +2502,7 @@
   }
 
   // =====================================================
-  //   FUNGSI ADMIN UNTUK POSTTEST QUESTIONS (ke #posttestQuestions)
+  //   FUNGSI ADMIN POSTTEST
   // =====================================================
   async function loadAdminPosttestQuestions() {
     const container = document.getElementById('posttestQuestions');
@@ -2627,7 +2609,7 @@
   }
 
   // =====================================================
-  //   FUNGSI ADMIN UNTUK SESI ABSEN (DENGAN REGENERATE QR)
+  //   FUNGSI ADMIN SESI ABSEN
   // =====================================================
   async function loadAdminSesi() {
     const container = document.getElementById('adminSesi');
@@ -2750,7 +2732,6 @@
         });
       });
 
-      // Tombol Lihat Kehadiran
       document.querySelectorAll('.view-attendance').forEach(btn => {
         btn.addEventListener('click', async function() {
           const sesiId = this.dataset.id;
@@ -2881,7 +2862,7 @@
   });
 
   // =====================================================
-  //   FUNGSI ADMIN UNTUK MATERI
+  //   FUNGSI ADMIN MATERI
   // =====================================================
   async function loadAdminMateri() {
     const container = document.getElementById('adminMateri');
@@ -2945,7 +2926,6 @@
         });
       });
 
-      // Preview materi
       document.querySelectorAll('.preview-materi').forEach(btn => {
         btn.addEventListener('click', function() {
           const fileId = this.dataset.fileid;
@@ -2969,7 +2949,7 @@
   }
 
   // =====================================================
-  //   FUNGSI ADMIN UNTUK PESERTA
+  //   FUNGSI ADMIN PESERTA
   // =====================================================
   async function loadAdminPeserta() {
     const container = document.getElementById('adminPeserta');
@@ -3167,7 +3147,7 @@
   }
 
   // =====================================================
-  //   FUNGSI ADMIN UNTUK DATA SKRINING RESPONSES (ke #skriningData)
+  //   FUNGSI DATA SKRINING RESPONSES
   // =====================================================
   async function loadAdminSkriningData() {
     const container = document.getElementById('skriningData');
@@ -3288,7 +3268,7 @@
   }
 
   // =====================================================
-  //   FUNGSI ADMIN UNTUK DATA PRETEST RESPONSES (ke #pretestData)
+  //   FUNGSI DATA PRETEST RESPONSES
   // =====================================================
   async function loadAdminPretestData() {
     const container = document.getElementById('pretestData');
@@ -3362,7 +3342,7 @@
   }
 
   // =====================================================
-  //   FUNGSI ADMIN UNTUK DATA POSTTEST RESPONSES (ke #posttestData)
+  //   FUNGSI DATA POSTTEST RESPONSES
   // =====================================================
   async function loadAdminPosttestData() {
     const container = document.getElementById('posttestData');
@@ -3478,7 +3458,7 @@
   }
 
   // =====================================================
-  //   FUNGSI ADMIN UNTUK DATA ABSENSI RESPONSES
+  //   FUNGSI DATA ABSENSI RESPONSES
   // =====================================================
   async function loadAdminAbsensiData() {
     const container = document.getElementById('adminAbsensiData');
@@ -3549,7 +3529,7 @@
   }
 
   // =====================================================
-  //   FUNGSI ADMIN UNTUK REKAP ABSENSI
+  //   FUNGSI REKAP ABSENSI
   // =====================================================
   async function loadAdminRekapAbsensi() {
     const container = document.getElementById('adminRekapAbsensi');
@@ -3632,7 +3612,7 @@
   }
 
   // =====================================================
-  //   FUNGSI ADMIN UNTUK QUIZ SETTINGS (di dalam pengaturan)
+  //   FUNGSI QUIZ SETTINGS
   // =====================================================
   async function loadQuizSettings() {
     const container = document.getElementById('quizSettings');
@@ -3696,7 +3676,7 @@
   }
 
   // =====================================================
-  //   FUNGSI ADMIN UNTUK MENU PASSWORDS
+  //   FUNGSI MENU PASSWORDS
   // =====================================================
   async function loadMenuPasswords() {
     const container = document.getElementById('menuPasswords');
@@ -3739,7 +3719,7 @@
   }
 
   // =====================================================
-  //   FUNGSI ADMIN UNTUK ADMIN USERS
+  //   FUNGSI ADMIN USERS
   // =====================================================
   async function loadAdminUsers() {
     const container = document.getElementById('adminUsers');
@@ -3857,7 +3837,7 @@
   }
 
   // =====================================================
-  //   FUNGSI ADMIN UNTUK CERTIFIKAT PRESETS
+  //   FUNGSI CERTIFIKAT PRESETS
   // =====================================================
   async function loadCertPresets() {
     const container = document.getElementById('certPresets');
@@ -3977,7 +3957,7 @@
   }
 
   // =====================================================
-  //   FUNGSI ADMIN UNTUK MEMBER USERS (BARU)
+  //   FUNGSI MEMBER USERS
   // =====================================================
   async function loadAdminMembers() {
     const container = document.getElementById('members');
@@ -4045,7 +4025,7 @@
     document.getElementById('memberModalLabel').innerText = isEdit ? 'Edit Member' : 'Tambah Member';
     document.getElementById('memberId').value = isEdit ? member.username : '';
     document.getElementById('memberUsername').value = isEdit ? member.username : '';
-    document.getElementById('memberUsername').disabled = isEdit; // username tidak bisa diubah saat edit
+    document.getElementById('memberUsername').disabled = isEdit;
     document.getElementById('memberPassword').value = '';
     document.getElementById('memberNamaLengkap').value = isEdit ? (member.nama_lengkap || '') : '';
     document.getElementById('memberEmail').value = isEdit ? (member.email || '') : '';
@@ -4074,7 +4054,7 @@
       if (isEdit) {
         action = 'updateMember';
         params = { action, username, password, namaLengkap, email, nohp };
-        if (!password) delete params.password; // tidak ganti password jika kosong
+        if (!password) delete params.password;
       } else {
         action = 'addMember';
         params = { action, username, password, namaLengkap, email, nohp };
@@ -4094,7 +4074,7 @@
   }
 
   // =====================================================
-  //   FUNGSI ADMIN UNTUK PENGATURAN REALTIME (BARU)
+  //   FUNGSI REALTIME SETTINGS
   // =====================================================
   async function loadRealtimeSettings() {
     const container = document.getElementById('realtimeSettings');
@@ -4119,7 +4099,7 @@
         const newEnabled = document.getElementById('realtimeToggle').checked;
         await callAppsScript({ action: 'setRealtimeSetting', enabled: newEnabled }, 'POST');
         showToast('Pengaturan realtime disimpan', 'success');
-        loadRealtimeSettings(); // refresh
+        loadRealtimeSettings();
       });
     } catch (e) {
       container.innerHTML = `<div class="alert alert-danger">Gagal memuat: ${e.message}</div>`;
@@ -4246,474 +4226,7 @@
   });
 
   // =====================================================
-  //   FUNGSI ADMIN UNTUK SERTIFIKAT (PREVIEW)
-  // =====================================================
-  async function loadAdminSertifikat() {
-    const container = document.getElementById('adminSertifikat');
-    container.innerHTML = ''; // Kosongkan container
-    loadPreviewSertifikat();
-  }
-
-  // =====================================================
-  //   FUNGSI PREVIEW SERTIFIKAT (dengan daftar materi dinamis)
-  // =====================================================
-  function loadPreviewSertifikat() {
-    const container = document.getElementById('adminSertifikat');
-    if (!container) return;
-
-    const previewHTML = `
-      <!-- Control Bar dengan judul Preview dan tombol cetak, form tersembunyi secara default -->
-      <div class="d-flex justify-content-between align-items-center mb-3 d-print-none">
-        <h4 class="mb-0"><i class="fas fa-certificate me-2"></i>Preview Sertifikat</h4>
-        <div>
-          <button class="btn btn-sm btn-outline-secondary" id="toggleFormPreview"><i class="fas fa-plus-square"></i> Tampilkan Form</button>
-          <button class="btn btn-sm btn-outline-secondary" id="toggleDepanPreview"><i class="fas fa-file"></i> Sembunyikan Depan</button>
-          <button class="btn btn-sm btn-outline-secondary" id="toggleBelakangPreview"><i class="fas fa-file"></i> Sembunyikan Belakang</button>
-          <button class="btn btn-sm btn-primary print-btn ms-2" onclick="printCertificate()"><i class="fas fa-print"></i> Cetak</button>
-        </div>
-      </div>
-
-      <!-- FORM ISIAN - disembunyikan secara default -->
-      <div class="preview-form-panel d-print-none d-none">
-        <div class="card">
-          <div class="card-header bg-primary text-white py-2">
-            <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Form Data Sertifikat (otomatis update)</h5>
-          </div>
-          <div class="card-body">
-            <!-- Baris 1: Nomor, Nama, Kapanewon, TTL -->
-            <div class="row g-2 mb-2">
-              <div class="col-md-3">
-                <label class="form-label">Nomor Sertifikat</label>
-                <input type="text" class="form-control" id="inputNomor" value="001/PC-XI/SR-01.PKD/I/2026">
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Nama Lengkap</label>
-                <input type="text" class="form-control" id="inputNama" value="ULINNUHA">
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Kapanewon (Depan)</label>
-                <input type="text" class="form-control" id="inputKapanewon" value="Dlingo">
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Tempat, Tgl Lahir</label>
-                <input type="text" class="form-control" id="inputTtl" value="Bantul, 3 Agustus 1999">
-              </div>
-            </div>
-            <!-- Baris 2: Tanggal Pelaksanaan, Tempat, Tgl Terbit, Utusan -->
-            <div class="row g-2 mb-2">
-              <div class="col-md-3">
-                <label class="form-label">Tanggal Pelaksanaan</label>
-                <input type="text" class="form-control" id="inputTglPelaksanaan" value="14 Februari sampai 15 Februari 2026">
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Tempat Pelaksanaan</label>
-                <input type="text" class="form-control" id="inputTempat" value="MTs N 8 Bantul, D.I.Yogyakarta">
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Tanggal Penerbitan</label>
-                <input type="text" class="form-control" id="inputTglTerbit" value="Bantul, 16 Februari 2026">
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Utusan (Belakang)</label>
-                <input type="text" class="form-control" id="inputUtusan" value="PAC GP ANSOR DLINGO">
-              </div>
-            </div>
-            <!-- Baris 3: Tanda Tangan -->
-            <div class="row g-2 mb-2">
-              <div class="col-md-3">
-                <label class="form-label">Ketua PAC</label>
-                <input type="text" class="form-control" id="inputKetuaPAC" value="Andi">
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Sekretaris PAC</label>
-                <input type="text" class="form-control" id="inputSekretarisPAC" value="Dito">
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Ketua PC</label>
-                <input type="text" class="form-control" id="inputKetuaPC" value="Ahmad Sidik">
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Instruktur Umum</label>
-                <input type="text" class="form-control" id="inputInstrukturUmum" value="Cahyo Galih">
-              </div>
-            </div>
-            <!-- Baris 4: Upload Foto -->
-            <div class="row g-2 mb-3">
-              <div class="col-md-6">
-                <label class="form-label">Foto 3x4 (opsional)</label>
-                <input type="file" class="form-control" id="inputFoto" accept="image/*">
-              </div>
-              <div class="col-md-6 d-flex align-items-end">
-                <button class="btn btn-outline-secondary" onclick="resetAllPreview()"><i class="fas fa-undo"></i> Reset</button>
-              </div>
-            </div>
-
-            <!-- Daftar materi & instruktur dinamis -->
-            <div class="d-flex justify-content-between align-items-center mt-3">
-              <label class="form-label fw-bold">Daftar Materi & Instruktur (Belakang)</label>
-              <button class="btn btn-sm btn-success" id="tambahMateriBtn"><i class="fas fa-plus"></i> Tambah Materi</button>
-            </div>
-            <div id="materiListContainer" class="materi-dynamic-list mb-3">
-              <!-- Akan diisi oleh JavaScript -->
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SERTIFIKAT DEPAN -->
-      <div class="certificate-container cert-front">
-        <div class="certificate-border">
-          <div class="guilloche-border"></div>
-          <div class="inner-border"></div>
-          <div class="certificate-inner">
-            <div class="guilloche-pattern"></div>
-            <div class="corner-decoration corner-tl"></div>
-            <div class="corner-decoration corner-tr"></div>
-            <div class="corner-decoration corner-bl"></div>
-            <div class="corner-decoration corner-br"></div>
-
-            <!-- Logo -->
-            <div class="logo-container">
-              <img src="LOGO ANSOR.webp" alt="Logo GP Ansor" class="logo-image" onerror="this.src='https://via.placeholder.com/85x85?text=Logo'">
-              <div class="logo-text">PIMPINAN CABANG <br>GERAKAN PEMUDA ANSOR <br>KABUPATEN BANTUL</div>
-            </div>
-
-            <div class="top-section">
-              <h1 class="certificate-title">SERTIFIKAT</h1>
-              <div class="certificate-number">NO <span id="cert-number">001/PC-XI/SR-01.PKD/I/2026</span></div>
-            </div>
-            <div class="bismillah-container">
-              <div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
-            </div>
-            <div class="recipient-name" id="recipient-name">ULINNUHA</div>
-            <div class="statement">DINYATAKAN LULUS</div>
-            <div class="certificate-body" id="certificate-body">
-              dalam Pelatihan Kaderisasi Dasar (PKD) Pimpinan Anak Cabang Gerakan Pemuda Ansor Kapanewon 
-              <span id="kapanewon-body">Dlingo</span> yang dilaksanakan pada tanggal 
-              <strong id="tanggal-pelaksanaan">14 Februari sampai 15 Februari 2026</strong> di 
-              <strong id="tempat">MTs N 8 Bantul, D.I.Yogyakarta</strong>
-            </div>
-            <div class="date-section" id="tanggal-penerbitan">Bantul, 16 Februari 2026</div>
-            <div class="organization" id="organization">
-              Pimpinan Anak Cabang Gerakan Pemuda Ansor<br>
-              Kapanewon <span id="kapanewon-org">Dlingo</span>
-            </div>
-
-            <div class="signatures-wrapper">
-              <div class="signature-box">
-                <div class="signature-name" id="ttd-ketua-pac">Andi</div>
-                <div class="signature-title">Ketua</div>
-              </div>
-              <div class="acknowledgment-center">
-                <div class="acknowledgment-label">Mengetahui,</div>
-                <div class="acknowledgment-content">
-                  <div class="acknowledgment-org">
-                    Pimpinan Cabang Gerakan Pemuda Ansor<br>
-                    Kabupaten Bantul
-                  </div>
-                  <div class="signature-name" id="ttd-ketua-pc">Ahmad Sidik</div>
-                  <div class="signature-title">Ketua</div>
-                </div>
-              </div>
-              <div class="signature-box">
-                <div class="signature-name" id="ttd-sekretaris-pac">Dito</div>
-                <div class="signature-title">Sekretaris</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SERTIFIKAT BELAKANG -->
-      <div class="certificate-container cert-back">
-        <div class="certificate-border">
-          <div class="guilloche-border"></div>
-          <div class="inner-border"></div>
-          <div class="certificate-inner">
-            <div class="guilloche-pattern"></div>
-            <div class="corner-decoration corner-tl"></div>
-            <div class="corner-decoration corner-tr"></div>
-            <div class="corner-decoration corner-bl"></div>
-            <div class="corner-decoration corner-br"></div>
-
-            <!-- Foto + Data Peserta -->
-            <div class="center-wrapper">
-              <div class="photo-box" id="photoBox">
-                <img id="fotoPreview" src="#" alt="Foto" style="display: none;">
-                <div class="photo-placeholder" id="photoPlaceholder">
-                  <i class="fas fa-user"></i>
-                  <span style="display: block; margin-top: 3px;">3x4</span>
-                </div>
-              </div>
-              <div class="info-container">
-                <div class="recipient-name" id="namaValue">ULINNUHA</div>
-                <div class="participant-detail">
-                  <span>Tempat, Tanggal Lahir :</span> <span id="ttlValue">Bantul, 3 Agustus 1999</span><br>
-                  <span>Utusan :</span> <span id="utusanValue">PAC GP ANSOR DLINGO</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Tabel Materi & Instruktur -->
-            <div class="materi-wrapper">
-              <table class="materi-table">
-                <thead><tr><th>NO</th><th>MATERI</th><th>INSTRUKTUR</th></tr></thead>
-                <tbody id="materi-table-body">
-                  <!-- Akan diisi oleh JavaScript -->
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Instruktur Umum (bawah) -->
-            <div class="instruktur-umum">
-              Instruktur Pelatihan Kaderisasi Dasar
-              <div class="nama-instruktur"><strong id="instrukturNama">Cahyo Galih</strong></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-
-    container.innerHTML += previewHTML;
-    initDynamicCertificatePreview();
-  }
-
-  // =====================================================
-  //   FUNGSI CETAK SERTIFIKAT (PERBAIKAN)
-  // =====================================================
-  window.printCertificate = function() {
-    const depan = document.querySelector('.cert-front');
-    const belakang = document.querySelector('.cert-back');
-    const depanHidden = depan.classList.contains('d-none');
-    const belakangHidden = belakang.classList.contains('d-none');
-
-    const beforePrintHandler = function() {
-      depan.classList.remove('d-none');
-      belakang.classList.remove('d-none');
-      window.removeEventListener('beforeprint', beforePrintHandler);
-    };
-
-    const afterPrintHandler = function() {
-      if (depanHidden) depan.classList.add('d-none');
-      if (belakangHidden) belakang.classList.add('d-none');
-      window.removeEventListener('afterprint', afterPrintHandler);
-    };
-
-    window.addEventListener('beforeprint', beforePrintHandler);
-    window.addEventListener('afterprint', afterPrintHandler);
-
-    window.print();
-  };
-
-  // =====================================================
-  //   INISIALISASI PREVIEW DINAMIS
-  // =====================================================
-  function initDynamicCertificatePreview() {
-    const defaultMateri = [
-      { materi: "Orientasi Pengkaderan", instruktur: "Nanang Zuhdi Santoso" },
-      { materi: "Ahlussunnah Wal Jama’ah I", instruktur: "Lupa" },
-      { materi: "Ke-Nahdlatul Ulama-an I", instruktur: "Dr. Attobari" },
-      { materi: "Organisasi dan Kepemimpinan", instruktur: "Wahdini" },
-      { materi: "Ke-GP Ansor-an I", instruktur: "Alan" },
-      { materi: "Dalil-dalil Amaliyah dan Tradisi Keagamaan NU", instruktur: "Mustaba" },
-      { materi: "Ke-Indonesia-an dan Ke-Bangsa-an", instruktur: "Tim Banser" },
-      { materi: "Pengenalan Aturan Organisasi GP Ansor", instruktur: "Danil" },
-      { materi: "Literasi Digital", instruktur: "Ulinnuha" },
-      { materi: "Analisis Sosial", instruktur: "Sucipto" },
-      { materi: "Rencana Kerja dan Tindak Lanjut", instruktur: "Cahyo Galih dkk" },
-      { materi: "Pembaitan", instruktur: "Tim Instruktur" }
-    ];
-
-    let daftarMateri = defaultMateri.map(item => ({ ...item }));
-
-    const containerList = document.getElementById('materiListContainer');
-    const tabelBody = document.getElementById('materi-table-body');
-    const tambahBtn = document.getElementById('tambahMateriBtn');
-
-    function renderMateriList() {
-      let html = '';
-      daftarMateri.forEach((item, index) => {
-        html += `
-          <div class="materi-item" data-index="${index}">
-            <input type="text" class="form-control materi-input" placeholder="Nama Materi" value="${escapeHtml(item.materi)}">
-            <input type="text" class="form-control instruktur-input" placeholder="Instruktur" value="${escapeHtml(item.instruktur)}">
-            <button class="btn btn-sm btn-outline-danger btn-hapus" data-index="${index}"><i class="bi bi-trash"></i></button>
-          </div>
-        `;
-      });
-      containerList.innerHTML = html;
-
-      containerList.querySelectorAll('.materi-item').forEach(div => {
-        const index = div.dataset.index;
-        const materiInput = div.querySelector('.materi-input');
-        const instrukturInput = div.querySelector('.instruktur-input');
-        const hapusBtn = div.querySelector('.btn-hapus');
-
-        materiInput.addEventListener('input', () => {
-          daftarMateri[index].materi = materiInput.value;
-          renderTabelBelakang();
-        });
-        instrukturInput.addEventListener('input', () => {
-          daftarMateri[index].instruktur = instrukturInput.value;
-          renderTabelBelakang();
-        });
-        hapusBtn.addEventListener('click', () => {
-          daftarMateri.splice(index, 1);
-          renderMateriList();
-          renderTabelBelakang();
-        });
-      });
-    }
-
-    function renderTabelBelakang() {
-      let rows = '';
-      daftarMateri.forEach((item, idx) => {
-        rows += `<tr>
-          <td>${idx + 1}</td>
-          <td>${escapeHtml(item.materi)}</td>
-          <td>${escapeHtml(item.instruktur)}</td>
-        </tr>`;
-      });
-      tabelBody.innerHTML = rows;
-    }
-
-    tambahBtn.addEventListener('click', () => {
-      daftarMateri.push({ materi: 'Materi Baru', instruktur: '' });
-      renderMateriList();
-      renderTabelBelakang();
-    });
-
-    renderMateriList();
-    renderTabelBelakang();
-
-    const inputNomor = document.getElementById('inputNomor');
-    const inputNama = document.getElementById('inputNama');
-    const inputKapanewon = document.getElementById('inputKapanewon');
-    const inputTglPelaksanaan = document.getElementById('inputTglPelaksanaan');
-    const inputTempat = document.getElementById('inputTempat');
-    const inputTglTerbit = document.getElementById('inputTglTerbit');
-    const inputKetuaPAC = document.getElementById('inputKetuaPAC');
-    const inputSekretarisPAC = document.getElementById('inputSekretarisPAC');
-    const inputKetuaPC = document.getElementById('inputKetuaPC');
-    const inputTtl = document.getElementById('inputTtl');
-    const inputUtusan = document.getElementById('inputUtusan');
-    const inputInstrukturUmum = document.getElementById('inputInstrukturUmum');
-    const inputFoto = document.getElementById('inputFoto');
-
-    const certNumber = document.getElementById('cert-number');
-    const recipientNameFront = document.getElementById('recipient-name');
-    const kapanewonBody = document.getElementById('kapanewon-body');
-    const tanggalPelaksanaan = document.getElementById('tanggal-pelaksanaan');
-    const tempat = document.getElementById('tempat');
-    const tanggalPenerbitan = document.getElementById('tanggal-penerbitan');
-    const ttdKetuaPAC = document.getElementById('ttd-ketua-pac');
-    const ttdSekretarisPAC = document.getElementById('ttd-sekretaris-pac');
-    const ttdKetuaPC = document.getElementById('ttd-ketua-pc');
-    const kapanewonOrg = document.getElementById('kapanewon-org');
-    const namaValue = document.getElementById('namaValue');
-    const ttlValue = document.getElementById('ttlValue');
-    const utusanValue = document.getElementById('utusanValue');
-    const instrukturNama = document.getElementById('instrukturNama');
-    const fotoPreview = document.getElementById('fotoPreview');
-    const fotoPlaceholder = document.getElementById('photoPlaceholder');
-
-    function updateAll() {
-      certNumber.textContent = inputNomor.value.trim() || '001/PC-XI/SR-01.PKD/I/2026';
-      recipientNameFront.textContent = inputNama.value.trim() || 'ULINNUHA';
-      kapanewonBody.textContent = inputKapanewon.value.trim() || 'Dlingo';
-      kapanewonOrg.textContent = inputKapanewon.value.trim() || 'Dlingo';
-      tanggalPelaksanaan.textContent = inputTglPelaksanaan.value.trim() || '14 Februari sampai 15 Februari 2026';
-      tempat.textContent = inputTempat.value.trim() || 'MTs N 8 Bantul, D.I.Yogyakarta';
-      tanggalPenerbitan.textContent = inputTglTerbit.value.trim() || 'Bantul, 16 Februari 2026';
-      ttdKetuaPAC.textContent = inputKetuaPAC.value.trim() || 'Andi';
-      ttdSekretarisPAC.textContent = inputSekretarisPAC.value.trim() || 'Dito';
-      ttdKetuaPC.textContent = inputKetuaPC.value.trim() || 'Ahmad Sidik';
-      namaValue.textContent = inputNama.value.trim() || 'ULINNUHA';
-      ttlValue.textContent = inputTtl.value.trim() || 'Bantul, 3 Agustus 1999';
-      utusanValue.textContent = inputUtusan.value.trim() || 'PAC GP ANSOR DLINGO';
-      instrukturNama.textContent = inputInstrukturUmum.value.trim() || 'Cahyo Galih';
-    }
-
-    const textInputs = document.querySelectorAll('#adminSertifikat input[type="text"]:not(.materi-input):not(.instruktur-input)');
-    textInputs.forEach(input => {
-      input.addEventListener('input', updateAll);
-    });
-
-    inputFoto.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(ev) {
-          fotoPreview.src = ev.target.result;
-          fotoPreview.style.display = 'block';
-          fotoPlaceholder.style.display = 'none';
-        };
-        reader.readAsDataURL(file);
-      } else {
-        fotoPreview.src = '#';
-        fotoPreview.style.display = 'none';
-        fotoPlaceholder.style.display = 'flex';
-      }
-    });
-
-    window.resetAllPreview = function() {
-      inputNomor.value = '001/PC-XI/SR-01.PKD/I/2026';
-      inputNama.value = 'ULINNUHA';
-      inputKapanewon.value = 'Dlingo';
-      inputTglPelaksanaan.value = '14 Februari sampai 15 Februari 2026';
-      inputTempat.value = 'MTs N 8 Bantul, D.I.Yogyakarta';
-      inputTglTerbit.value = 'Bantul, 16 Februari 2026';
-      inputKetuaPAC.value = 'Andi';
-      inputSekretarisPAC.value = 'Dito';
-      inputKetuaPC.value = 'Ahmad Sidik';
-      inputTtl.value = 'Bantul, 3 Agustus 1999';
-      inputUtusan.value = 'PAC GP ANSOR DLINGO';
-      inputInstrukturUmum.value = 'Cahyo Galih';
-
-      daftarMateri = defaultMateri.map(item => ({ ...item }));
-      renderMateriList();
-      renderTabelBelakang();
-
-      inputFoto.value = '';
-      fotoPreview.src = '#';
-      fotoPreview.style.display = 'none';
-      fotoPlaceholder.style.display = 'flex';
-
-      updateAll();
-    };
-
-    updateAll();
-
-    const toggleFormBtn = document.getElementById('toggleFormPreview');
-    toggleFormBtn.addEventListener('click', function() {
-      const form = document.querySelector('.preview-form-panel');
-      form.classList.toggle('d-none');
-      if (form.classList.contains('d-none')) {
-        this.innerHTML = '<i class="fas fa-plus-square"></i> Tampilkan Form';
-      } else {
-        this.innerHTML = '<i class="fas fa-minus-square"></i> Sembunyikan Form';
-      }
-    });
-
-    document.getElementById('toggleDepanPreview').addEventListener('click', function() {
-      const depan = document.querySelector('.cert-front');
-      depan.classList.toggle('d-none');
-      this.innerHTML = depan.classList.contains('d-none') ? 
-        '<i class="fas fa-file"></i> Tampilkan Depan' : 
-        '<i class="fas fa-file"></i> Sembunyikan Depan';
-    });
-
-    document.getElementById('toggleBelakangPreview').addEventListener('click', function() {
-      const belakang = document.querySelector('.cert-back');
-      belakang.classList.toggle('d-none');
-      this.innerHTML = belakang.classList.contains('d-none') ? 
-        '<i class="fas fa-file"></i> Tampilkan Belakang' : 
-        '<i class="fas fa-file"></i> Sembunyikan Belakang';
-    });
-  }
-
-  // =====================================================
-  //   FUNGSI BARU UNTUK STATISTIK KADER (SANGAT INTERAKTIF DAN INFORMATIF)
+  //   FUNGSI STATISTIK KADER
   // =====================================================
   async function loadKaderStatistics() {
     const container = document.getElementById('adminKader');
@@ -5040,24 +4553,382 @@
   };
 
   // =====================================================
-  //   SIMPAN STATE TAB AKTIF (AGAR TIDAK RESET KE SKRINING)
+  //   FUNGSI ADMIN INFORMASI
   // =====================================================
-  function saveActiveTabState() {
-    const activeMain = document.querySelector('#adminTabs .nav-link.active');
-    if (!activeMain) return;
-    const mainId = activeMain.id;
-    const activePane = document.querySelector('.tab-pane.show.active');
-    let innerId = '';
-    if (activePane) {
-      const innerNav = activePane.querySelector('.nav-tabs .nav-link.active');
-      if (innerNav) {
-        innerId = innerNav.id;
-      }
+  async function loadAdminInfo() {
+    const container = document.getElementById('adminInfo');
+    container.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>`;
+
+    try {
+      const res = await callAppsScript({ action: 'getInfoList' }, 'GET');
+      const infoList = res.data || [];
+
+      let html = `
+        <div class="d-flex justify-content-between mb-3">
+          <h5>📋 Manajemen Informasi Publik</h5>
+          <button class="btn btn-success btn-sm" id="addInfoBtn">➕ Tambah</button>
+        </div>
+        <div class="mb-3">
+          <select class="form-select" id="filterInfoJenis" style="max-width: 300px;">
+            <option value="">Semua Jenis</option>
+            <option value="flyer">Flyer</option>
+            <option value="galeri">Galeri</option>
+            <option value="video">Video</option>
+            <option value="timeline">Timeline</option>
+          </select>
+        </div>
+        <div class="table-responsive" style="max-height:500px;">
+          <table class="table table-bordered table-sm table-striped">
+            <thead><tr><th>ID</th><th>Jenis</th><th>Judul</th><th>Deskripsi</th><th>Konten</th><th>Urutan</th><th>Tanggal</th><th>Aksi</th></tr></thead>
+            <tbody id="infoTableBody">
+      `;
+
+      infoList.sort((a,b) => (a.urutan || a.id) - (b.urutan || b.id)).forEach(item => {
+        let konten = '';
+        if (item.jenis === 'flyer' || item.jenis === 'galeri') {
+          if (item.url) konten = `<img src="https://drive.google.com/thumbnail?id=${item.url}&sz=w100" style="max-width:80px;">`;
+          else konten = '-';
+        } else if (item.jenis === 'video') {
+          konten = item.url ? `<a href="${item.url}" target="_blank">Link</a>` : '-';
+        } else {
+          konten = '-';
+        }
+        html += `<tr data-jenis="${item.jenis}">
+          <td>${item.id}</td>
+          <td>${item.jenis}</td>
+          <td>${escapeHtml(item.judul || '')}</td>
+          <td>${escapeHtml(item.deskripsi || '')}</td>
+          <td>${konten}</td>
+          <td>${item.urutan || ''}</td>
+          <td>${item.createdAt ? new Date(item.createdAt).toLocaleDateString() : ''}</td>
+          <td>
+            <button class="btn btn-sm btn-warning edit-info" data-id="${item.id}">✏️</button>
+            <button class="btn btn-sm btn-danger delete-info" data-id="${item.id}">🗑️</button>
+          </td>
+        </tr>`;
+      });
+
+      html += `</tbody></table></div>`;
+      container.innerHTML = html;
+
+      document.getElementById('filterInfoJenis').addEventListener('change', function(e) {
+        const val = e.target.value;
+        document.querySelectorAll('#infoTableBody tr').forEach(row => {
+          row.style.display = (!val || row.dataset.jenis === val) ? '' : 'none';
+        });
+      });
+
+      document.getElementById('addInfoBtn').addEventListener('click', () => showInfoModal());
+
+      document.querySelectorAll('.edit-info').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const id = this.dataset.id;
+          const item = infoList.find(i => i.id == id);
+          showInfoModal(item);
+        });
+      });
+
+      document.querySelectorAll('.delete-info').forEach(btn => {
+        btn.addEventListener('click', async function() {
+          if (!confirm('Hapus item ini?')) return;
+          const id = this.dataset.id;
+          await callAppsScript({ action: 'deleteInfo', id }, 'POST');
+          showToast('Item dihapus', 'success');
+          loadAdminInfo();
+        });
+      });
+
+    } catch (e) {
+      container.innerHTML = `<div class="alert alert-danger">Gagal memuat: ${escapeHtml(e.message)}</div>`;
     }
-    sessionStorage.setItem('admin_active_tab', mainId + '|' + innerId);
   }
 
-  document.addEventListener('shown.bs.tab', saveActiveTabState);
+  function showInfoModal(item = null) {
+    const isEdit = !!item;
+    document.getElementById('infoModalLabel').innerText = isEdit ? 'Edit Informasi' : 'Tambah Informasi';
+    document.getElementById('infoId').value = isEdit ? item.id : '';
+    document.getElementById('infoJenis').value = isEdit ? item.jenis : 'flyer';
+    document.getElementById('infoJudul').value = isEdit ? (item.judul || '') : '';
+    document.getElementById('infoDeskripsi').value = isEdit ? (item.deskripsi || '') : '';
+    document.getElementById('infoUrl').value = isEdit ? (item.url || '') : '';
+    document.getElementById('infoUrutan').value = isEdit ? (item.urutan || '') : '0';
+    
+    const preview = document.getElementById('infoPreview');
+    if (isEdit && (item.jenis === 'flyer' || item.jenis === 'galeri') && item.url) {
+      preview.src = `https://drive.google.com/thumbnail?id=${item.url}&sz=w150`;
+      preview.style.display = 'block';
+    } else {
+      preview.style.display = 'none';
+      preview.src = '#';
+    }
+    document.getElementById('infoFile').value = '';
+
+    toggleInfoFields();
+
+    const modal = new bootstrap.Modal(document.getElementById('infoModal'));
+    modal.show();
+
+    document.getElementById('simpanInfoBtn').onclick = async function() {
+      const id = document.getElementById('infoId').value;
+      const jenis = document.getElementById('infoJenis').value;
+      const judul = document.getElementById('infoJudul').value;
+      const deskripsi = document.getElementById('infoDeskripsi').value;
+      const url = document.getElementById('infoUrl').value;
+      const urutan = document.getElementById('infoUrutan').value;
+      const fileInput = document.getElementById('infoFile');
+      let fileData = null, fileName = null;
+
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        fileName = file.name;
+        fileData = await readFileAsBase64(file);
+      }
+
+      const params = {
+        action: isEdit ? 'updateInfo' : 'addInfo',
+        id: id || undefined,
+        jenis, judul, deskripsi, url, urutan,
+        fileData, fileName
+      };
+
+      try {
+        await callAppsScript(params, 'POST');
+        showToast(isEdit ? 'Diperbarui' : 'Ditambahkan', 'success');
+        modal.hide();
+        loadAdminInfo();
+      } catch (err) {
+        showToast('Gagal: ' + err.message, 'danger');
+      }
+    };
+  }
+
+  function toggleInfoFields() {
+    const jenis = document.getElementById('infoJenis').value;
+    const urlGroup = document.getElementById('infoUrlGroup');
+    const fileGroup = document.getElementById('infoFileGroup');
+    if (jenis === 'video') {
+      urlGroup.style.display = 'block';
+      fileGroup.style.display = 'none';
+    } else {
+      urlGroup.style.display = 'none';
+      fileGroup.style.display = 'block';
+    }
+  }
+
+  document.getElementById('infoJenis')?.addEventListener('change', toggleInfoFields);
+
+  // =====================================================
+  //   FUNGSI TEMPLATE SERTIFIKAT
+  // =====================================================
+  async function loadCertTemplates() {
+    const container = document.getElementById('certTemplates');
+    if (!container) return;
+    container.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>`;
+
+    try {
+      const res = await callAppsScript({ action: 'getCertificateTemplates' }, 'GET');
+      const templates = res.data || [];
+
+      let html = `
+        <div class="d-flex justify-content-between mb-3">
+          <h5>📄 Daftar Template Sertifikat</h5>
+          <button class="btn btn-success btn-sm" id="addTemplateBtn">➕ Tambah Template</button>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm">
+            <thead><tr><th>ID</th><th>Nama Template</th><th>ID Google Docs</th><th>Konfigurasi</th><th>Dibuat</th><th>Aksi</th></tr></thead>
+            <tbody>
+      `;
+
+      templates.forEach(t => {
+        html += `<tr>
+          <td>${t.id}</td>
+          <td>${escapeHtml(t.nama_template)}</td>
+          <td><a href="https://docs.google.com/document/d/${t.doc_template_id}/edit" target="_blank">${t.doc_template_id}</a></td>
+          <td><pre class="small">${escapeHtml(JSON.stringify(t.config, null, 2))}</pre></td>
+          <td>${new Date(t.createdAt).toLocaleDateString()}</td>
+          <td>
+            <button class="btn btn-sm btn-warning edit-template" data-id="${t.id}">✏️</button>
+            <button class="btn btn-sm btn-danger delete-template" data-id="${t.id}">🗑️</button>
+          </td>
+        </tr>`;
+      });
+
+      html += `</tbody></table></div>`;
+      container.innerHTML = html;
+
+      document.getElementById('addTemplateBtn').addEventListener('click', () => showTemplateModal());
+
+      document.querySelectorAll('.edit-template').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const id = this.dataset.id;
+          const template = templates.find(t => t.id == id);
+          showTemplateModal(template);
+        });
+      });
+
+      document.querySelectorAll('.delete-template').forEach(btn => {
+        btn.addEventListener('click', async function() {
+          if (!confirm('Hapus template ini?')) return;
+          const id = this.dataset.id;
+          try {
+            await callAppsScript({ action: 'deleteCertificateTemplate', id }, 'POST');
+            showToast('Template dihapus', 'success');
+            loadCertTemplates();
+          } catch (e) {
+            showToast('Gagal: ' + e.message, 'danger');
+          }
+        });
+      });
+
+    } catch (e) {
+      container.innerHTML = `<div class="alert alert-danger">Gagal memuat: ${escapeHtml(e.message)}</div>`;
+    }
+  }
+
+  function showTemplateModal(template = null) {
+    const isEdit = !!template;
+    document.getElementById('templateModalLabel').innerText = isEdit ? 'Edit Template' : 'Tambah Template';
+    document.getElementById('templateId').value = isEdit ? template.id : '';
+    document.getElementById('templateNama').value = isEdit ? template.nama_template : '';
+    document.getElementById('templateDocId').value = isEdit ? template.doc_template_id : '';
+    document.getElementById('templateConfig').value = isEdit ? JSON.stringify(template.config, null, 2) : '{"placeholder": "value"}';
+
+    const modal = new bootstrap.Modal(document.getElementById('templateModal'));
+    modal.show();
+
+    document.getElementById('simpanTemplateBtn').onclick = async function() {
+      const id = document.getElementById('templateId').value;
+      const nama = document.getElementById('templateNama').value.trim();
+      const docId = document.getElementById('templateDocId').value.trim();
+      let config = {};
+      try {
+        config = JSON.parse(document.getElementById('templateConfig').value);
+      } catch (e) {
+        alert('Konfigurasi harus berupa JSON valid');
+        return;
+      }
+      if (!nama || !docId) {
+        alert('Nama dan ID Google Docs wajib diisi');
+        return;
+      }
+
+      const params = {
+        nama_template: nama,
+        doc_template_id: docId,
+        config: JSON.stringify(config)
+      };
+      if (isEdit) {
+        params.action = 'updateCertificateTemplate';
+        params.id = id;
+      } else {
+        params.action = 'addCertificateTemplateManual';
+      }
+
+      try {
+        await callAppsScript(params, 'POST');
+        showToast(isEdit ? 'Template diperbarui' : 'Template ditambahkan', 'success');
+        modal.hide();
+        loadCertTemplates();
+      } catch (err) {
+        alert('Gagal: ' + err.message);
+      }
+    };
+  }
+
+  // =====================================================
+  //   TOAST
+  // =====================================================
+  function showToast(message, type = 'success') {
+    const toastEl = document.getElementById('notificationToast');
+    const toastMessage = document.getElementById('toastMessage');
+    const toastIcon = document.getElementById('toastIcon');
+    const toastTitle = document.getElementById('toastTitle');
+
+    toastMessage.innerText = message;
+
+    if (type === 'success') {
+      toastEl.classList.add('border-success');
+      toastEl.classList.remove('border-danger');
+      toastIcon.className = 'bi bi-check-circle-fill me-2 text-success';
+      toastTitle.innerText = 'Berhasil';
+      toastTitle.style.color = '#28a745';
+    } else {
+      toastEl.classList.add('border-danger');
+      toastEl.classList.remove('border-success');
+      toastIcon.className = 'bi bi-x-circle-fill me-2 text-danger';
+      toastTitle.innerText = 'Gagal';
+      toastTitle.style.color = '#dc3545';
+    }
+
+    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+    toast.show();
+  }
+
+  // =====================================================
+  //   FUNGSI REFRESH ADMIN PART
+  // =====================================================
+  async function refreshAdminPart(part) {
+    let data;
+    switch(part) {
+      case 'skriningQuestions':
+        data = await callAppsScript({ action: 'getSkriningQuestions' }, 'GET').then(r => r.data || []);
+        adminDataCache.skriningQuestions = data;
+        break;
+      case 'pretestQuestions':
+        data = await callAppsScript({ action: 'getPretestQuestions' }, 'GET').then(r => r.data || []);
+        adminDataCache.pretestQuestions = data;
+        break;
+      case 'posttestQuestions':
+        data = await callAppsScript({ action: 'getPosttestQuestions' }, 'GET').then(r => r.data || []);
+        adminDataCache.posttestQuestions = data;
+        break;
+      case 'sesiAbsen':
+        data = await callAppsScript({ action: 'getSesiAbsen' }, 'GET').then(r => r.data || []);
+        adminDataCache.sesiAbsen = data;
+        break;
+      case 'materiList':
+        data = await callAppsScript({ action: 'getMateriList' }, 'GET').then(r => r.data || []);
+        adminDataCache.materiList = data;
+        break;
+      case 'quizSettings':
+        data = await callAppsScript({ action: 'getQuizSettings' }, 'GET').then(r => r.data || {});
+        adminDataCache.quizSettings = data;
+        break;
+      case 'skriningResponses':
+        data = await callAppsScript({ action: 'getSkriningResponses' }, 'GET').then(r => r.success ? r.data : []);
+        adminDataCache.skriningResponses = data;
+        break;
+      case 'pretestResponses':
+        data = await callAppsScript({ action: 'getPretestResponses' }, 'GET').then(r => r.success ? r.data : []);
+        adminDataCache.pretestResponses = data;
+        break;
+      case 'posttestResponses':
+        data = await callAppsScript({ action: 'getPosttestResponses' }, 'GET').then(r => r.success ? r.data : []);
+        adminDataCache.posttestResponses = data;
+        break;
+      case 'absensiResponses':
+        data = await callAppsScript({ action: 'getAbsensiResponses' }, 'GET').then(r => r.success ? r.data : []);
+        adminDataCache.absensiResponses = data;
+        break;
+      case 'pesertaList':
+        data = await callAppsScript({ action: 'getPesertaList' }, 'GET').then(r => r.success ? r.data : []);
+        adminDataCache.pesertaList = data;
+        break;
+      case 'memberList':
+        data = await callAppsScript({ action: 'getMemberList' }, 'GET').then(r => r.success ? r.data : []);
+        adminDataCache.memberList = data;
+        break;
+      default:
+        return;
+    }
+    adminDataCache.lastFetch = Date.now();
+  }
+
+  function invalidateCache() {
+    globalCache = { ...globalCache, lastFetch: 0 };
+    localStorage.removeItem(CACHE_KEY);
+  }
 
   // =====================================================
   //   INISIALISASI
@@ -5069,17 +4940,34 @@
       loadAllData().catch(console.warn);
       loadAdminData().catch(console.warn);
 
-      loadAdminSkriningQuestions();
-
+      // Event listener untuk tab-tab
+      document.getElementById('skrining-questions-tab').addEventListener('shown.bs.tab', function (e) {
+        if (!this.dataset.loaded) {
+          loadAdminSkriningQuestions();
+          this.dataset.loaded = 'true';
+        }
+      });
       document.getElementById('skrining-data-tab').addEventListener('shown.bs.tab', function (e) {
         if (!this.dataset.loaded) {
           loadAdminSkriningData();
           this.dataset.loaded = 'true';
         }
       });
+      document.getElementById('pretest-questions-tab').addEventListener('shown.bs.tab', function (e) {
+        if (!this.dataset.loaded) {
+          loadAdminPretestQuestions();
+          this.dataset.loaded = 'true';
+        }
+      });
       document.getElementById('pretest-data-tab').addEventListener('shown.bs.tab', function (e) {
         if (!this.dataset.loaded) {
           loadAdminPretestData();
+          this.dataset.loaded = 'true';
+        }
+      });
+      document.getElementById('posttest-questions-tab').addEventListener('shown.bs.tab', function (e) {
+        if (!this.dataset.loaded) {
+          loadAdminPosttestQuestions();
           this.dataset.loaded = 'true';
         }
       });
@@ -5091,13 +4979,20 @@
       });
 
       const tabHandlers = [
-        { id: 'pretest-questions-tab', handler: loadAdminPretestQuestions },
-        { id: 'posttest-questions-tab', handler: loadAdminPosttestQuestions },
         { id: 'sesi-tab', handler: loadAdminSesi },
         { id: 'materi-tab', handler: loadAdminMateri },
         { id: 'peserta-tab', handler: loadAdminPeserta },
         { id: 'absensiData-tab', handler: loadAdminAbsensiData },
-        { id: 'rekapAbsensi-tab', handler: loadAdminRekapAbsensi }
+        { id: 'rekapAbsensi-tab', handler: loadAdminRekapAbsensi },
+        { id: 'kader-tab', handler: loadKaderStatistics },
+        { id: 'info-tab', handler: loadAdminInfo },
+        { id: 'quiz-settings-tab', handler: loadQuizSettings },
+        { id: 'menu-passwords-tab', handler: loadMenuPasswords },
+        { id: 'admin-users-tab', handler: loadAdminUsers },
+        { id: 'cert-presets-tab', handler: loadCertPresets },
+        { id: 'cert-templates-tab', handler: loadCertTemplates },
+        { id: 'members-tab', handler: loadAdminMembers },
+        { id: 'realtime-tab', handler: loadRealtimeSettings }
       ];
 
       tabHandlers.forEach(item => {
@@ -5113,65 +5008,6 @@
         }
       });
 
-      const sertifikatTabTrigger = document.getElementById('sertifikat-tab');
-      if (sertifikatTabTrigger && !sertifikatTabTrigger.dataset.listenerAttached) {
-        sertifikatTabTrigger.addEventListener('shown.bs.tab', function (e) {
-          if (!this.dataset.loaded) {
-            loadAdminSertifikat();
-            this.dataset.loaded = 'true';
-          }
-        });
-        sertifikatTabTrigger.dataset.listenerAttached = 'true';
-      }
-
-      const kaderTabTrigger = document.getElementById('kader-tab');
-      if (kaderTabTrigger && !kaderTabTrigger.dataset.listenerAttached) {
-        kaderTabTrigger.addEventListener('shown.bs.tab', function (e) {
-          if (!this.dataset.loaded) {
-            loadKaderStatistics();
-            this.dataset.loaded = 'true';
-          }
-        });
-        kaderTabTrigger.dataset.listenerAttached = 'true';
-      }
-
-      document.getElementById('quiz-settings-tab').addEventListener('shown.bs.tab', function (e) {
-        if (!this.dataset.loaded) {
-          loadQuizSettings();
-          this.dataset.loaded = 'true';
-        }
-      });
-      document.getElementById('menu-passwords-tab').addEventListener('shown.bs.tab', function (e) {
-        if (!this.dataset.loaded) {
-          loadMenuPasswords();
-          this.dataset.loaded = 'true';
-        }
-      });
-      document.getElementById('admin-users-tab').addEventListener('shown.bs.tab', function (e) {
-        if (!this.dataset.loaded) {
-          loadAdminUsers();
-          this.dataset.loaded = 'true';
-        }
-      });
-      document.getElementById('cert-presets-tab').addEventListener('shown.bs.tab', function (e) {
-        if (!this.dataset.loaded) {
-          loadCertPresets();
-          this.dataset.loaded = 'true';
-        }
-      });
-      document.getElementById('members-tab').addEventListener('shown.bs.tab', function (e) {
-        if (!this.dataset.loaded) {
-          loadAdminMembers();
-          this.dataset.loaded = 'true';
-        }
-      });
-      document.getElementById('realtime-tab').addEventListener('shown.bs.tab', function (e) {
-        if (!this.dataset.loaded) {
-          loadRealtimeSettings();
-          this.dataset.loaded = 'true';
-        }
-      });
-
       document.getElementById('settings-tab').addEventListener('shown.bs.tab', function (e) {
         if (!this.dataset.innerLoaded) {
           document.getElementById('quiz-settings-tab').click();
@@ -5179,17 +5015,12 @@
         }
       });
 
-      if (document.getElementById('adminQuizSettings').classList.contains('show')) {
-        document.getElementById('quiz-settings-tab').click();
-      }
-
       const savedTab = sessionStorage.getItem('admin_active_tab');
       if (savedTab) {
         const [mainId, innerId] = savedTab.split('|');
         const mainTab = document.getElementById(mainId);
         if (mainTab) {
-          const isMainActive = mainTab.classList.contains('active');
-          if (isMainActive) {
+          if (mainTab.classList.contains('active')) {
             if (innerId) {
               const innerTab = document.getElementById(innerId);
               if (innerTab) innerTab.click();
@@ -5213,6 +5044,7 @@
       }
     }
 
+    // Tutup navbar saat klik di luar
     document.addEventListener('click', function(event) {
       const navbar = document.getElementById('navbarMain');
       const toggler = document.querySelector('.navbar-toggler');
