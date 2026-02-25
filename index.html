@@ -11,24 +11,6 @@
   <!-- Bootstrap 5 + Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <!-- Html5-Qrcode untuk scan QR (dengan fallback) -->
-  <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
-  <script>
-    // Fallback jika library dari unpkg gagal
-    window.onerror = function(msg, url, line, col, error) {
-      if (msg.includes('Html5QrcodeScanner') || (error && error.message && error.message.includes('Html5QrcodeScanner'))) {
-        var script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/html5-qrcode@2.2.1/minified/html5-qrcode.min.js';
-        document.head.appendChild(script);
-      }
-    };
-    // Cek langsung apakah sudah terdefinisi
-    if (typeof Html5QrcodeScanner === 'undefined') {
-      var script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/html5-qrcode@2.2.1/minified/html5-qrcode.min.js';
-      document.head.appendChild(script);
-    }
-  </script>
   
   <style>
     /* ========== GAYA ASLI TETAP ========== */
@@ -442,43 +424,6 @@
   </div>
 </div>
 
-<!-- ==================== MODAL VERIFIKASI SERTIFIKAT ==================== -->
-<div class="modal fade" id="verifyModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content border-0 shadow-lg">
-      <div class="modal-header bg-primary text-white border-0 rounded-top-4">
-        <h5 class="modal-title"><i class="bi bi-patch-check-fill me-2"></i>Verifikasi Keaslian Sertifikat</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body p-4">
-        <!-- Input manual nomor sertifikat -->
-        <div class="mb-3">
-          <label class="form-label fw-semibold">Masukkan Nomor Sertifikat</label>
-          <div class="input-group">
-            <input type="text" class="form-control" id="certNumberInput" placeholder="Contoh: 001/PC-XI/SR-01.PKD/I/2026">
-            <button class="btn btn-primary" type="button" id="verifyByNumberBtn"><i class="bi bi-search"></i> Cek</button>
-          </div>
-        </div>
-
-        <div class="text-center my-3 text-muted">— atau —</div>
-
-        <!-- Area scan QR -->
-        <div class="mb-3">
-          <label class="form-label fw-semibold">Scan QR Code Sertifikat</label>
-          <div id="qr-reader" style="width: 100%; border: 2px dashed #ccc; border-radius: 16px; padding: 10px;"></div>
-          <div id="qr-reader-results" class="mt-2 small text-muted"></div>
-        </div>
-
-        <!-- Hasil verifikasi -->
-        <div id="verifyResult" class="mt-4 p-3 rounded-3" style="display: none;"></div>
-      </div>
-      <div class="modal-footer border-0">
-        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- ==================== TOAST NOTIFICATION ==================== -->
 <div class="toast-container">
   <div id="notificationToast" class="toast border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
@@ -556,12 +501,12 @@
               <div><strong>Tentang Kami</strong><br><span class="text-muted small">Informasi seputar PKD GP Ansor Bantul.</span></div>
             </div>
           </div>
-          <!-- Verifikasi Sertifikat -->
+          <!-- Verifikasi Sertifikat (mengarah ke halaman terpisah) -->
           <div class="col-6 col-md-4 col-lg-6 col-xl-4">
-            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="openVerifyModal()" role="button">
+            <a href="Verifikasi Sertifikat.html" class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card text-decoration-none text-dark" role="button">
               <div class="feature-icon mb-3"><i class="bi bi-qr-code-scan"></i></div>
               <div><strong>Verifikasi Sertifikat</strong><br><span class="text-muted small">Scan QR untuk cek keaslian sertifikat.</span></div>
-            </div>
+            </a>
           </div>
         </div>
       </div>
@@ -631,7 +576,7 @@
   // =====================================================
   //   KONFIGURASI & STATE
   // =====================================================
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbzmbhyv3UDwYFxX4BOfHU04tfs-tQfArJZC2niGxFNvY9gpIgtuWPxyYpGNvXdW1h07/exec'; // GANTI DENGAN URL ANDA!
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbzCgdl1FM1Ji4PbTFS3EwMCRqUxTqvwPf_AOrWBRHKyal4MhgUCd5A3xILjqfW7PCpY/exec'; // GANTI DENGAN URL ANDA!
 
   let userRole = null;        // null, 'admin', 'member'
   let userData = {};          // { username, nama, email, nohp } untuk member, { username, nama } untuk admin
@@ -886,94 +831,6 @@
       }
     });
   })();
-
-  // =====================================================
-  //   VERIFIKASI SERTIFIKAT
-  // =====================================================
-  let html5QrcodeScanner = null;
-
-  function openVerifyModal() {
-    const modal = new bootstrap.Modal(document.getElementById('verifyModal'));
-    modal.show();
-    // Tunggu sebentar agar modal selesai dirender
-    setTimeout(initQrScanner, 500);
-  }
-
-  function initQrScanner() {
-    // Cek apakah library sudah tersedia
-    if (typeof Html5QrcodeScanner === 'undefined') {
-      console.error('Html5QrcodeScanner tidak tersedia. Library gagal dimuat.');
-      document.getElementById('qr-reader').innerHTML = '<div class="alert alert-warning">Gagal memuat library QR. Silakan coba lagi atau gunakan input manual.</div>';
-      return;
-    }
-    if (html5QrcodeScanner) {
-      html5QrcodeScanner.clear(); // bersihkan scanner lama
-    }
-    html5QrcodeScanner = new Html5QrcodeScanner(
-      "qr-reader",
-      { fps: 10, qrbox: { width: 250, height: 250 } },
-      /* verbose= */ false
-    );
-    html5QrcodeScanner.render(onScanSuccess, onScanError);
-  }
-
-  function onScanSuccess(decodedText, decodedResult) {
-    // decodedText diharapkan berisi nomor sertifikat
-    html5QrcodeScanner.clear();
-    verifyCertificate(decodedText);
-  }
-
-  function onScanError(errorMessage) {
-    // biarkan saja, biasanya error karena tidak ada QR
-    console.log(errorMessage);
-  }
-
-  async function verifyCertificate(nomor) {
-    const resultDiv = document.getElementById('verifyResult');
-    resultDiv.style.display = 'none';
-    resultDiv.innerHTML = '';
-
-    if (!nomor) {
-      showToast('Masukkan nomor sertifikat', 'error');
-      return;
-    }
-
-    try {
-      const res = await callAppsScript({ action: 'verifyCertificate', nomor: nomor }, 'GET');
-      if (res.success && res.data) {
-        const data = res.data;
-        resultDiv.innerHTML = `
-          <div class="alert alert-success mb-0">
-            <h6 class="alert-heading fw-bold"><i class="bi bi-check-circle-fill me-2"></i>Sertifikat VALID</h6>
-            <hr>
-            <p class="mb-1"><strong>Nama:</strong> ${escapeHtml(data.nama_peserta)}</p>
-            <p class="mb-1"><strong>Nomor Sertifikat:</strong> ${escapeHtml(data.nomor_sertifikat)}</p>
-            <p class="mb-1"><strong>Lokasi PKD:</strong> ${escapeHtml(data.lokasi || 'Kabupaten Bantul')}</p>
-            <p class="mb-1"><strong>Tanggal Terbit:</strong> ${escapeHtml(data.createdAt || '-')}</p>
-            <a href="${escapeHtml(data.pdf_url)}" target="_blank" class="btn btn-sm btn-outline-success mt-2"><i class="bi bi-file-pdf"></i> Lihat Sertifikat</a>
-          </div>
-        `;
-      } else {
-        resultDiv.innerHTML = `<div class="alert alert-danger mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i>Sertifikat dengan nomor "${escapeHtml(nomor)}" tidak ditemukan.</div>`;
-      }
-      resultDiv.style.display = 'block';
-    } catch (e) {
-      showToast('Gagal memverifikasi: ' + e.message, 'error');
-    }
-  }
-
-  // Event listener untuk tombol cek manual
-  document.getElementById('verifyByNumberBtn')?.addEventListener('click', function() {
-    const nomor = document.getElementById('certNumberInput').value.trim();
-    verifyCertificate(nomor);
-  });
-
-  // Saat modal ditutup, hentikan scanner
-  document.getElementById('verifyModal')?.addEventListener('hidden.bs.modal', function () {
-    if (html5QrcodeScanner) {
-      html5QrcodeScanner.clear();
-    }
-  });
 
   // =====================================================
   //   INISIALISASI
