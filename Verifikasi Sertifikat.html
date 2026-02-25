@@ -119,6 +119,10 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    /* Spinner */
+    #loadingSpinner {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -165,6 +169,14 @@
     <label class="form-label fw-semibold">Scan QR Code pada Sertifikat</label>
     <div id="qr-reader"></div>
     <div id="qr-reader-results" class="mt-2 small text-muted"></div>
+  </div>
+
+  <!-- Indikator proses -->
+  <div id="loadingSpinner" class="text-center my-3">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Memverifikasi...</span>
+    </div>
+    <p class="mt-2">Memverifikasi sertifikat, harap tunggu...</p>
   </div>
 
   <!-- Hasil verifikasi -->
@@ -260,29 +272,35 @@
     });
   }
 
-  // Tampilkan notifikasi sederhana (ganti dengan alert karena toast tidak didefinisikan)
+  // Tampilkan pesan sederhana (tanpa spinner)
   function showMessage(message, isSuccess = true) {
     const resultDiv = document.getElementById('verifyResult');
+    const spinner = document.getElementById('loadingSpinner');
+    spinner.style.display = 'none';
     resultDiv.style.display = 'block';
     resultDiv.innerHTML = `<div class="alert alert-${isSuccess ? 'success' : 'danger'} mb-0">${message}</div>`;
     // Scroll ke hasil
     resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  // Verifikasi sertifikat berdasarkan nomor
+  // Verifikasi sertifikat berdasarkan nomor (dengan spinner)
   async function verifyCertificate(nomor) {
     const resultDiv = document.getElementById('verifyResult');
+    const spinner = document.getElementById('loadingSpinner');
+    // Sembunyikan hasil sebelumnya, tampilkan spinner
     resultDiv.style.display = 'none';
-    resultDiv.innerHTML = '';
+    spinner.style.display = 'block';
 
     const cleanedNomor = nomor ? nomor.toString().trim().replace(/\s+/g, ' ') : '';
     if (!cleanedNomor) {
+      spinner.style.display = 'none';
       showMessage('Masukkan nomor sertifikat terlebih dahulu.', false);
       return;
     }
 
     try {
       const res = await callAppsScript({ action: 'verifyCertificate', nomor: cleanedNomor }, 'GET');
+      spinner.style.display = 'none';
       if (res.success && res.data) {
         const data = res.data;
         resultDiv.innerHTML = `
@@ -303,8 +321,15 @@
       }
       resultDiv.style.display = 'block';
     } catch (e) {
+      spinner.style.display = 'none';
       showMessage('Gagal memverifikasi: ' + e.message, false);
     }
+  }
+
+  // Ambil parameter dari URL
+  function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
   }
 
   // Inisialisasi QR scanner
@@ -330,7 +355,35 @@
     if (html5QrcodeScanner) {
       html5QrcodeScanner.clear();
     }
-    verifyCertificate(decodedText.trim());
+
+    // Ambil teks hasil scan
+    let nomor = decodedText.trim();
+
+    // Coba ekstrak nomor jika formatnya "Sertifikat No: ... - ..."
+    const prefix = "Sertifikat No: ";
+    if (nomor.startsWith(prefix)) {
+      const afterPrefix = nomor.substring(prefix.length);
+      const dashIndex = afterPrefix.indexOf(" - ");
+      if (dashIndex !== -1) {
+        nomor = afterPrefix.substring(0, dashIndex).trim();
+      } else {
+        nomor = afterPrefix.trim();
+      }
+    } else if (nomor.includes('?nomor=')) {
+      // Jika QR berisi URL dengan parameter (metode baru)
+      try {
+        const url = new URL(nomor);
+        const paramNomor = url.searchParams.get('nomor');
+        if (paramNomor) nomor = paramNomor;
+      } catch (e) {
+        // bukan URL valid, gunakan teks asli
+      }
+    }
+
+    // Isi input dengan nomor (opsional)
+    document.getElementById('certNumberInput').value = nomor;
+    // Jalankan verifikasi
+    verifyCertificate(nomor);
   }
 
   function onScanError(errorMessage) {
@@ -351,8 +404,14 @@
     }
   });
 
-  // Inisialisasi scanner setelah halaman siap
+  // Saat halaman dimuat, cek parameter 'nomor' dan inisialisasi scanner
   window.addEventListener('load', function() {
+    const nomorFromUrl = getQueryParam('nomor');
+    if (nomorFromUrl) {
+      document.getElementById('certNumberInput').value = nomorFromUrl;
+      // Langsung verifikasi dengan spinner
+      verifyCertificate(nomorFromUrl);
+    }
     initQrScanner();
   });
 
