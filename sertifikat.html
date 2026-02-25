@@ -997,7 +997,7 @@ PKD Bantul 2026,"MTs N 8 Bantul","14-15 Februari 2026","Dlingo","Andi","Dito","A
     if (!qrContainer) return;
     const nomor = document.getElementById('inputNomor')?.value || 'No. Sertifikat';
     // Buat URL dengan parameter nomor (encoding)
-    const baseUrl = window.location.origin + '/Verifikasi%20Sertifikat.html';
+    const baseUrl = window.location.origin + '/verifikasi.html';
     const verificationUrl = `${baseUrl}?nomor=${encodeURIComponent(nomor)}`;
     try {
       const qr = qrcode(0, 'M');
