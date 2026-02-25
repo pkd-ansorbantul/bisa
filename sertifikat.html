@@ -991,6 +991,30 @@ PKD Bantul 2026,"MTs N 8 Bantul","14-15 Februari 2026","Dlingo","Andi","Dito","A
     }
   }
 
+  // FUNGSI GENERATE QR DENGAN URL VERIFIKASI (DIUBAH)
+  function generateVerificationQR() {
+    const qrContainer = document.getElementById('qr-ketua-pc');
+    if (!qrContainer) return;
+    const nomor = document.getElementById('inputNomor')?.value || 'No. Sertifikat';
+    // Buat URL dengan parameter nomor (encoding)
+    const baseUrl = window.location.origin + '/Verifikasi%20Sertifikat.html';
+    const verificationUrl = `${baseUrl}?nomor=${encodeURIComponent(nomor)}`;
+    try {
+      const qr = qrcode(0, 'M');
+      qr.addData(verificationUrl);
+      qr.make();
+      const img = document.createElement('img');
+      img.src = qr.createDataURL(4, 0);
+      img.style.maxHeight = '50px';
+      img.style.maxWidth = '150px';
+      qrContainer.innerHTML = '';
+      qrContainer.appendChild(img);
+      qrContainer.style.display = 'block';
+    } catch (e) {
+      console.warn('QR gagal:', e);
+    }
+  }
+
   function loadPreviewSertifikat() {
     const container = document.getElementById('previewPanel');
     if (!container) return;
@@ -1744,26 +1768,6 @@ PKD Bantul 2026,"MTs N 8 Bantul","14-15 Februari 2026","Dlingo","Andi","Dito","A
         updateSignatureFromFile(this, signatureImages[key]);
       });
     }
-  }
-
-  function generateVerificationQR() {
-    const qrContainer = document.getElementById('qr-ketua-pc');
-    if (!qrContainer) return;
-    const nomor = document.getElementById('inputNomor')?.value || 'No. Sertifikat';
-    const nama = document.getElementById('inputNama')?.value || 'Nama Peserta';
-    const qrText = `Sertifikat No: ${nomor} - ${nama}`;
-    try {
-      const qr = qrcode(0, 'M');
-      qr.addData(qrText);
-      qr.make();
-      const img = document.createElement('img');
-      img.src = qr.createDataURL(4, 0);
-      img.style.maxHeight = '50px';
-      img.style.maxWidth = '150px';
-      qrContainer.innerHTML = '';
-      qrContainer.appendChild(img);
-      qrContainer.style.display = 'block';
-    } catch (e) { console.warn('QR gagal:', e); }
   }
 
   async function loadGenerateSertifikatUI() {
