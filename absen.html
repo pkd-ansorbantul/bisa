@@ -123,6 +123,17 @@
   </style>
 </head>
 <body>
+<!-- ========== CEK AUTENTIKASI ========== -->
+<script>
+  (function() {
+    const auth = localStorage.getItem('pkd_auth') || sessionStorage.getItem('pkd_auth');
+    if (!auth) {
+      const redirect = encodeURIComponent(window.location.href);
+      window.location.replace('login.html?redirect=' + redirect);
+    }
+  })();
+</script>
+<!-- ===================================== -->
 
 <!-- Navbar (sama dengan about.html) -->
 <nav class="navbar navbar-expand-lg bg-white sticky-top shadow-sm">
@@ -171,7 +182,7 @@
   // =====================================================
   //   KONFIGURASI & STATE (khusus absen)
   // =====================================================
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycby1BmHq5n77oLoW9r5xhY7b9H6Lvcoi5Jz79hqcbrnO0Y4VidFNmugVFSjcGyJ5f8If/exec'; // Ganti jika berbeda
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbyjyKtVSIvbFaCkiZhQ5DF1RN13PmoOXiX2LdTuK_iUmcuHbrYlr_cY6hAsSR__b2I9/exec'; // Ganti jika berbeda
 
   // Cache sesi sederhana
   let cachedSesi = null;

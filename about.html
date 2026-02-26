@@ -192,6 +192,21 @@
   </div>
 </nav>
 
+<!-- ==================== NAVIGASI INTERNAL ==================== -->
+<div class="container mt-3">
+  <ul class="nav nav-pills justify-content-center">
+    <li class="nav-item">
+      <a class="nav-link active" href="#tentang-section">Tentang Kami</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#informasi-section">Informasi PKD</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#kontak-section">Kontak Kami</a>
+    </li>
+  </ul>
+</div>
+
 <!-- ==================== KONTEN GABUNGAN ==================== -->
 <main class="container container-card">
   <!-- ===== BAGIAN TENTANG KAMI ===== -->
@@ -349,6 +364,16 @@
       <div id="timelineList"></div>
     </div>
   </section>
+
+  <!-- ==================== FORM KONTAK ==================== -->
+  <section class="mt-5 pt-4 border-top" id="kontak-section">
+    <h2 class="section-title"><i class="bi bi-envelope me-2"></i>Kontak Kami</h2>
+    <div class="row justify-content-center">
+      <div class="col-md-8" id="kontakContainer">
+        <!-- Konten akan diisi oleh JavaScript -->
+      </div>
+    </div>
+  </section>
 </main>
 
 <!-- ==================== FOOTER ==================== -->
@@ -365,7 +390,7 @@
 <!-- ==================== SCRIPT INFORMASI (dinamis) ==================== -->
 <script>
   // Konfigurasi Apps Script (sesuaikan dengan URL Anda)
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbzCgdl1FM1Ji4PbTFS3EwMCRqUxTqvwPf_AOrWBRHKyal4MhgUCd5A3xILjqfW7PCpY/exec';
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbyjyKtVSIvbFaCkiZhQ5DF1RN13PmoOXiX2LdTuK_iUmcuHbrYlr_cY6hAsSR__b2I9/exec';
 
   async function callAppsScript(params) {
     const query = new URLSearchParams(params).toString();
@@ -463,6 +488,154 @@
       alert('Gagal memuat informasi.');
     }
   };
+</script>
+
+<!-- ==================== SCRIPT TAMBAHAN (KONTAK & NAVIGASI) ==================== -->
+<script>
+  // =====================================================
+  //   FUNGSI UNTUK MENGAMBIL DATA USER DARI LOCALSTORAGE
+  // =====================================================
+  function getCurrentUser() {
+    const authStr = localStorage.getItem('pkd_auth') || sessionStorage.getItem('pkd_auth');
+    if (!authStr) return null;
+    try {
+      const auth = JSON.parse(authStr);
+      return auth.data || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // =====================================================
+  //   RENDER FORM KONTAK BERDASARKAN STATUS LOGIN
+  // =====================================================
+  function renderKontak() {
+    const user = getCurrentUser();
+    const container = document.getElementById('kontakContainer');
+    if (!user) {
+      container.innerHTML = `
+        <div class="alert alert-info text-center">
+          <i class="bi bi-info-circle"></i> Anda harus login untuk menghubungi kami.
+          <div class="mt-3">
+            <a href="login.html" class="btn btn-primary me-2">Login</a>
+            </div>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = `
+      <form id="kontakForm">
+        <div class="mb-3">
+          <label class="form-label">Nama Lengkap</label>
+          <input type="text" class="form-control" id="nama" value="${escapeHtml(user.nama || user.username || '')}" readonly>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" id="email" value="${escapeHtml(user.email || '')}" readonly>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Pesan</label>
+          <textarea class="form-control" id="pesan" rows="4" required></textarea>
+        </div>
+        <!-- Autentikasi sederhana: captcha matematika -->
+        <div class="mb-3">
+          <label class="form-label">Verifikasi: Berapa 5 + 3?</label>
+          <input type="number" class="form-control" id="captcha" required min="0" max="20">
+        </div>
+        <button type="submit" class="btn btn-primary">Kirim Pesan</button>
+        <div id="kontakStatus" class="mt-3"></div>
+      </form>
+    `;
+
+    // Pasang event listener submit
+    document.getElementById('kontakForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const pesan = document.getElementById('pesan').value.trim();
+      const captcha = parseInt(document.getElementById('captcha').value);
+
+      if (captcha !== 8) {
+        document.getElementById('kontakStatus').innerHTML = '<div class="alert alert-danger">Jawaban captcha salah!</div>';
+        return;
+      }
+
+      const btn = this.querySelector('button[type="submit"]');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = 'Mengirim...';
+      btn.disabled = true;
+
+      try {
+        // Ambil IP pengirim (opsional)
+        const ipRes = await fetch('https://api.ipify.org?format=json');
+        const ipData = await ipRes.json();
+        const ip = ipData.ip;
+
+        const params = new URLSearchParams({
+          action: 'submitKontak',
+          nama: user.nama || user.username,
+          email: user.email || '',
+          pesan: pesan,
+          username: user.username,
+          role: user.role || 'member',
+          ip: ip
+        });
+
+        const res = await fetch(`${scriptUrl}?${params.toString()}`);
+        const data = await res.json();
+
+        if (data.error) {
+          document.getElementById('kontakStatus').innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+        } else {
+          document.getElementById('kontakStatus').innerHTML = '<div class="alert alert-success">Pesan berhasil dikirim! Terima kasih.</div>';
+          this.reset(); // Reset hanya textarea, nama/email tetap
+          document.getElementById('pesan').value = '';
+        }
+      } catch (err) {
+        document.getElementById('kontakStatus').innerHTML = '<div class="alert alert-danger">Gagal mengirim pesan. Coba lagi.</div>';
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    });
+  }
+
+  // =====================================================
+  //   SMOOTH SCROLL UNTUK NAVIGASI INTERNAL
+  // =====================================================
+  document.querySelectorAll('.nav-pills a').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const targetId = this.getAttribute('href');
+      const target = document.querySelector(targetId);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+        // Update active class
+        document.querySelectorAll('.nav-pills .nav-link').forEach(l => l.classList.remove('active'));
+        this.classList.add('active');
+      }
+    });
+  });
+
+  // Update active berdasarkan scroll (opsional)
+  window.addEventListener('scroll', function() {
+    const sections = document.querySelectorAll('#tentang-section, #informasi-section, #kontak-section');
+    let current = '';
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop - 100;
+      if (pageYOffset >= sectionTop) {
+        current = section.getAttribute('id');
+      }
+    });
+    document.querySelectorAll('.nav-pills .nav-link').forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href') === '#' + current) {
+        link.classList.add('active');
+      }
+    });
+  });
+
+  // Panggil renderKontak setelah halaman dimuat
+  window.addEventListener('load', renderKontak);
 </script>
 
 <!-- Opsional: script tambahan untuk navbar (dari about.html) -->
