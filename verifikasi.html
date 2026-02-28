@@ -123,6 +123,33 @@
     #loadingSpinner {
       display: none;
     }
+    .loading-spinner {
+      display: inline-block;
+      width: 2rem;
+      height: 2rem;
+      border: 3px solid rgba(37,99,235,0.2);
+      border-radius: 50%;
+      border-top-color: #2563eb;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .verification-result {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      background-color: #f8f9fa;
+      border-left: 4px solid #2563eb;
+    }
+    .verification-valid {
+      border-left-color: #28a745;
+      background-color: #d4edda;
+    }
+    .verification-invalid {
+      border-left-color: #dc3545;
+      background-color: #f8d7da;
+    }
   </style>
 </head>
 <body>
@@ -173,14 +200,14 @@
 
   <!-- Indikator proses -->
   <div id="loadingSpinner" class="text-center my-3">
-    <div class="spinner-border text-primary" role="status">
+    <div class="loading-spinner" role="status">
       <span class="visually-hidden">Memverifikasi...</span>
     </div>
     <p class="mt-2">Memverifikasi sertifikat, harap tunggu...</p>
   </div>
 
   <!-- Hasil verifikasi -->
-  <div id="verifyResult" class="mt-4 p-4 rounded-4" style="display: none;"></div>
+  <div id="verifyResult" class="mt-4" style="display: none;"></div>
 
   <div class="text-center mt-3">
     <a href="index.html" class="btn btn-outline-secondary rounded-pill px-5">
@@ -202,7 +229,8 @@
 <!-- Script Verifikasi -->
 <script>
   // Konfigurasi Apps Script (sama dengan di index.html)
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbyjyKtVSIvbFaCkiZhQ5DF1RN13PmoOXiX2LdTuK_iUmcuHbrYlr_cY6hAsSR__b2I9/exec'; // Ganti jika perlu
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbw9SOqv7cUwaASY63dDAR2uGSDvEVMDOeH2WKEOpGYBsfvn2mS_kuk9Nwn-iXqXIkOa/exec'; // Ganti jika perlu
+  const BASE_URL = 'https://pkd-ansorbantul.github.io'; // Ganti dengan domain sebenarnya
 
   // Utility: escape HTML
   function escapeHtml(unsafe) {
@@ -210,7 +238,7 @@
     return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
   }
 
-  // Fungsi call Apps Script (dengan fallback JSONP, disederhanakan)
+  // Fungsi call Apps Script (dengan fallback JSONP)
   async function callAppsScript(params, method = 'GET', timeout = 30000) {
     return new Promise(async (resolve, reject) => {
       const queryString = new URLSearchParams(params).toString();
@@ -272,18 +300,43 @@
     });
   }
 
-  // Tampilkan pesan sederhana (tanpa spinner)
-  function showMessage(message, isSuccess = true) {
+  // Tampilkan hasil verifikasi
+  function showResult(content, isValid = true) {
     const resultDiv = document.getElementById('verifyResult');
     const spinner = document.getElementById('loadingSpinner');
     spinner.style.display = 'none';
     resultDiv.style.display = 'block';
-    resultDiv.innerHTML = `<div class="alert alert-${isSuccess ? 'success' : 'danger'} mb-0">${message}</div>`;
+    resultDiv.innerHTML = content;
     // Scroll ke hasil
     resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  // Verifikasi sertifikat berdasarkan nomor (dengan spinner)
+  // Simpan hasil ke sessionStorage agar tidak perlu request ulang
+  function cacheResult(nomor, data) {
+    try {
+      const cache = {
+        data: data,
+        timestamp: Date.now()
+      };
+      sessionStorage.setItem('verify_' + nomor, JSON.stringify(cache));
+    } catch (e) {}
+  }
+
+  function getCachedResult(nomor) {
+    try {
+      const cached = sessionStorage.getItem('verify_' + nomor);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        // Cache berlaku 1 jam
+        if (Date.now() - parsed.timestamp < 3600000) {
+          return parsed.data;
+        }
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  // Verifikasi sertifikat berdasarkan nomor
   async function verifyCertificate(nomor) {
     const resultDiv = document.getElementById('verifyResult');
     const spinner = document.getElementById('loadingSpinner');
@@ -294,7 +347,15 @@
     const cleanedNomor = nomor ? nomor.toString().trim().replace(/\s+/g, ' ') : '';
     if (!cleanedNomor) {
       spinner.style.display = 'none';
-      showMessage('Masukkan nomor sertifikat terlebih dahulu.', false);
+      showResult('<div class="alert alert-danger mb-0">Masukkan nomor sertifikat terlebih dahulu.</div>', false);
+      return;
+    }
+
+    // Cek cache
+    const cached = getCachedResult(cleanedNomor);
+    if (cached) {
+      spinner.style.display = 'none';
+      renderVerificationResult(cached);
       return;
     }
 
@@ -302,28 +363,32 @@
       const res = await callAppsScript({ action: 'verifyCertificate', nomor: cleanedNomor }, 'GET');
       spinner.style.display = 'none';
       if (res.success && res.data) {
-        const data = res.data;
-        resultDiv.innerHTML = `
-          <div class="alert alert-success mb-0">
-            <h5 class="alert-heading fw-bold"><i class="bi bi-check-circle-fill me-2"></i>Sertifikat VALID</h5>
-            <hr>
-            <p class="mb-1"><strong>Nama:</strong> ${escapeHtml(data.nama_peserta)}</p>
-            <p class="mb-1"><strong>Nomor Sertifikat:</strong> ${escapeHtml(data.nomor_sertifikat)}</p>
-            <p class="mb-1"><strong>Lokasi PKD:</strong> ${escapeHtml(data.lokasi || 'Kabupaten Bantul')}</p>
-            <p class="mb-1"><strong>Tanggal Terbit:</strong> ${escapeHtml(data.createdAt || '-')}</p>
-            <a href="${escapeHtml(data.pdf_url)}" target="_blank" class="btn btn-sm btn-outline-success mt-2 rounded-pill">
-              <i class="bi bi-file-pdf"></i> Lihat Sertifikat
-            </a>
-          </div>
-        `;
+        cacheResult(cleanedNomor, res.data);
+        renderVerificationResult(res.data);
       } else {
-        resultDiv.innerHTML = `<div class="alert alert-danger mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i>Sertifikat dengan nomor "${escapeHtml(cleanedNomor)}" tidak ditemukan.</div>`;
+        showResult(`<div class="alert alert-danger mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i>Sertifikat dengan nomor "${escapeHtml(cleanedNomor)}" tidak ditemukan.</div>`, false);
       }
-      resultDiv.style.display = 'block';
     } catch (e) {
       spinner.style.display = 'none';
-      showMessage('Gagal memverifikasi: ' + e.message, false);
+      showResult(`<div class="alert alert-danger mb-0">Gagal memverifikasi: ${escapeHtml(e.message)}</div>`, false);
     }
+  }
+
+  function renderVerificationResult(data) {
+    const html = `
+      <div class="verification-result verification-valid">
+        <h5 class="alert-heading fw-bold"><i class="bi bi-check-circle-fill me-2"></i>Sertifikat VALID</h5>
+        <hr>
+        <p class="mb-1"><strong>Nama:</strong> ${escapeHtml(data.nama_peserta)}</p>
+        <p class="mb-1"><strong>Nomor Sertifikat:</strong> ${escapeHtml(data.nomor_sertifikat)}</p>
+        <p class="mb-1"><strong>Lokasi PKD:</strong> ${escapeHtml(data.lokasi || 'Kabupaten Bantul')}</p>
+        <p class="mb-1"><strong>Tanggal Terbit:</strong> ${escapeHtml(data.createdAt || '-')}</p>
+        <a href="${escapeHtml(data.pdf_url)}" target="_blank" class="btn btn-sm btn-outline-success mt-2 rounded-pill">
+          <i class="bi bi-file-pdf"></i> Lihat Sertifikat
+        </a>
+      </div>
+    `;
+    showResult(html, true);
   }
 
   // Ambil parameter dari URL

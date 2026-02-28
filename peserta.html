@@ -11,9 +11,10 @@
   <!-- Bootstrap 5 + Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  
+  <!-- Signature Pad -->
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+
   <style>
-    /* Gaya asli dipertahankan */
     * { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
     .navbar-brand {
       line-height: 1.2;
@@ -89,6 +90,15 @@
     #utusanLuarContainer {
       transition: all 0.3s ease;
     }
+    /* Signature canvas */
+    #signatureCanvas {
+      width: 100%;
+      height: 200px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: #fff;
+      touch-action: none;
+    }
   </style>
 </head>
 <body>
@@ -149,12 +159,12 @@
 <!-- Bootstrap JS & dependencies -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Script publik (form peserta) -->
 <script>
   // =====================================================
   //   KONFIGURASI & STATE
   // =====================================================
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbyjyKtVSIvbFaCkiZhQ5DF1RN13PmoOXiX2LdTuK_iUmcuHbrYlr_cY6hAsSR__b2I9/exec'; // GANTI DENGAN URL DEPLOY ANDA!
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbw9SOqv7cUwaASY63dDAR2uGSDvEVMDOeH2WKEOpGYBsfvn2mS_kuk9Nwn-iXqXIkOa/exec'; // GANTI DENGAN URL DEPLOY ANDA
+  let signaturePad; // untuk akses global
 
   // =====================================================
   //   FUNGSI BANTU
@@ -191,7 +201,7 @@
       toastTitle.style.color = '#dc3545';
     }
 
-    const toast = new bootstrap.Toast(toastEl, { delay: 5000 }); // perpanjang jadi 5 detik untuk error
+    const toast = new bootstrap.Toast(toastEl, { delay: 5000 });
     toast.show();
   }
 
@@ -199,7 +209,6 @@
   //   PANGGILAN APPS SCRIPT (POST dengan JSON response)
   // =====================================================
   async function callAppsScript(params) {
-    // Buat URLSearchParams dari objek params
     const body = new URLSearchParams();
     for (const key in params) {
       body.append(key, params[key]);
@@ -257,6 +266,7 @@
     const container = document.getElementById('pesertaFormContainer');
     container.innerHTML = 'Memuat form...';
 
+    // Form dengan urutan baru: Tanda Tangan dipindah ke bawah setelah Pengalaman Organisasi
     let html = `
       <form id="formPesertaDinamis">
         <div class="mb-3">
@@ -330,6 +340,19 @@
           <label class="form-label fw-bold">📋 Pengalaman Organisasi</label>
           <textarea class="form-control" name="pengalaman_organisasi" rows="3" placeholder="Tuliskan pengalaman organisasi Anda"></textarea>
         </div>
+
+        <!-- TANDA TANGAN DIGITAL (dipindah ke sini) -->
+        <div class="mb-3">
+          <label class="form-label fw-bold">✍️ Tanda Tangan Digital</label>
+          <div class="border rounded p-2" style="background: #fff;">
+            <canvas id="signatureCanvas"></canvas>
+          </div>
+          <div class="mt-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" id="clearSignature"><i class="bi bi-eraser"></i> Hapus</button>
+            <small class="text-muted ms-2">Gambar tanda tangan dengan mouse atau jari (pada layar sentuh).</small>
+          </div>
+        </div>
+
         <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill">📤 Kirim Data Peserta</button>
       </form>
     `;
@@ -348,7 +371,7 @@
       }
     });
 
-    // Preview surat rekomendasi (tampilkan nama file)
+    // Preview surat rekomendasi
     document.getElementById('suratRekomendasiInput').addEventListener('change', function(e) {
       const file = e.target.files[0];
       const previewDiv = document.getElementById('suratRekomendasiPreview');
@@ -358,6 +381,29 @@
         previewDiv.innerHTML = '';
       }
     });
+
+    // Inisialisasi Signature Pad
+    const canvas = document.getElementById('signatureCanvas');
+    if (canvas) {
+      signaturePad = new SignaturePad(canvas, {
+        backgroundColor: 'rgb(255,255,255)',
+        penColor: 'rgb(0,0,0)'
+      });
+
+      function resizeCanvas() {
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
+        canvas.getContext("2d").scale(ratio, ratio);
+        signaturePad.clear(); // clear after resize agar tidak ada coretan aneh
+      }
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      document.getElementById('clearSignature').addEventListener('click', function() {
+        signaturePad.clear();
+      });
+    }
 
     // Restore state
     restorePesertaFormState();
@@ -378,7 +424,6 @@
       });
     }
 
-    // Trigger change untuk restore
     if (utusanSelect) {
       utusanSelect.dispatchEvent(new Event('change'));
     }
@@ -397,7 +442,7 @@
     e.preventDefault();
     const form = document.getElementById('formPesertaDinamis');
     const formData = new FormData(form);
-    const data = { action: 'submitPeserta' }; // tambahkan action
+    const data = { action: 'submitPeserta' };
 
     // Validasi ukuran file foto
     const fotoFile = formData.get('foto');
@@ -447,6 +492,11 @@
         });
       }
 
+      // Proses tanda tangan digital
+      if (signaturePad && !signaturePad.isEmpty()) {
+        data.tanda_tangan = signaturePad.toDataURL(); // PNG base64
+      }
+
       // Ambil data field lainnya (kecuali file)
       formData.forEach((value, key) => {
         if (key !== 'foto' && key !== 'surat_rekomendasi') data[key] = value;
@@ -474,6 +524,7 @@
       form.reset();
       document.getElementById('pesertaFotoPreview').style.display = 'none';
       document.getElementById('suratRekomendasiPreview').innerHTML = '';
+      signaturePad.clear();
       clearPesertaFormState();
       document.getElementById('utusanLuarContainer').style.display = 'none';
     } catch (err) {
@@ -507,6 +558,5 @@
     });
   };
 </script>
-<!-- Catatan: Jika terjadi error CORS, deploy HTML ini sebagai Web App Apps Script -->
 </body>
 </html>

@@ -97,6 +97,27 @@
     }
     .toast.border-success { border-left-color: #28a745; }
     .toast.border-danger { border-left-color: #dc3545; }
+    
+    /* Loading spinner */
+    .loading-spinner {
+      display: inline-block;
+      width: 2rem;
+      height: 2rem;
+      border: 3px solid rgba(37,99,235,0.2);
+      border-radius: 50%;
+      border-top-color: #2563eb;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .fade-in {
+      animation: fadeIn 0.3s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
   </style>
 </head>
 <body>
@@ -188,18 +209,12 @@
 <!-- Bootstrap JS & dependencies -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Script publik (tanpa admin) -->
 <script>
   // =====================================================
   //   KONFIGURASI & STATE
   // =====================================================
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbyjyKtVSIvbFaCkiZhQ5DF1RN13PmoOXiX2LdTuK_iUmcuHbrYlr_cY6hAsSR__b2I9/exec'; // GANTI DENGAN URL DEPLOY ANDA!
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbw9SOqv7cUwaASY63dDAR2uGSDvEVMDOeH2WKEOpGYBsfvn2mS_kuk9Nwn-iXqXIkOa/exec'; // GANTI DENGAN URL DEPLOY ANDA!
   const CACHE_DURATION = 3600000; // 1 jam
-
-  // Cache per jenis data
-  const dataCache = {
-    materiList: { data: null, lastFetch: 0 }
-  };
 
   // =====================================================
   //   FUNGSI BANTU
@@ -311,99 +326,138 @@
   }
 
   // =====================================================
-  //   AMBIL DATA MATERI (dengan cache)
+  //   CACHE DI SESSIONSTORAGE
   // =====================================================
+  function getCachedMateri() {
+    try {
+      const cached = sessionStorage.getItem('materiListCache');
+      const cachedTime = sessionStorage.getItem('materiListCacheTime');
+      if (cached && cachedTime && (Date.now() - parseInt(cachedTime)) < CACHE_DURATION) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function saveCachedMateri(data) {
+    try {
+      sessionStorage.setItem('materiListCache', JSON.stringify(data));
+      sessionStorage.setItem('materiListCacheTime', Date.now().toString());
+    } catch (e) {}
+  }
+
   async function fetchMateriList(forceRefresh = false) {
-    const cache = dataCache.materiList;
-    const now = Date.now();
-    if (!forceRefresh && cache.data && (now - cache.lastFetch) < CACHE_DURATION) {
-      return cache.data;
+    if (!forceRefresh) {
+      const cached = getCachedMateri();
+      if (cached) return cached;
     }
     try {
       const res = await callAppsScript({ action: 'getMateriList' }, 'GET', 10000);
       const data = res.data || [];
-      cache.data = data;
-      cache.lastFetch = now;
+      saveCachedMateri(data);
       return data;
     } catch (e) {
       console.error('Gagal memuat materi:', e);
-      return cache.data || [];
+      return [];
     }
   }
 
   // =====================================================
-  //   TAMPILKAN DAFTAR MATERI
+  //   RENDER DAFTAR MATERI
+  // =====================================================
+  function renderMateriList(materi) {
+    const container = document.getElementById('materiContainer');
+    if (!container) return;
+    if (!materi.length) {
+      container.innerHTML = '<div class="alert alert-info text-center">Belum ada materi yang diunggah.</div>';
+      return;
+    }
+
+    let html = '<div class="row g-4">';
+    materi.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(m => {
+      const fileUrl = `https://drive.google.com/file/d/${m.fileId}/view`;
+      const previewUrl = `https://drive.google.com/file/d/${m.fileId}/preview`;
+      const icon = m.tipe === 'pdf' ? 'bi-file-pdf-fill text-danger' : 'bi-file-ppt-fill text-warning';
+      
+      html += `
+        <div class="col-md-6">
+          <div class="card h-100 border-0 shadow-sm rounded-4">
+            <div class="card-body">
+              <div class="d-flex align-items-center mb-3">
+                <i class="${icon} fs-1 me-3"></i>
+                <h5 class="card-title mb-0">${escapeHtml(m.judul || '')}</h5>
+              </div>
+              <p class="card-text text-muted small">${escapeHtml(m.deskripsi || '')}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="badge bg-light text-dark">${m.tipe.toUpperCase()}</span>
+                <div>
+                  <button class="btn btn-primary btn-sm rounded-pill px-3 me-1 preview-materi-btn" 
+                    data-judul="${escapeHtml(m.judul)}" 
+                    data-preview-url="${previewUrl}" 
+                    data-download-url="${fileUrl}">
+                    <i class="bi bi-play-circle me-1"></i>Tayangkan
+                  </button>
+                  <a href="${fileUrl}" target="_blank" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                    <i class="bi bi-download"></i>
+                  </a>
+                </div>
+              </div>
+              <div class="mt-2 text-end text-muted small">
+                Diupload: ${new Date(m.timestamp).toLocaleDateString('id-ID')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+    container.classList.add('fade-in');
+
+    // Event listener untuk tombol preview
+    document.querySelectorAll('.preview-materi-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const judul = this.dataset.judul;
+        const previewUrl = this.dataset.previewUrl;
+        const downloadUrl = this.dataset.downloadUrl;
+
+        document.getElementById('previewMateriJudul').innerText = judul;
+        document.getElementById('previewMateriIframe').src = previewUrl;
+        document.getElementById('previewMateriDownloadBtn').href = downloadUrl;
+        document.getElementById('previewMateriSpinner').style.display = 'flex';
+
+        new bootstrap.Modal(document.getElementById('previewMateriModal')).show();
+      });
+    });
+  }
+
+  // =====================================================
+  //   LOAD MATERI (cache dulu, lalu background update)
   // =====================================================
   async function loadMateriList() {
     const container = document.getElementById('materiContainer');
     if (!container) return;
-    container.innerHTML = 'Memuat materi...';
 
-    try {
-      const materi = await fetchMateriList();
-      if (!materi.length) {
-        container.innerHTML = '<div class="alert alert-info text-center">Belum ada materi yang diunggah.</div>';
-        return;
+    // 1. Coba ambil dari cache
+    let materi = getCachedMateri();
+    if (materi && materi.length) {
+      renderMateriList(materi);
+      // 2. Background update
+      fetchMateriList(true).then(newMateri => {
+        if (JSON.stringify(newMateri) !== JSON.stringify(materi)) {
+          renderMateriList(newMateri);
+        }
+      }).catch(err => console.warn('Gagal update materi:', err));
+    } else {
+      // Tidak ada cache, tampilkan spinner
+      container.innerHTML = '<div class="text-center my-4"><div class="loading-spinner"></div><p class="mt-2 text-muted">Memuat materi...</p></div>';
+      try {
+        materi = await fetchMateriList(true);
+        renderMateriList(materi);
+      } catch (e) {
+        container.innerHTML = `<div class="alert alert-danger">Gagal memuat materi: ${escapeHtml(e.message)}</div>`;
       }
-
-      let html = '<div class="row g-4">';
-      materi.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(m => {
-        const fileUrl = `https://drive.google.com/file/d/${m.fileId}/view`;
-        const previewUrl = `https://drive.google.com/file/d/${m.fileId}/preview`;
-        const icon = m.tipe === 'pdf' ? 'bi-file-pdf-fill text-danger' : 'bi-file-ppt-fill text-warning';
-        
-        html += `
-          <div class="col-md-6">
-            <div class="card h-100 border-0 shadow-sm rounded-4">
-              <div class="card-body">
-                <div class="d-flex align-items-center mb-3">
-                  <i class="${icon} fs-1 me-3"></i>
-                  <h5 class="card-title mb-0">${escapeHtml(m.judul || '')}</h5>
-                </div>
-                <p class="card-text text-muted small">${escapeHtml(m.deskripsi || '')}</p>
-                <div class="d-flex justify-content-between align-items-center">
-                  <span class="badge bg-light text-dark">${m.tipe.toUpperCase()}</span>
-                  <div>
-                    <button class="btn btn-primary btn-sm rounded-pill px-3 me-1 preview-materi-btn" 
-                      data-judul="${escapeHtml(m.judul)}" 
-                      data-preview-url="${previewUrl}" 
-                      data-download-url="${fileUrl}">
-                      <i class="bi bi-play-circle me-1"></i>Tayangkan
-                    </button>
-                    <a href="${fileUrl}" target="_blank" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                      <i class="bi bi-download"></i>
-                    </a>
-                  </div>
-                </div>
-                <div class="mt-2 text-end text-muted small">
-                  Diupload: ${new Date(m.timestamp).toLocaleDateString('id-ID')}
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      });
-      html += '</div>';
-      container.innerHTML = html;
-
-      // Event listener untuk tombol preview
-      document.querySelectorAll('.preview-materi-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-          const judul = this.dataset.judul;
-          const previewUrl = this.dataset.previewUrl;
-          const downloadUrl = this.dataset.downloadUrl;
-
-          document.getElementById('previewMateriJudul').innerText = judul;
-          document.getElementById('previewMateriIframe').src = previewUrl;
-          document.getElementById('previewMateriDownloadBtn').href = downloadUrl;
-          document.getElementById('previewMateriSpinner').style.display = 'flex';
-
-          new bootstrap.Modal(document.getElementById('previewMateriModal')).show();
-        });
-      });
-
-    } catch (e) {
-      container.innerHTML = `<div class="alert alert-danger">Gagal memuat materi: ${escapeHtml(e.message)}</div>`;
     }
   }
 
@@ -412,18 +466,6 @@
   // =====================================================
   window.onload = function() {
     loadMateriList();
-
-    // Tutup navbar otomatis saat klik di luar
-    document.addEventListener('click', function(event) {
-      const navbar = document.getElementById('navbarMain');
-      const toggler = document.querySelector('.navbar-toggler');
-      if (!navbar || !toggler) return;
-      const isClickInside = navbar.contains(event.target) || toggler.contains(event.target);
-      if (!isClickInside && navbar.classList.contains('show')) {
-        const bsCollapse = bootstrap.Collapse.getInstance(navbar);
-        if (bsCollapse) bsCollapse.hide();
-      }
-    });
 
     // Reset iframe saat modal ditutup
     document.getElementById('previewMateriModal')?.addEventListener('hidden.bs.modal', function () {

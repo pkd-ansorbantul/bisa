@@ -182,9 +182,9 @@
   // =====================================================
   //   KONFIGURASI & STATE (khusus absen)
   // =====================================================
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbyjyKtVSIvbFaCkiZhQ5DF1RN13PmoOXiX2LdTuK_iUmcuHbrYlr_cY6hAsSR__b2I9/exec'; // Ganti jika berbeda
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbw9SOqv7cUwaASY63dDAR2uGSDvEVMDOeH2WKEOpGYBsfvn2mS_kuk9Nwn-iXqXIkOa/exec'; // Ganti jika berbeda
 
-  // Cache sesi sederhana
+  // Cache sesi (in-memory)
   let cachedSesi = null;
 
   // =====================================================
@@ -299,13 +299,64 @@
   }
 
   // =====================================================
-  //   FETCH SESI ABSEN
+  //   FETCH SESI ABSEN (dengan cache sessionStorage)
   // =====================================================
   async function fetchSesiAbsen(forceRefresh = false) {
-    if (!forceRefresh && cachedSesi) return cachedSesi;
+    const cacheKey = 'absenSesiCache';
+    const cacheTimeKey = 'absenSesiCacheTime';
+    const now = Date.now();
+    const maxAge = 5 * 60 * 1000; // 5 menit
+
+    // Jika tidak dipaksa refresh, coba ambil dari sessionStorage
+    if (!forceRefresh) {
+      try {
+        const cached = sessionStorage.getItem(cacheKey);
+        const cachedTime = sessionStorage.getItem(cacheTimeKey);
+        if (cached && cachedTime && (now - parseInt(cachedTime)) < maxAge) {
+          const parsed = JSON.parse(cached);
+          if (parsed && Array.isArray(parsed)) {
+            cachedSesi = parsed;
+            return parsed;
+          }
+        }
+      } catch (e) {
+        // Abaikan error, lanjut fetch
+      }
+    }
+
+    // Ambil dari server
     const res = await callAppsScript({ action: 'getSesiAbsen' }, 'GET');
-    cachedSesi = res.data || [];
-    return cachedSesi;
+    const data = res.data || [];
+    cachedSesi = data;
+
+    // Simpan ke sessionStorage
+    try {
+      sessionStorage.setItem(cacheKey, JSON.stringify(data));
+      sessionStorage.setItem(cacheTimeKey, now.toString());
+    } catch (e) {}
+
+    return data;
+  }
+
+  // =====================================================
+  //   FUNGSI MEMBACA CACHE (langsung dari sessionStorage)
+  // =====================================================
+  function getCachedSesi() {
+    const cacheKey = 'absenSesiCache';
+    const cacheTimeKey = 'absenSesiCacheTime';
+    const now = Date.now();
+    const maxAge = 5 * 60 * 1000; // 5 menit
+    try {
+      const cached = sessionStorage.getItem(cacheKey);
+      const cachedTime = sessionStorage.getItem(cacheTimeKey);
+      if (cached && cachedTime && (now - parseInt(cachedTime)) < maxAge) {
+        const parsed = JSON.parse(cached);
+        if (parsed && Array.isArray(parsed)) {
+          return parsed;
+        }
+      }
+    } catch (e) {}
+    return null; // tidak ada cache atau kadaluarsa
   }
 
   // =====================================================
@@ -351,56 +402,26 @@
       const data = window.sigPadAbsen.toData();
       if (data) { data.pop(); window.sigPadAbsen.fromData(data); saveAbsenFormState(); }
     });
+
+    // Simpan state setiap kali selesai menggambar
+    window.sigPadAbsen.addEventListener('endStroke', saveAbsenFormState);
   }
 
   // =====================================================
-  //   RENDER FORM ABSEN
+  //   RENDER FORM ABSEN (fungsi terpisah)
   // =====================================================
-  async function loadAbsenSesi() {
+  function renderForm(sesiList, sesiIdFromUrl, tokenFromUrl, isQRMode) {
     const container = document.getElementById('absenContainer');
-    container.innerHTML = 'Memuat sesi...';
-
-    // Cek parameter URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const sesiIdFromUrl = urlParams.get('sesi_id');
-    const tokenFromUrl = urlParams.get('token');
-    const isQRMode = !!(sesiIdFromUrl && tokenFromUrl);
-
-    // Jika mode QR, hapus semua state tersimpan agar form selalu bersih
-    if (isQRMode) {
-      clearAbsenFormState();
-    }
-
-    // Ambil daftar sesi (paksa refresh jika mode QR)
-    let sesiList;
-    if (isQRMode) {
-      sesiList = await fetchSesiAbsen(true);
-    } else {
-      sesiList = await fetchSesiAbsen(false);
-    }
-
     if (!sesiList.length) {
       container.innerHTML = '<div class="alert alert-info">Belum ada sesi absen aktif.</div>';
       return;
     }
 
-    // Validasi: jika mode QR dan sesiId tidak ditemukan dalam list
-    if (isQRMode) {
-      const foundSesi = sesiList.find(s => s.id == sesiIdFromUrl);
-      if (!foundSesi) {
-        container.innerHTML = `<div class="alert alert-danger">
-          <i class="bi bi-exclamation-triangle"></i> Sesi dengan ID ${sesiIdFromUrl} tidak ditemukan. Mungkin sesi telah dihapus atau token tidak valid.
-        </div>`;
-        return;
-      }
-    }
-
     let html = `<div class="mb-4 ${isQRMode ? 'qr-mode' : ''}">`;
-
     html += `<h5>Pilih Sesi</h5><select class="form-select" id="pilihSesiAbsen" ${isQRMode ? 'disabled' : ''}>`;
     sesiList.forEach(s => {
       const selected = (sesiIdFromUrl && s.id == sesiIdFromUrl) ? 'selected' : '';
-      html += `<option value="${s.id}" ${selected}>${s.nama} (${s.waktu || ''})</option>`;
+      html += `<option value="${s.id}" ${selected}>${escapeHtml(s.nama)} (${escapeHtml(s.waktu || '')})</option>`;
     });
     html += `</select></div>`;
 
@@ -439,19 +460,19 @@
     container.innerHTML = html;
     initAbsenSignaturePad();
 
-    if (isQRMode) {
+    // Restore state (jika bukan mode QR)
+    if (!isQRMode) {
+      restoreAbsenFormState();
+    } else {
+      // Mode QR: pastikan dropdown sesuai URL
       const dropdown = document.getElementById('pilihSesiAbsen');
       if (dropdown) dropdown.value = sesiIdFromUrl;
-      // Tidak restore karena sudah clear
-    } else {
-      restoreAbsenFormState();
     }
 
-    // Event listeners untuk menyimpan state
-    document.getElementById('namaAbsen')?.addEventListener('input', saveAbsenFormState);
-    document.getElementById('pilihSesiAbsen')?.addEventListener('change', saveAbsenFormState);
-    if (window.sigPadAbsen) {
-      window.sigPadAbsen.addEventListener('endStroke', saveAbsenFormState);
+    // Event listeners untuk menyimpan state (kecuali mode QR, kita tidak simpan state)
+    if (!isQRMode) {
+      document.getElementById('namaAbsen')?.addEventListener('input', saveAbsenFormState);
+      document.getElementById('pilihSesiAbsen')?.addEventListener('change', saveAbsenFormState);
     }
 
     // Submit handler
@@ -514,6 +535,55 @@
         btn.innerHTML = '📋 Kirim Absen';
       }
     });
+  }
+
+  // =====================================================
+  //   LOAD ABSEN SESI (dengan cache lalu update background)
+  // =====================================================
+  async function loadAbsenSesi() {
+    const container = document.getElementById('absenContainer');
+    const urlParams = new URLSearchParams(window.location.search);
+    const sesiIdFromUrl = urlParams.get('sesi_id');
+    const tokenFromUrl = urlParams.get('token');
+    const isQRMode = !!(sesiIdFromUrl && tokenFromUrl);
+
+    // Jika mode QR, hapus state tersimpan agar form selalu bersih
+    if (isQRMode) {
+      clearAbsenFormState();
+    }
+
+    // 1. Coba ambil dari cache dulu
+    let sesiList = getCachedSesi();
+
+    if (sesiList && sesiList.length > 0) {
+      // Render langsung dari cache
+      renderForm(sesiList, sesiIdFromUrl, tokenFromUrl, isQRMode);
+
+      // 2. Di latar belakang, ambil data terbaru
+      fetchSesiAbsen(true).then(newList => {
+        // Jika data berubah (misalnya ada sesi baru), perbarui dropdown
+        if (JSON.stringify(newList) !== JSON.stringify(sesiList)) {
+          renderForm(newList, sesiIdFromUrl, tokenFromUrl, isQRMode);
+        }
+      }).catch(err => console.warn('Gagal memperbarui sesi:', err));
+    } else {
+      // Tidak ada cache, tampilkan spinner dan fetch
+      container.innerHTML = `
+        <div class="text-center my-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Memuat...</span>
+          </div>
+          <p class="mt-2 text-muted">Memuat sesi tersedia...</p>
+        </div>
+      `;
+
+      try {
+        sesiList = await fetchSesiAbsen(true);
+        renderForm(sesiList, sesiIdFromUrl, tokenFromUrl, isQRMode);
+      } catch (err) {
+        container.innerHTML = `<div class="alert alert-danger">Gagal memuat sesi: ${err.message}</div>`;
+      }
+    }
   }
 
   // =====================================================
