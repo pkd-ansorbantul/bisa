@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>PKD GP Ansor Bantul · Peserta</title>
+
+  <!-- Favicon & Font -->
+  <link rel="icon" type="image/png" href="LOGO ANSOR.webp">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <!-- Bootstrap + Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <style>
+    /* ===== GAYA UMUM (sama seperti admin) ===== */
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #f8fafc; color: #0f172a; }
+    .navbar { background: rgba(255,255,255,0.8) !important; backdrop-filter: blur(12px); border-bottom: 1px solid rgba(203,213,225,0.3); }
+    .navbar-brand { font-weight: 700; }
+    .navbar-brand img { max-height: 40px; margin-right: 12px; }
+    .brand-title { font-size: 1.35rem; font-weight: 700; color: #0a3d62; }
+    .brand-sub { font-size: 0.9rem; color: #6c757d; display: block; }
+    .nav-link { font-weight: 500; border-radius: 9999px; padding: 0.5rem 1.2rem; color: #334155 !important; transition: all 0.15s; }
+    .nav-link:hover { background: rgba(37,99,235,0.06); color: #2563eb !important; }
+    .nav-link.active { background: #2563eb !important; color: white !important; box-shadow: 0 4px 10px rgba(37,99,235,0.2); }
+    .nav-link i { margin-right: 6px; }
+
+    .container-card { max-width: 1400px; background: white; border-radius: 32px; padding: 2rem; margin: 30px auto; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid rgba(226,232,240,0.6); }
+    .section-title { font-weight: 650; font-size: 1.75rem; border-left: 6px solid #2563eb; padding-left: 1.2rem; margin-bottom: 1.8rem; }
+
+    /* Sidebar vertikal */
+    .nav-pills .nav-link { border-radius: 12px; padding: 0.6rem 1rem; margin-bottom: 4px; color: #334155; font-weight: 500; }
+    .nav-pills .nav-link i { font-size: 1.1rem; }
+    .nav-pills .nav-link.active { background-color: #2563eb; color: white !important; }
+    .sidebar-sticky { position: sticky; top: 80px; z-index: 1; transition: all 0.3s ease; }
+
+    /* Skeleton loading */
+    .skeleton-loader { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: skeleton-shimmer 1.5s infinite linear; border-radius: 8px; height: 1.2em; width: 100%; }
+    @keyframes skeleton-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    .crud-table { max-height: 500px; overflow-y: auto; border-radius: 16px; }
+    .table-admin th { background-color: #f8fafc; font-weight: 600; position: sticky; top: 0; background: white; z-index: 10; }
+
+    .fade-in { animation: fadeIn 0.3s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+    .toast { background: white; border-left: 5px solid; border-radius: 16px; }
+
+    /* Thumbnail foto */
+    .foto-thumb { max-width: 50px; max-height: 50px; border-radius: 4px; object-fit: cover; cursor: pointer; }
+
+    /* Filter bar */
+    .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; align-items: center; }
+
+    /* ===== SIDEBAR MINIMIZED MODE ===== */
+    .sidebar-minimized .col-md-3.col-lg-2 { flex: 0 0 auto; width: auto; max-width: 70px; }
+    .sidebar-minimized .col-md-9.col-lg-10 { flex: 1 0 0; width: auto; min-width: 0; }
+    .sidebar-minimized .sidebar-sticky .nav-link span,
+    .sidebar-minimized .sidebar-sticky h6 span,
+    .sidebar-minimized .sidebar-sticky hr {
+      display: none;
+    }
+    .sidebar-minimized .sidebar-sticky .nav-link {
+      padding: 0.6rem 0.8rem;
+      text-align: center;
+    }
+    .sidebar-minimized .sidebar-sticky .nav-link i {
+      font-size: 1.4rem;
+      margin-right: 0;
+    }
+    .sidebar-minimized .sidebar-sticky h6 i {
+      font-size: 1.5rem;
+    }
+    .sidebar-minimized .sidebar-sticky #toggleSidebarBtn {
+      margin-left: auto;
+      display: block;
+    }
+    .sidebar-minimized .nav-link[title]:hover::after {
+      content: attr(title);
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #1e293b;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      z-index: 1000;
+      margin-left: 8px;
+      pointer-events: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .sidebar-minimized .nav-link {
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ==================== NAVBAR (sama dengan admin) ==================== -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="index.html">
+      <img src="LOGO ANSOR.webp" alt="GP Ansor">
+      <span><span class="brand-title">PKD GP Ansor</span><span class="brand-sub">Kabupaten Bantul</span></span>
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="pretest.html"><i class="bi bi-pencil-square"></i>Pre-test</a></li>
+        <li class="nav-item"><a class="nav-link" href="posttest.html"><i class="bi bi-trophy"></i>Post-test</a></li>
+        <li class="nav-item"><a class="nav-link" href="absen.html"><i class="bi bi-qr-code"></i>Absen</a></li>
+        <li class="nav-item"><a class="nav-link" href="skrining.html"><i class="bi bi-clipboard-check"></i>Skrining</a></li>
+        <li class="nav-item"><a class="nav-link active" href="peserta.html"><i class="bi bi-person-badge"></i>Peserta</a></li>
+        <li class="nav-item"><a class="nav-link" href="materi.html"><i class="bi bi-file-earmark-pdf"></i>Materi</a></li>
+        <li class="nav-item"><a class="nav-link" href="admin.html"><i class="bi bi-gear-wide"></i>Admin</a></li>
+      </ul>
+      <!-- Tempat untuk menu user (akan diisi JS) -->
+      <div class="d-flex align-items-center gap-2" id="navbarUserMenu"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- ==================== KONTEN UTAMA + SIDEBAR ==================== -->
+<section class="container container-card">
+  <div class="row g-4">
+    <!-- Sidebar kiri (sama dengan admin) -->
+    <div class="col-md-3 col-lg-2">
+      <div class="sidebar-sticky">
+        <div class="bg-light p-3 rounded-4 shadow-sm">
+          <!-- Header dengan tombol minimize -->
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-bold mb-0"><i class="bi bi-grid me-2"></i><span>Menu Admin</span></h6>
+            <button class="btn btn-sm btn-outline-secondary" id="toggleSidebarBtn" title="Minimize/Maximize sidebar">
+              <i class="bi bi-arrow-left-right"></i>
+            </button>
+          </div>
+          <div class="nav flex-column nav-pills">
+            <a class="nav-link" href="/admin/skrining.html" title="Skrining"><i class="bi bi-clipboard-check me-2"></i><span>Skrining</span></a>
+            <a class="nav-link" href="/admin/pretest.html" title="Pre-test"><i class="bi bi-pencil-square me-2"></i><span>Pre-test</span></a>
+            <a class="nav-link" href="/admin/posttest.html" title="Post-test"><i class="bi bi-trophy me-2"></i><span>Post-test</span></a>
+            <a class="nav-link" href="/admin/sesi_absen.html" title="Sesi Absen"><i class="bi bi-calendar-event me-2"></i><span>Sesi Absen</span></a>
+            <a class="nav-link" href="/admin/materi.html" title="Materi"><i class="bi bi-file-earmark-pdf me-2"></i><span>Materi</span></a>
+            <a class="nav-link active" href="/admin/peserta.html" title="Peserta"><i class="bi bi-person-badge me-2"></i><span>Peserta</span></a>
+            <a class="nav-link" href="/admin/kader.html" title="Kader"><i class="bi bi-people-fill me-2"></i><span>Kader</span></a>
+            <a class="nav-link" href="/admin/informasi.html" title="Informasi"><i class="bi bi-info-circle me-2"></i><span>Informasi</span></a>
+            <a class="nav-link" href="/admin/data_absensi.html" title="Data Absensi"><i class="bi bi-table me-2"></i><span>Data Absensi</span></a>
+            <a class="nav-link" href="/admin/rekap_absensi.html" title="Rekap Absensi"><i class="bi bi-bar-chart me-2"></i><span>Rekap Absensi</span></a>
+            <a class="nav-link" href="/admin/sertifikat.html" title="Sertifikat"><i class="bi bi-patch-check me-2"></i><span>Sertifikat</span></a>
+            <a class="nav-link" href="/admin/pengaturan.html" title="Pengaturan"><i class="bi bi-gear me-2"></i><span>Pengaturan</span></a>
+            <hr class="my-2">
+            <a class="nav-link text-danger" href="#" id="sidebarLogoutBtn" title="Logout">
+              <i class="bi bi-box-arrow-right me-2"></i><span>Logout</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Konten kanan: Manajemen Peserta -->
+    <div class="col-md-9 col-lg-10">
+      <div class="bg-white p-4 rounded-4 shadow-sm">
+        <h2 class="section-title"><i class="bi bi-person-badge me-2"></i>Manajemen Peserta PKD</h2>
+
+        <!-- Tombol aksi -->
+        <div class="d-flex justify-content-between mb-4 flex-wrap gap-2">
+          <div>
+            <button class="btn btn-success btn-sm" id="tambahPesertaBtn"><i class="bi bi-plus-circle"></i> Tambah Peserta</button>
+            <button class="btn btn-info btn-sm" id="importPesertaBtn"><i class="bi bi-file-earmark-arrow-up"></i> Impor CSV</button>
+            <button class="btn btn-secondary btn-sm" id="exportPesertaBtn"><i class="bi bi-download"></i> Ekspor CSV</button>
+          </div>
+          <div class="filter-input" style="width: 250px;">
+            <input type="text" class="form-control form-control-sm" id="searchPeserta" placeholder="🔍 Cari nama / alamat / utusan...">
+          </div>
+        </div>
+
+        <!-- Tabel daftar peserta -->
+        <div id="pesertaContainer">
+          <!-- skeleton akan diisi JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer-modern container text-center py-3 border-top mt-4">
+  <i class="bi bi-c-circle"></i> Hak Cipta 2026 - Tim Instruktur GP Ansor Kabupaten Bantul
+</footer>
+
+<!-- ==================== MODAL LOGIN (salin dari admin) ==================== -->
+<div class="modal fade" id="adminLoginModal" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white border-0 rounded-top-4">
+        <h5 class="modal-title"><i class="bi bi-shield-lock me-2"></i>Login Admin</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Username</label>
+          <input type="text" id="adminUsername" class="form-control rounded-3" placeholder="Masukkan username" autocomplete="off">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Password</label>
+          <div class="input-group">
+            <input type="password" id="adminPassword" class="form-control rounded-start-3" placeholder="Masukkan password" autocomplete="off">
+            <button class="btn btn-outline-secondary rounded-end-3" type="button" onclick="togglePasswordVisibility('adminPassword')">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+        </div>
+        <div id="adminLoginError" class="text-danger mt-2 small" style="display: none;"></div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary rounded-pill px-4" id="adminLoginSubmit">Login</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MODAL PESERTA (tetap) ==================== -->
+<div class="modal fade" id="pesertaModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="pesertaModalLabel">Tambah/Edit Peserta</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="pesertaId">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Foto</label>
+          <input type="file" class="form-control" id="pesertaFoto" accept="image/*">
+          <img id="pesertaFotoPreview" src="#" alt="Preview" style="max-width: 150px; display: none;" class="mt-2 rounded border">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Nama Lengkap *</label>
+          <input type="text" class="form-control" id="pesertaNamaLengkap" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Tempat dan Tanggal Lahir</label>
+          <input type="text" class="form-control" id="pesertaTempatTglLahir" placeholder="Contoh: Bantul, 17 Agustus 2000">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Pekerjaan</label>
+          <input type="text" class="form-control" id="pesertaPekerjaan">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Pendidikan Terakhir</label>
+          <input type="text" class="form-control" id="pesertaPendidikan">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Alamat</label>
+          <textarea class="form-control" id="pesertaAlamat" rows="2"></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">No HP</label>
+          <input type="tel" class="form-control" id="pesertaNoHP">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Email</label>
+          <input type="email" class="form-control" id="pesertaEmail">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Utusan (PAC / Organisasi)</label>
+          <input type="text" class="form-control" id="pesertaUtusan" placeholder="Contoh: PAC Bantul">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Pengalaman Organisasi</label>
+          <textarea class="form-control" id="pesertaPengalaman" rows="3"></textarea>
+        </div>
+        <div id="pesertaModalError" class="text-danger small" style="display: none;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" id="simpanPesertaBtn">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Impor CSV -->
+<div class="modal fade" id="importPesertaModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title"><i class="bi bi-file-earmark-arrow-up me-2"></i>Impor Data Peserta dari CSV</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Pilih File CSV</label>
+          <input type="file" class="form-control" id="importCsvFile" accept=".csv" required>
+          <div class="form-text text-muted small">
+            Format CSV harus memiliki header: 
+            <code>nama_lengkap, tempat_tgl_lahir, pekerjaan, pendidikan_terakhir, alamat, no_hp, email, utusan, pengalaman_organisasi</code> 
+            (kolom lain diabaikan). File maksimal 5 MB.
+          </div>
+        </div>
+        <div id="importCsvError" class="text-danger small" style="display: none;"></div>
+        <div id="importCsvProgress" class="progress mt-2" style="display: none;">
+          <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%">Memproses...</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-info" id="importCsvSubmitBtn">Upload</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TOAST NOTIFIKASI ==================== -->
+<div class="toast-container">
+  <div id="notificationToast" class="toast border-0 shadow-lg" role="alert" data-bs-delay="3000">
+    <div class="toast-header bg-white border-0">
+      <i class="bi me-2" id="toastIcon"></i>
+      <strong class="me-auto" id="toastTitle">Berhasil</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+    </div>
+    <div class="toast-body" id="toastMessage"></div>
+  </div>
+</div>
+
+<!-- ==================== SCRIPT (gabungan autentikasi + fungsi peserta) ==================== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // =====================================================
+  // KONFIGURASI (GANTI DENGAN URL APPS SCRIPT ANDA)
+  // =====================================================
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbw9SOqv7cUwaASY63dDAR2uGSDvEVMDOeH2WKEOpGYBsfvn2mS_kuk9Nwn-iXqXIkOa/exec'; // GANTI!
+
+  // =====================================================
+  // AUTENTIKASI (salin dari admin)
+  // =====================================================
+  let userRole = null;
+  let userData = {};
+
+  function persistAuthState() {
+    const state = { role: userRole, data: userData };
+    sessionStorage.setItem('pkd_auth', JSON.stringify(state));
+    localStorage.setItem('pkd_auth', JSON.stringify(state));
+  }
+
+  function loadAuthState() {
+    let serialized = sessionStorage.getItem('pkd_auth');
+    if (!serialized) serialized = localStorage.getItem('pkd_auth');
+    if (serialized) {
+      try {
+        const state = JSON.parse(serialized);
+        userRole = state.role || null;
+        userData = state.data || {};
+      } catch (e) {}
+    }
+    updateNavbarMenu();
+  }
+
+  function updateNavbarMenu() {
+    const menu = document.getElementById('navbarUserMenu');
+    if (!menu) return;
+    if (userRole === 'admin') {
+      menu.innerHTML = `
+        <span class="badge bg-light text-dark px-3 py-2 rounded-pill me-2">
+          <i class="bi bi-shield-fill me-1"></i>Admin
+        </span>
+        <div class="dropdown">
+          <button class="btn btn-outline-primary rounded-pill px-4 dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+            <i class="bi bi-person-circle me-1"></i> ${escapeHtml(userData.nama || 'Admin')}
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="admin.html"><i class="bi bi-gear-wide me-2"></i>Dashboard</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><button class="dropdown-item" id="logoutBtn"><i class="bi bi-box-arrow-right me-2"></i>Logout</button></li>
+          </ul>
+        </div>
+      `;
+    } else {
+      menu.innerHTML = `
+        <span class="badge bg-light text-dark px-3 py-2 rounded-pill me-2">
+          <i class="bi bi-person-circle me-1"></i>Guest
+        </span>
+        <button class="btn btn-outline-primary rounded-pill px-4" id="loginBtn">Login</button>
+      `;
+    }
+
+    document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      logout();
+    });
+    document.getElementById('loginBtn')?.addEventListener('click', () => {
+      new bootstrap.Modal(document.getElementById('adminLoginModal')).show();
+    });
+  }
+
+  function logout() {
+    userRole = null;
+    userData = {};
+    sessionStorage.removeItem('pkd_auth');
+    localStorage.removeItem('pkd_auth');
+    window.location.href = 'index.html';
+  }
+
+  window.togglePasswordVisibility = function(inputId) {
+    const input = document.getElementById(inputId);
+    input.type = input.type === 'password' ? 'text' : 'password';
+  };
+
+  // =====================================================
+  // FUNGSI BANTU (dari peserta.html asli + tambahan)
+  // =====================================================
+  function escapeHtml(unsafe) {
+    if (unsafe == null) return '';
+    return String(unsafe).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  }
+
+  function showToast(message, type = 'success') {
+    const toastEl = document.getElementById('notificationToast');
+    document.getElementById('toastMessage').innerText = message;
+    if (type === 'success') {
+      toastEl.classList.add('border-success'); toastEl.classList.remove('border-danger');
+      document.getElementById('toastIcon').className = 'bi bi-check-circle-fill me-2 text-success';
+      document.getElementById('toastTitle').innerText = 'Berhasil';
+    } else {
+      toastEl.classList.add('border-danger'); toastEl.classList.remove('border-success');
+      document.getElementById('toastIcon').className = 'bi bi-x-circle-fill me-2 text-danger';
+      document.getElementById('toastTitle').innerText = 'Gagal';
+    }
+    new bootstrap.Toast(toastEl).show();
+  }
+
+  function callAppsScript(params, method = 'GET') {
+    return new Promise((resolve, reject) => {
+      if (method === 'GET') {
+        fetch(scriptUrl + '?' + new URLSearchParams(params), { method: 'GET', mode: 'cors' })
+          .then(r => r.json())
+          .then(resolve)
+          .catch(reject);
+      } else {
+        fetch(scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(params)
+        }).then(() => resolve({ success: true })).catch(reject);
+      }
+    });
+  }
+
+  function renderSkeletonTable(rows = 5, cols = 12) {
+    let html = '<div class="skeleton-table p-3">';
+    for (let r = 0; r < rows; r++) {
+      html += '<div class="d-flex gap-2 mb-3">';
+      for (let c = 0; c < cols; c++) {
+        html += '<div class="skeleton-loader" style="flex:1; height:1.5rem;"></div>';
+      }
+      html += '</div>';
+    }
+    return html + '</div>';
+  }
+
+  function readFileAsBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function downloadCSV(csvContent, filename) {
+    const bom = "\uFEFF";
+    const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+
+  // =====================================================
+  // MANAJEMEN CACHE
+  // =====================================================
+  function getCachedData(key, maxAge = 3600000) {
+    try {
+      const data = sessionStorage.getItem(key + '_data');
+      const time = sessionStorage.getItem(key + '_time');
+      if (data && time && (Date.now() - parseInt(time)) < maxAge) {
+        return JSON.parse(data);
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function saveCachedData(key, data) {
+    try {
+      sessionStorage.setItem(key + '_data', JSON.stringify(data));
+      sessionStorage.setItem(key + '_time', Date.now().toString());
+    } catch (e) {}
+  }
+
+  async function fetchPesertaFromServer() {
+    const res = await callAppsScript({ action: 'getPesertaList' }, 'GET');
+    return res.data || [];
+  }
+
+  // =====================================================
+  // FUNGSI RENDER TABEL PESERTA
+  // =====================================================
+  function renderPesertaTable(data, container) {
+    if (!data.length) {
+      container.innerHTML = '<p class="text-muted">Belum ada data peserta.</p>';
+      return;
+    }
+
+    let html = `<div class="table-responsive crud-table">
+                  <table class="table table-bordered table-sm table-hover table-admin">
+                    <thead>
+                      <tr>
+                        <th>No</th>
+                        <th>Foto</th>
+                        <th>Nama Lengkap</th>
+                        <th>Tempat/Tgl Lahir</th>
+                        <th>Pekerjaan</th>
+                        <th>Pendidikan</th>
+                        <th>Alamat</th>
+                        <th>No HP</th>
+                        <th>Email</th>
+                        <th>Utusan</th>
+                        <th>Pengalaman</th>
+                        <th>Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody id="pesertaTableBody">`;
+
+    data.forEach((p, idx) => {
+      const fotoThumb = p.fotoDriveId ? `https://drive.google.com/thumbnail?id=${p.fotoDriveId}&sz=w100-h100` : '';
+      html += `<tr class="peserta-row" data-nama="${escapeHtml(p.nama_lengkap || '').toLowerCase()}" data-alamat="${escapeHtml(p.alamat || '').toLowerCase()}" data-utusan="${escapeHtml(p.utusan || '').toLowerCase()}">
+        <td>${idx + 1}</td>
+        <td>${p.fotoDriveId ? `<img src="${fotoThumb}" class="foto-thumb" onclick="window.open('https://drive.google.com/file/d/${p.fotoDriveId}/view')">` : '-'}</td>
+        <td>${escapeHtml(p.nama_lengkap || '')}</td>
+        <td>${escapeHtml(p.tempat_tgl_lahir || '')}</td>
+        <td>${escapeHtml(p.pekerjaan || '')}</td>
+        <td>${escapeHtml(p.pendidikan_terakhir || '')}</td>
+        <td>${escapeHtml(p.alamat || '')}</td>
+        <td>${escapeHtml(p.no_hp || '')}</td>
+        <td>${escapeHtml(p.email || '')}</td>
+        <td>${escapeHtml(p.utusan || '')}</td>
+        <td>${escapeHtml(p.pengalaman_organisasi || '')}</td>
+        <td>
+          <button class="btn btn-sm btn-warning edit-peserta" data-id="${p.id}">✏️</button>
+          <button class="btn btn-sm btn-danger delete-peserta" data-id="${p.id}">🗑️</button>
+        </td>
+      </tr>`;
+    });
+
+    html += `</tbody></table></div>`;
+    container.innerHTML = html;
+    container.classList.add('fade-in');
+
+    // Event listener untuk tombol edit/hapus
+    document.querySelectorAll('.edit-peserta').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const id = this.dataset.id;
+        const peserta = data.find(p => p.id == id);
+        showPesertaModal(peserta);
+      });
+    });
+
+    document.querySelectorAll('.delete-peserta').forEach(btn => {
+      btn.addEventListener('click', async function() {
+        if (!confirm('Hapus data peserta ini?')) return;
+        const id = this.dataset.id;
+        try {
+          await callAppsScript({ action: 'deletePeserta', id }, 'POST');
+          showToast('Peserta dihapus', 'success');
+          loadPeserta(); // reload dengan cache
+        } catch (e) {
+          showToast('Gagal menghapus: ' + e.message, 'danger');
+        }
+      });
+    });
+
+    // Filter search
+    const searchInput = document.getElementById('searchPeserta');
+    if (searchInput) {
+      // Hapus listener lama, ganti baru
+      const newSearch = searchInput.cloneNode(true);
+      searchInput.parentNode.replaceChild(newSearch, searchInput);
+      newSearch.addEventListener('input', function(e) {
+        const keyword = e.target.value.toLowerCase();
+        document.querySelectorAll('#pesertaTableBody .peserta-row').forEach(row => {
+          const nama = row.dataset.nama || '';
+          const alamat = row.dataset.alamat || '';
+          const utusan = row.dataset.utusan || '';
+          row.style.display = (nama.includes(keyword) || alamat.includes(keyword) || utusan.includes(keyword)) ? '' : 'none';
+        });
+      });
+    }
+  }
+
+  // =====================================================
+  // FUNGSI UTAMA: LOAD PESERTA (dengan cache)
+  // =====================================================
+  async function loadPeserta() {
+    const container = document.getElementById('pesertaContainer');
+    const cached = getCachedData('pesertaList');
+
+    if (cached) {
+      renderPesertaTable(cached, container);
+      fetchPesertaFromServer().then(newData => {
+        if (JSON.stringify(newData) !== JSON.stringify(cached)) {
+          renderPesertaTable(newData, container);
+          saveCachedData('pesertaList', newData);
+        }
+      }).catch(console.warn);
+    } else {
+      container.innerHTML = renderSkeletonTable(5, 12);
+      try {
+        const data = await fetchPesertaFromServer();
+        renderPesertaTable(data, container);
+        saveCachedData('pesertaList', data);
+      } catch (e) {
+        container.innerHTML = `<div class="alert alert-danger">Gagal memuat: ${escapeHtml(e.message)}</div>`;
+      }
+    }
+  }
+
+  // =====================================================
+  // MODAL TAMBAH/EDIT PESERTA (dari peserta.html asli)
+  // =====================================================
+  function showPesertaModal(peserta = null) {
+    const isEdit = !!peserta;
+    document.getElementById('pesertaModalLabel').innerText = isEdit ? 'Edit Peserta' : 'Tambah Peserta';
+    document.getElementById('pesertaId').value = isEdit ? peserta.id : '';
+    document.getElementById('pesertaNamaLengkap').value = isEdit ? (peserta.nama_lengkap || '') : '';
+    document.getElementById('pesertaTempatTglLahir').value = isEdit ? (peserta.tempat_tgl_lahir || '') : '';
+    document.getElementById('pesertaPekerjaan').value = isEdit ? (peserta.pekerjaan || '') : '';
+    document.getElementById('pesertaPendidikan').value = isEdit ? (peserta.pendidikan_terakhir || '') : '';
+    document.getElementById('pesertaAlamat').value = isEdit ? (peserta.alamat || '') : '';
+    document.getElementById('pesertaNoHP').value = isEdit ? (peserta.no_hp || '') : '';
+    document.getElementById('pesertaEmail').value = isEdit ? (peserta.email || '') : '';
+    document.getElementById('pesertaUtusan').value = isEdit ? (peserta.utusan || '') : '';
+    document.getElementById('pesertaPengalaman').value = isEdit ? (peserta.pengalaman_organisasi || '') : '';
+
+    const preview = document.getElementById('pesertaFotoPreview');
+    if (isEdit && peserta.fotoDriveId) {
+      preview.src = `https://drive.google.com/thumbnail?id=${peserta.fotoDriveId}&sz=w150`;
+      preview.style.display = 'block';
+    } else {
+      preview.style.display = 'none';
+      preview.src = '#';
+    }
+    document.getElementById('pesertaFoto').value = '';
+
+    const modal = new bootstrap.Modal(document.getElementById('pesertaModal'));
+    modal.show();
+
+    document.getElementById('simpanPesertaBtn').onclick = async function() {
+      const id = document.getElementById('pesertaId').value;
+      const nama_lengkap = document.getElementById('pesertaNamaLengkap').value.trim();
+      if (!nama_lengkap) {
+        document.getElementById('pesertaModalError').innerText = 'Nama lengkap wajib diisi!';
+        document.getElementById('pesertaModalError').style.display = 'block';
+        return;
+      }
+
+      const fotoFile = document.getElementById('pesertaFoto').files[0];
+      let fotoBase64 = null;
+      if (fotoFile) {
+        if (fotoFile.size > 5 * 1024 * 1024) {
+          document.getElementById('pesertaModalError').innerText = 'Ukuran foto maksimal 5 MB';
+          document.getElementById('pesertaModalError').style.display = 'block';
+          return;
+        }
+        fotoBase64 = await readFileAsBase64(fotoFile);
+      }
+
+      const params = {
+        action: isEdit ? 'updatePeserta' : 'submitPeserta',
+        id: id || undefined,
+        nama_lengkap,
+        tempat_tgl_lahir: document.getElementById('pesertaTempatTglLahir').value,
+        pekerjaan: document.getElementById('pesertaPekerjaan').value,
+        pendidikan_terakhir: document.getElementById('pesertaPendidikan').value,
+        alamat: document.getElementById('pesertaAlamat').value,
+        no_hp: document.getElementById('pesertaNoHP').value,
+        email: document.getElementById('pesertaEmail').value,
+        utusan: document.getElementById('pesertaUtusan').value,
+        pengalaman_organisasi: document.getElementById('pesertaPengalaman').value
+      };
+      if (fotoBase64) params.foto = fotoBase64;
+
+      try {
+        await callAppsScript(params, 'POST');
+        showToast(isEdit ? 'Data diperbarui' : 'Data ditambahkan', 'success');
+        modal.hide();
+        loadPeserta(); // reload dengan cache
+      } catch (err) {
+        document.getElementById('pesertaModalError').innerText = err.message;
+        document.getElementById('pesertaModalError').style.display = 'block';
+      }
+    };
+  }
+
+  // =====================================================
+  // IMPOR CSV (dari peserta.html asli)
+  // =====================================================
+  document.getElementById('importPesertaBtn')?.addEventListener('click', () => {
+    new bootstrap.Modal(document.getElementById('importPesertaModal')).show();
+  });
+
+  document.getElementById('importCsvSubmitBtn')?.addEventListener('click', async function() {
+    const fileInput = document.getElementById('importCsvFile');
+    const errorDiv = document.getElementById('importCsvError');
+    const progress = document.getElementById('importCsvProgress');
+
+    if (!fileInput.files.length) {
+      errorDiv.innerText = 'Pilih file CSV terlebih dahulu!';
+      errorDiv.style.display = 'block';
+      return;
+    }
+
+    const file = fileInput.files[0];
+    if (file.size > 5 * 1024 * 1024) {
+      errorDiv.innerText = 'Ukuran file maksimal 5 MB';
+      errorDiv.style.display = 'block';
+      return;
+    }
+
+    errorDiv.style.display = 'none';
+    progress.style.display = 'block';
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      const base64Data = e.target.result.split(',')[1];
+      try {
+        const res = await callAppsScript({
+          action: 'importPesertaCSV',
+          csvData: base64Data,
+          fileName: file.name
+        }, 'POST');
+        if (res.success) {
+          showToast(`Berhasil mengimpor ${res.count || 0} data`, 'success');
+          bootstrap.Modal.getInstance(document.getElementById('importPesertaModal')).hide();
+          fileInput.value = '';
+          loadPeserta(); // reload dengan cache
+        } else {
+          throw new Error(res.message || 'Gagal impor');
+        }
+      } catch (err) {
+        errorDiv.innerText = 'Gagal: ' + err.message;
+        errorDiv.style.display = 'block';
+      } finally {
+        progress.style.display = 'none';
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // =====================================================
+  // EKSPOR CSV (dari peserta.html asli)
+  // =====================================================
+  document.getElementById('exportPesertaBtn')?.addEventListener('click', async () => {
+    try {
+      const res = await callAppsScript({ action: 'exportPesertaCSV' }, 'GET');
+      if (res.success && res.csv) {
+        downloadCSV(res.csv, 'data_peserta.csv');
+        showToast('Ekspor berhasil', 'success');
+      } else {
+        showToast('Gagal mengekspor data', 'danger');
+      }
+    } catch (e) {
+      showToast('Error: ' + e.message, 'danger');
+    }
+  });
+
+  // =====================================================
+  // INISIALISASI
+  // =====================================================
+  document.addEventListener('DOMContentLoaded', () => {
+    loadAuthState();
+
+    // Jika belum login, tampilkan modal login
+    if (userRole !== 'admin') {
+      const loginModal = new bootstrap.Modal(document.getElementById('adminLoginModal'));
+      loginModal.show();
+    } else {
+      loadPeserta();
+    }
+
+    // Tombol login di modal
+    document.getElementById('adminLoginSubmit').addEventListener('click', async function() {
+      const username = document.getElementById('adminUsername').value.trim();
+      const password = document.getElementById('adminPassword').value;
+      const errorDiv = document.getElementById('adminLoginError');
+      if (!username || !password) {
+        errorDiv.innerText = 'Username dan password harus diisi';
+        errorDiv.style.display = 'block';
+        return;
+      }
+      try {
+        const res = await callAppsScript({ action: 'verifyAdmin', username, password }, 'GET');
+        if (res.success) {
+          userRole = 'admin';
+          userData = { nama: username };
+          persistAuthState();
+          updateNavbarMenu();
+          bootstrap.Modal.getInstance(document.getElementById('adminLoginModal')).hide();
+          loadPeserta(); // Muat data setelah login
+        } else {
+          errorDiv.innerText = res.message || 'Login gagal';
+          errorDiv.style.display = 'block';
+        }
+      } catch (err) {
+        errorDiv.innerText = 'Kesalahan: ' + err.message;
+        errorDiv.style.display = 'block';
+      }
+    });
+
+    // Tombol logout di sidebar
+    document.getElementById('sidebarLogoutBtn')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      logout();
+    });
+
+    // Toggle sidebar
+    const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
+    if (toggleSidebarBtn) {
+      toggleSidebarBtn.addEventListener('click', function() {
+        const row = document.querySelector('.row.g-4');
+        row.classList.toggle('sidebar-minimized');
+        const icon = this.querySelector('i');
+        if (icon.classList.contains('bi-arrow-left-right')) {
+          icon.classList.remove('bi-arrow-left-right');
+          icon.classList.add('bi-arrow-right-left');
+        } else {
+          icon.classList.remove('bi-arrow-right-left');
+          icon.classList.add('bi-arrow-left-right');
+        }
+      });
+    }
+
+    // Tombol tambah peserta
+    document.getElementById('tambahPesertaBtn').addEventListener('click', () => showPesertaModal());
+
+    // Tutup navbar saat klik di luar
+    document.addEventListener('click', function(e) {
+      const navbar = document.getElementById('navbarMain');
+      const toggler = document.querySelector('.navbar-toggler');
+      if (navbar && toggler && !navbar.contains(e.target) && !toggler.contains(e.target) && navbar.classList.contains('show')) {
+        bootstrap.Collapse.getInstance(navbar)?.hide();
+      }
+    });
+  });
+</script>
+</body>
+</html>
