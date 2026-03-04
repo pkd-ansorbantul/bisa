@@ -286,7 +286,7 @@
   // =====================================================
   //   KONFIGURASI & FUNGSI
   // =====================================================
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbw9SOqv7cUwaASY63dDAR2uGSDvEVMDOeH2WKEOpGYBsfvn2mS_kuk9Nwn-iXqXIkOa/exec'; // GANTI DENGAN URL ANDA
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbxhkFxLG4RZd4tm3w_4j761hXz0gn4cmQFt-2JO0IEIBS-frohWV_c9CDA1fdM65lee/exec/'; // GANTI DENGAN URL ANDA
 
   async function callAppsScript(params) {
     const query = new URLSearchParams(params).toString();
@@ -392,7 +392,31 @@
       if (!res.success) {
         throw new Error(res.error || 'Gagal memuat data');
       }
-      const items = res.data || [];
+      let items = res.data || [];
+
+      // ========== TAMBAHKAN VIDEO MANUAL ==========
+      // Menambahkan tiga video YouTube yang diminta ke dalam daftar
+      items.push({
+        jenis: 'video',
+        judul: 'MARS SYUBBANUL WATHON',
+        deskripsi: 'Mars Syubbanul Wathon - GP Ansor',
+        url: 'https://youtu.be/q-jLfOBVxrw',
+        urutan: 999  // urutan besar agar muncul di akhir (jika ada video lain)
+      });
+      items.push({
+        jenis: 'video',
+        judul: 'Mars GP Ansor',
+        deskripsi: 'Mars Gerakan Pemuda Ansor',
+        url: 'https://youtu.be/x_HcLf8RFP4',
+        urutan: 998
+      });
+      items.push({
+        jenis: 'video',
+        judul: 'Indonesia Raya',
+        deskripsi: 'Lagu Kebangsaan Indonesia Raya',
+        url: 'https://youtu.be/DhyDhaCynGw',
+        urutan: 997
+      });
 
       // ========== FLYER (dengan carousel jika lebih dari satu) ==========
       const flyerItems = items.filter(i => i.jenis === 'flyer').sort((a,b) => (a.urutan||0)-(b.urutan||0));
