@@ -182,7 +182,7 @@
   // =====================================================
   //   KONFIGURASI & STATE (khusus absen)
   // =====================================================
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbw9SOqv7cUwaASY63dDAR2uGSDvEVMDOeH2WKEOpGYBsfvn2mS_kuk9Nwn-iXqXIkOa/exec'; // Ganti jika berbeda
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbxbsEY1R97mxLuCpiuu6MosJ6rzPuX_F2zuNGgA27B5mYm0oFO4cjq-QjqX35xd1fwq/exec'; // Ganti dengan URL deployment Anda
 
   // Cache sesi (in-memory)
   let cachedSesi = null;
@@ -227,28 +227,30 @@
   }
 
   // =====================================================
-  //   PANGGILAN APPS SCRIPT (GET & POST)
+  //   PANGGILAN APPS SCRIPT (MEMPERBAIKI HANDLING RESPON)
   // =====================================================
-  function callAppsScript(params, method = 'POST', timeout = 30000) {
-    return new Promise(async (resolve, reject) => {
-      if (method === 'GET') {
-        try {
-          const queryString = new URLSearchParams(params).toString();
-          const response = await fetch(`${scriptUrl}?${queryString}`, {
-            method: 'GET',
-            mode: 'cors',
-            headers: { 'Accept': 'application/json' }
-          });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const data = await response.json();
-          return resolve(data);
-        } catch (fetchError) {
-          console.warn('Fetch GET gagal, fallback ke JSONP:', fetchError);
-          // Fallback JSONP
+  async function callAppsScript(params, method = 'POST', timeout = 30000) {
+    // Untuk method GET: gunakan fetch dengan JSONP fallback jika perlu
+    if (method === 'GET') {
+      // Coba fetch biasa dulu
+      try {
+        const queryString = new URLSearchParams(params).toString();
+        const response = await fetch(`${scriptUrl}?${queryString}`, {
+          method: 'GET',
+          mode: 'cors',
+          headers: { 'Accept': 'application/json' }
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        return data;
+      } catch (fetchError) {
+        console.warn('Fetch GET gagal, fallback ke JSONP:', fetchError);
+        // Fallback JSONP
+        return new Promise((resolve, reject) => {
           const callbackName = 'jsonp_callback_' + Date.now();
           const script = document.createElement('script');
           let isResolved = false;
-          let timer = setTimeout(() => {
+          const timer = setTimeout(() => {
             if (!isResolved) {
               isResolved = true;
               if (document.head.contains(script)) document.head.removeChild(script);
@@ -283,19 +285,30 @@
           const queryString = new URLSearchParams({ ...cleanParams, callback: callbackName }).toString();
           script.src = `${scriptUrl}?${queryString}`;
           document.head.appendChild(script);
-        }
-      } else {
-        // POST
-        fetch(scriptUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams(params)
-        })
-          .then(() => resolve({ success: true, message: 'Request sent (no-cors)' }))
-          .catch(reject);
+        });
       }
-    });
+    } else {
+      // POST: gunakan fetch dengan cors dan baca respons JSON
+      try {
+        // Hapus parameter yang tidak perlu dikirim (opsional)
+        const postParams = { ...params };
+        // Kirim sebagai FormData atau URLSearchParams? Backend menerima application/x-www-form-urlencoded
+        const response = await fetch(scriptUrl, {
+          method: 'POST',
+          mode: 'cors',  // Penting: gunakan cors agar bisa baca respons
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(postParams)
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        // Jika respons dari server memiliki field error, lemparkan
+        if (data.error) throw new Error(data.error);
+        return data;
+      } catch (err) {
+        console.error('POST error:', err);
+        throw err;
+      }
+    }
   }
 
   // =====================================================
@@ -517,7 +530,8 @@
       }
 
       try {
-        await callAppsScript(params, 'POST');
+        const result = await callAppsScript(params, 'POST');
+        // Jika berhasil, result seharusnya berisi { success: true, ... }
         showToast('✅ Absen berhasil tercatat!', 'success');
         window.sigPadAbsen.clear();
         document.getElementById('namaAbsen').value = '';
@@ -529,7 +543,8 @@
           window.history.replaceState({}, document.title, window.location.pathname);
         }
       } catch (e) {
-        showToast('❌ Error: ' + e.message, 'danger');
+        // Tampilkan pesan error dari server (misal: sudah absen)
+        showToast('❌ ' + (e.message || 'Terjadi kesalahan'), 'danger');
       } finally {
         btn.disabled = false;
         btn.innerHTML = '📋 Kirim Absen';
