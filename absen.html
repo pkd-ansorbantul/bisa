@@ -5,137 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
   <title>PKD GP Ansor Bantul · Absen Digital</title>
   <link rel="icon" type="image/png" href="LOGO ANSOR.webp">
-  <!-- Font & Bootstrap -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <!-- Signature Pad -->
   <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
   <style>
     * { font-family: 'Inter', system-ui, sans-serif; }
-    /* ===== Gaya navbar yang diselaraskan dengan index.html ===== */
-    .navbar-brand {
-      line-height: 1.2;
-    }
-    .brand-title {
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: #0a3d62;
-    }
-    .brand-sub {
-      font-size: 0.9rem;
-      font-weight: 400;
-      color: #6c757d;
-      display: block;
-      margin-top: 2px;
-      letter-spacing: 0.5px;
-    }
-    .navbar-brand img {
-      height: 45px;
-      width: auto;
-      margin-right: 12px;
-      transition: transform 0.3s ease;
-      will-change: transform;
-    }
-    .navbar-brand img:hover {
-      transform: scale(1.05);
-    }
-    /* ========================================================= */
-    body {
-      background: #f8fafc;
-      color: #0f172a;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    .container-card {
-      max-width: 700px;
-      background: white;
-      border-radius: 32px;
-      padding: 2rem;
-      margin: 30px auto;
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
-      border: 1px solid rgba(226,232,240,0.6);
-    }
-    .section-title {
-      font-weight: 650;
-      font-size: 1.75rem;
-      margin-bottom: 1.8rem;
-      color: #0f172a;
-      border-left: 6px solid #2563eb;
-      padding-left: 1.2rem;
-    }
-    .signature-area {
-      border: 2px dashed #cbd5e1;
-      border-radius: 20px;
-      background: white;
-      padding: 12px;
-      transition: border-color 0.2s;
-    }
+    body { background: #f8fafc; color: #0f172a; min-height: 100vh; display: flex; flex-direction: column; }
+    .navbar { background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(203,213,225,0.3); }
+    .navbar-brand img { max-height: 45px; margin-right: 12px; }
+    .brand-title { font-size: 1.35rem; font-weight: 700; color: #0a3d62; }
+    .brand-sub { font-size: 0.9rem; color: #6c757d; display: block; margin-top: 2px; }
+    .container-card { max-width: 700px; background: white; border-radius: 32px; padding: 2rem; margin: 30px auto; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid rgba(226,232,240,0.6); }
+    .section-title { font-weight: 650; font-size: 1.75rem; margin-bottom: 1.8rem; color: #0f172a; border-left: 6px solid #2563eb; padding-left: 1.2rem; }
+    .signature-area { border: 2px dashed #cbd5e1; border-radius: 20px; background: white; padding: 12px; transition: border-color 0.2s; }
     .signature-area:hover { border-color: #2563eb; }
-    canvas {
-      width: 100%;
-      height: auto;
-      max-width: 300px;
-      max-height: 150px;
-      background: white;
-      display: block;
-      border-radius: 12px;
-      margin: 0 auto;
-    }
-    .signature-buttons {
-      display: flex;
-      gap: 12px;
-      margin-top: 12px;
-      justify-content: center;
-    }
-    .btn-signature {
-      border-radius: 9999px;
-      padding: 0.4rem 1.6rem;
-      font-size: 0.9rem;
-    }
-    .footer-modern {
-      font-size: 0.85rem;
-      color: #64748b;
-      margin-top: auto;
-      text-align: center;
-      padding: 1.5rem 0;
-      border-top: 1px solid #e2e8f0;
-      background: white;
-    }
-    .toast-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 9999;
-    }
-    .toast {
-      background: white;
-      border-left: 5px solid;
-      box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
-      border-radius: 16px;
-    }
+    canvas { width: 100%; height: auto; max-width: 300px; max-height: 150px; background: white; display: block; border-radius: 12px; margin: 0 auto; }
+    .signature-buttons { display: flex; gap: 12px; margin-top: 12px; justify-content: center; }
+    .btn-signature { border-radius: 9999px; padding: 0.4rem 1.6rem; font-size: 0.9rem; }
+    .footer-modern { font-size: 0.85rem; color: #64748b; margin-top: auto; text-align: center; padding: 1.5rem 0; border-top: 1px solid #e2e8f0; background: white; }
+    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+    .toast { background: white; border-left: 5px solid; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15); border-radius: 16px; }
     .toast.border-success { border-left-color: #28a745; }
     .toast.border-danger { border-left-color: #dc3545; }
-    @media (max-width: 576px) {
-      .container-card { padding: 1.5rem; }
-    }
+    @media (max-width: 576px) { .container-card { padding: 1.5rem; } }
   </style>
 </head>
 <body>
-<!-- ========== CEK AUTENTIKASI ========== -->
-<script>
-  (function() {
-    const auth = localStorage.getItem('pkd_auth') || sessionStorage.getItem('pkd_auth');
-    if (!auth) {
-      const redirect = encodeURIComponent(window.location.href);
-      window.location.replace('login.html?redirect=' + redirect);
-    }
-  })();
-</script>
-<!-- ===================================== -->
 
-<!-- Navbar (sama dengan about.html) -->
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg bg-white sticky-top shadow-sm">
   <div class="container">
     <a class="navbar-brand d-flex align-items-center" href="index.html">
@@ -175,17 +73,13 @@
   </div>
 </div>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
   // =====================================================
-  //   KONFIGURASI & STATE (khusus absen)
+  //   KONFIGURASI & STATE
   // =====================================================
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbxbsEY1R97mxLuCpiuu6MosJ6rzPuX_F2zuNGgA27B5mYm0oFO4cjq-QjqX35xd1fwq/exec'; // Ganti dengan URL deployment Anda
-
-  // Cache sesi (in-memory)
-  let cachedSesi = null;
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec'; // Ganti
 
   // =====================================================
   //   FUNGSI BANTU
@@ -226,31 +120,34 @@
     toast.show();
   }
 
+  function togglePassword(id) {
+    const input = document.getElementById(id);
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+  window.togglePassword = togglePassword;
+
   // =====================================================
-  //   PANGGILAN APPS SCRIPT (MEMPERBAIKI HANDLING RESPON)
+  //   PANGGILAN APPS SCRIPT (GET & POST)
   // =====================================================
-  async function callAppsScript(params, method = 'POST', timeout = 30000) {
-    // Untuk method GET: gunakan fetch dengan JSONP fallback jika perlu
-    if (method === 'GET') {
-      // Coba fetch biasa dulu
-      try {
-        const queryString = new URLSearchParams(params).toString();
-        const response = await fetch(`${scriptUrl}?${queryString}`, {
-          method: 'GET',
-          mode: 'cors',
-          headers: { 'Accept': 'application/json' }
-        });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
-        return data;
-      } catch (fetchError) {
-        console.warn('Fetch GET gagal, fallback ke JSONP:', fetchError);
-        // Fallback JSONP
-        return new Promise((resolve, reject) => {
+  function callAppsScript(params, method = 'POST', timeout = 30000) {
+    return new Promise(async (resolve, reject) => {
+      if (method === 'GET') {
+        try {
+          const queryString = new URLSearchParams(params).toString();
+          const response = await fetch(`${scriptUrl}?${queryString}`, {
+            method: 'GET',
+            mode: 'cors',
+            headers: { 'Accept': 'application/json' }
+          });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const data = await response.json();
+          return resolve(data);
+        } catch (fetchError) {
+          console.warn('Fetch GET gagal, fallback ke JSONP:', fetchError);
           const callbackName = 'jsonp_callback_' + Date.now();
           const script = document.createElement('script');
           let isResolved = false;
-          const timer = setTimeout(() => {
+          let timer = setTimeout(() => {
             if (!isResolved) {
               isResolved = true;
               if (document.head.contains(script)) document.head.removeChild(script);
@@ -269,7 +166,7 @@
             if (document.head.contains(script)) document.head.removeChild(script);
           };
 
-          script.onerror = () => {
+          script.onerror = (err) => {
             if (!isResolved) {
               isResolved = true;
               clearTimeout(timer);
@@ -280,96 +177,53 @@
           };
 
           const cleanParams = { ...params };
-          delete cleanParams.tandaTangan;
-          delete cleanParams.signature;
           const queryString = new URLSearchParams({ ...cleanParams, callback: callbackName }).toString();
           script.src = `${scriptUrl}?${queryString}`;
           document.head.appendChild(script);
-        });
-      }
-    } else {
-      // POST: gunakan fetch dengan cors dan baca respons JSON
-      try {
-        // Hapus parameter yang tidak perlu dikirim (opsional)
-        const postParams = { ...params };
-        // Kirim sebagai FormData atau URLSearchParams? Backend menerima application/x-www-form-urlencoded
-        const response = await fetch(scriptUrl, {
-          method: 'POST',
-          mode: 'cors',  // Penting: gunakan cors agar bisa baca respons
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams(postParams)
-        });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
-        // Jika respons dari server memiliki field error, lemparkan
-        if (data.error) throw new Error(data.error);
-        return data;
-      } catch (err) {
-        console.error('POST error:', err);
-        throw err;
-      }
-    }
-  }
-
-  // =====================================================
-  //   FETCH SESI ABSEN (dengan cache sessionStorage)
-  // =====================================================
-  async function fetchSesiAbsen(forceRefresh = false) {
-    const cacheKey = 'absenSesiCache';
-    const cacheTimeKey = 'absenSesiCacheTime';
-    const now = Date.now();
-    const maxAge = 5 * 60 * 1000; // 5 menit
-
-    // Jika tidak dipaksa refresh, coba ambil dari sessionStorage
-    if (!forceRefresh) {
-      try {
-        const cached = sessionStorage.getItem(cacheKey);
-        const cachedTime = sessionStorage.getItem(cacheTimeKey);
-        if (cached && cachedTime && (now - parseInt(cachedTime)) < maxAge) {
-          const parsed = JSON.parse(cached);
-          if (parsed && Array.isArray(parsed)) {
-            cachedSesi = parsed;
-            return parsed;
-          }
         }
-      } catch (e) {
-        // Abaikan error, lanjut fetch
+      } else {
+        fetch(scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(params)
+        })
+          .then(() => resolve({ success: true, message: 'Request sent (no-cors)' }))
+          .catch(reject);
       }
-    }
-
-    // Ambil dari server
-    const res = await callAppsScript({ action: 'getSesiAbsen' }, 'GET');
-    const data = res.data || [];
-    cachedSesi = data;
-
-    // Simpan ke sessionStorage
-    try {
-      sessionStorage.setItem(cacheKey, JSON.stringify(data));
-      sessionStorage.setItem(cacheTimeKey, now.toString());
-    } catch (e) {}
-
-    return data;
+    });
   }
 
   // =====================================================
-  //   FUNGSI MEMBACA CACHE (langsung dari sessionStorage)
+  //   CACHE SESSION (sessionStorage)
   // =====================================================
   function getCachedSesi() {
-    const cacheKey = 'absenSesiCache';
-    const cacheTimeKey = 'absenSesiCacheTime';
-    const now = Date.now();
-    const maxAge = 5 * 60 * 1000; // 5 menit
     try {
-      const cached = sessionStorage.getItem(cacheKey);
-      const cachedTime = sessionStorage.getItem(cacheTimeKey);
-      if (cached && cachedTime && (now - parseInt(cachedTime)) < maxAge) {
-        const parsed = JSON.parse(cached);
-        if (parsed && Array.isArray(parsed)) {
-          return parsed;
-        }
+      const cached = sessionStorage.getItem('absenSesiCache');
+      const time = sessionStorage.getItem('absenSesiCacheTime');
+      if (cached && time && (Date.now() - parseInt(time)) < 300000) { // 5 menit
+        return JSON.parse(cached);
       }
-    } catch (e) {}
-    return null; // tidak ada cache atau kadaluarsa
+    } catch(e) {}
+    return null;
+  }
+
+  function saveCachedSesi(data) {
+    try {
+      sessionStorage.setItem('absenSesiCache', JSON.stringify(data));
+      sessionStorage.setItem('absenSesiCacheTime', Date.now().toString());
+    } catch(e) {}
+  }
+
+  async function fetchSesiAbsen(forceRefresh = false) {
+    if (!forceRefresh) {
+      const cached = getCachedSesi();
+      if (cached) return cached;
+    }
+    const res = await callAppsScript({ action: 'getSesiAbsen' }, 'GET');
+    const data = res.data || [];
+    saveCachedSesi(data);
+    return data;
   }
 
   // =====================================================
@@ -403,7 +257,7 @@
   }
 
   // =====================================================
-  //   INISIALISASI SIGNATURE PAD
+  //   SIGNATURE PAD
   // =====================================================
   function initAbsenSignaturePad() {
     const canvas = document.getElementById('signatureCanvasAbsen');
@@ -415,13 +269,11 @@
       const data = window.sigPadAbsen.toData();
       if (data) { data.pop(); window.sigPadAbsen.fromData(data); saveAbsenFormState(); }
     });
-
-    // Simpan state setiap kali selesai menggambar
     window.sigPadAbsen.addEventListener('endStroke', saveAbsenFormState);
   }
 
   // =====================================================
-  //   RENDER FORM ABSEN (fungsi terpisah)
+  //   RENDER FORM
   // =====================================================
   function renderForm(sesiList, sesiIdFromUrl, tokenFromUrl, isQRMode) {
     const container = document.getElementById('absenContainer');
@@ -439,9 +291,9 @@
     html += `</select></div>`;
 
     html += `<div class="mb-3">
-                <label class="form-label fw-bold">Nama Lengkap</label>
-                <input type="text" class="form-control" id="namaAbsen" required>
-              </div>`;
+               <label class="form-label fw-bold">Nama Lengkap</label>
+               <input type="text" class="form-control" id="namaAbsen" required>
+             </div>`;
 
     if (isQRMode) {
       html += `<input type="hidden" id="qrTokenAbsen" value="${escapeHtml(tokenFromUrl)}">`;
@@ -453,7 +305,7 @@
                 <label class="form-label fw-bold">🔑 Password Sesi</label>
                 <div class="input-group">
                   <input type="password" class="form-control" id="passwordAbsen" placeholder="Masukkan password sesi">
-                  <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('passwordAbsen')">
+                  <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('passwordAbsen')">
                     <i class="bi bi-eye"></i>
                   </button>
                 </div>
@@ -461,31 +313,25 @@
     }
 
     html += `<div class="mb-3">
-                <label class="form-label fw-bold">✍️ Tanda Tangan Digital</label>
-                <div class="signature-area"><canvas id="signatureCanvasAbsen" width="250" height="120"></canvas></div>
-                <div class="signature-buttons">
-                  <button type="button" class="btn btn-outline-secondary" id="clearAbsenSign">Hapus</button>
-                  <button type="button" class="btn btn-outline-primary" id="undoAbsenSign">Undo</button>
-                </div>
-              </div>
-              <button id="submitAbsenBtn" class="btn btn-warning btn-lg w-100 rounded-pill">📋 Kirim Absen</button>`;
+               <label class="form-label fw-bold">✍️ Tanda Tangan Digital</label>
+               <div class="signature-area"><canvas id="signatureCanvasAbsen" width="250" height="120"></canvas></div>
+               <div class="signature-buttons">
+                 <button type="button" class="btn btn-outline-secondary" id="clearAbsenSign">Hapus</button>
+                 <button type="button" class="btn btn-outline-primary" id="undoAbsenSign">Undo</button>
+               </div>
+             </div>
+             <button id="submitAbsenBtn" class="btn btn-warning btn-lg w-100 rounded-pill">📋 Kirim Absen</button>`;
 
     container.innerHTML = html;
     initAbsenSignaturePad();
 
-    // Restore state (jika bukan mode QR)
+    // Restore state hanya jika bukan mode QR
     if (!isQRMode) {
       restoreAbsenFormState();
-    } else {
-      // Mode QR: pastikan dropdown sesuai URL
-      const dropdown = document.getElementById('pilihSesiAbsen');
-      if (dropdown) dropdown.value = sesiIdFromUrl;
-    }
-
-    // Event listeners untuk menyimpan state (kecuali mode QR, kita tidak simpan state)
-    if (!isQRMode) {
       document.getElementById('namaAbsen')?.addEventListener('input', saveAbsenFormState);
       document.getElementById('pilihSesiAbsen')?.addEventListener('change', saveAbsenFormState);
+    } else {
+      document.getElementById('pilihSesiAbsen').value = sesiIdFromUrl;
     }
 
     // Submit handler
@@ -531,19 +377,15 @@
 
       try {
         const result = await callAppsScript(params, 'POST');
-        // Jika berhasil, result seharusnya berisi { success: true, ... }
         showToast('✅ Absen berhasil tercatat!', 'success');
         window.sigPadAbsen.clear();
         document.getElementById('namaAbsen').value = '';
         if (!isQRMode) document.getElementById('passwordAbsen').value = '';
         clearAbsenFormState();
-
-        // Hapus parameter URL jika mode QR
         if (isQRMode) {
           window.history.replaceState({}, document.title, window.location.pathname);
         }
       } catch (e) {
-        // Tampilkan pesan error dari server (misal: sudah absen)
         showToast('❌ ' + (e.message || 'Terjadi kesalahan'), 'danger');
       } finally {
         btn.disabled = false;
@@ -553,7 +395,7 @@
   }
 
   // =====================================================
-  //   LOAD ABSEN SESI (dengan cache lalu update background)
+  //   LOAD ABSEN SESI (CACHE + BACKGROUND UPDATE)
   // =====================================================
   async function loadAbsenSesi() {
     const container = document.getElementById('absenContainer');
@@ -562,36 +404,22 @@
     const tokenFromUrl = urlParams.get('token');
     const isQRMode = !!(sesiIdFromUrl && tokenFromUrl);
 
-    // Jika mode QR, hapus state tersimpan agar form selalu bersih
-    if (isQRMode) {
-      clearAbsenFormState();
-    }
+    if (isQRMode) clearAbsenFormState();
 
-    // 1. Coba ambil dari cache dulu
     let sesiList = getCachedSesi();
-
     if (sesiList && sesiList.length > 0) {
-      // Render langsung dari cache
       renderForm(sesiList, sesiIdFromUrl, tokenFromUrl, isQRMode);
-
-      // 2. Di latar belakang, ambil data terbaru
       fetchSesiAbsen(true).then(newList => {
-        // Jika data berubah (misalnya ada sesi baru), perbarui dropdown
         if (JSON.stringify(newList) !== JSON.stringify(sesiList)) {
           renderForm(newList, sesiIdFromUrl, tokenFromUrl, isQRMode);
         }
-      }).catch(err => console.warn('Gagal memperbarui sesi:', err));
+      }).catch(console.warn);
     } else {
-      // Tidak ada cache, tampilkan spinner dan fetch
       container.innerHTML = `
         <div class="text-center my-4">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Memuat...</span>
-          </div>
+          <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Memuat...</span></div>
           <p class="mt-2 text-muted">Memuat sesi tersedia...</p>
-        </div>
-      `;
-
+        </div>`;
       try {
         sesiList = await fetchSesiAbsen(true);
         renderForm(sesiList, sesiIdFromUrl, tokenFromUrl, isQRMode);
@@ -602,19 +430,24 @@
   }
 
   // =====================================================
-  //   FUNGSI TOGGLE PASSWORD
+  //   INISIALISASI (MODE LOGIN CHECK + LOAD)
   // =====================================================
-  window.togglePasswordVisibility = function(inputId) {
-    const input = document.getElementById(inputId);
-    input.type = input.type === 'password' ? 'text' : 'password';
-  };
-
-  // =====================================================
-  //   INISIALISASI SAAT HALAMAN DIMUAT
-  // =====================================================
-  window.onload = function() {
-    loadAbsenSesi();
-  };
+  (async function() {
+    try {
+      const res = await fetch(`${scriptUrl}?action=getLoginMode`);
+      const data = await res.json();
+      const requireLogin = data.success ? data.enabled : false;
+      if (requireLogin) {
+        const auth = localStorage.getItem('pkd_auth') || sessionStorage.getItem('pkd_auth');
+        if (!auth) {
+          window.location.href = 'login.html';
+          return;
+        }
+      }
+    } catch(e) { console.error('Gagal cek mode login', e); }
+    // Lanjutkan ke konten
+    window.onload = loadAbsenSesi;
+  })();
 </script>
 </body>
 </html>

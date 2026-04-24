@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   
   <style>
-    /* ========== GAYA DASAR TANPA ANIMASI BERAT ========== */
+    /* ========== GAYA DASAR ========== */
     .navbar-brand {
       line-height: 1.2;
     }
@@ -34,7 +34,11 @@
       height: 45px;
       width: auto;
       margin-right: 12px;
-      /* efek hover dihapus */
+      transition: transform 0.3s ease;
+      will-change: transform;
+    }
+    .navbar-brand img:hover {
+      transform: scale(1.05);
     }
     .nav-link.active {
       font-weight: 600;
@@ -60,11 +64,16 @@
       background: #f8fafc;
       color: #0f172a;
       line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
     .navbar {
-      background: #ffffff !important; /* solid, tanpa blur */
-      border-bottom: 1px solid #dee2e6;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      background: rgba(255,255,255,0.8) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(203,213,225,0.3);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
     }
     .navbar-brand {
       font-weight: 700;
@@ -77,6 +86,7 @@
       padding: 0.5rem 1.2rem;
       margin: 0 0.2rem;
       color: #334155 !important;
+      transition: all 0.15s;
     }
     .nav-link:hover {
       background: rgba(37,99,235,0.06);
@@ -85,6 +95,7 @@
     .nav-link.active {
       background: #2563eb !important;
       color: white !important;
+      box-shadow: 0 4px 10px rgba(37,99,235,0.2);
     }
     .nav-link i { margin-right: 6px; }
 
@@ -96,7 +107,7 @@
       margin: 30px auto;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
       border: 1px solid #e2e8f0;
-      /* animation dihapus */
+      flex: 1;
     }
     .section-title {
       font-weight: 650;
@@ -119,7 +130,6 @@
       justify-content: center;
       border-radius: 30px;
       margin-bottom: 1rem;
-      /* transisi dihapus */
     }
 
     .btn-rounded {
@@ -156,7 +166,6 @@
       justify-content: center;
       font-size: 28px;
       z-index: 1032;
-      /* animasi pulse dihapus */
     }
     .chatbot-button:hover {
       background: #1d4ed8;
@@ -221,22 +230,17 @@
 
     /* Kartu menu */
     .menu-card {
-      /* transisi dihapus, hanya efek hover sederhana */
       cursor: pointer;
+      transition: box-shadow 0.2s, background-color 0.2s;
     }
     .menu-card:hover {
       box-shadow: 0 8px 20px rgba(0,0,0,0.08) !important;
       background-color: #f9f9fc;
     }
-    /* efek pada ikon di dalam kartu dihapus */
 
-    /* Garis bawah pada tautan navbar dihapus (nav-link::after dihilangkan) */
-
-    /* Efek mengambang pada logo dihapus */
     .content-logo {
       max-width: 200px;
       opacity: 0.9;
-      /* animasi dan filter dihapus */
     }
 
     /* Badge total peserta */
@@ -249,15 +253,23 @@
       box-shadow: 0 2px 6px rgba(37,99,235,0.2);
     }
 
-    /* Modal tanpa efek skala */
-    .modal.fade .modal-dialog {
-      transition: opacity 0.2s linear;
+    /* Spinner */
+    .spinner-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
     }
-    /* toast tanpa animasi geser */
-    .toast {
-      transition: none;
+
+    /* Login prompt */
+    #loginPrompt {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+      background: #f8fafc;
+      border-radius: 16px;
+      border: 1px dashed #cbd5e1;
     }
-    /* Hover pada link WhatsApp dll tetap sederhana */
   </style>
 </head>
 <body>
@@ -278,69 +290,12 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarMain">
       <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
-        <!-- Menu navigasi utama (kosong) -->
+        <!-- Menu navigasi utama (kosong, akan diisi jika login) -->
       </ul>
       <div class="d-flex align-items-center gap-2 ms-auto" id="navbarUserMenu"></div>
     </div>
   </div>
 </nav>
-
-<!-- ==================== MODAL PREVIEW MATERI ==================== -->
-<div class="modal fade" id="previewMateriModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
-  <div class="modal-dialog modal-xl modal-dialog-centered">
-    <div class="modal-content border-0 shadow-lg" style="background: #1e1e2f; border-radius: 20px;">
-      <div class="modal-header bg-dark text-white border-0 rounded-top-4">
-        <h5 class="modal-title" id="previewMateriLabel">
-          <i class="bi bi-file-earmark-play me-2"></i><span id="previewMateriJudul">Pratinjau Materi</span>
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body p-0 d-flex justify-content-center align-items-center" style="min-height: 70vh; background: #0f172a; border-radius: 0 0 20px 20px; position: relative;">
-        <div id="previewMateriSpinner" class="position-absolute top-50 start-50 translate-middle">
-          <div class="spinner-border text-light" role="status">
-            <span class="visually-hidden">Memuat...</span>
-          </div>
-        </div>
-        <iframe id="previewMateriIframe" src="" style="width: 100%; height: 80vh; border: none; border-radius: 0 0 20px 20px;" allowfullscreen onload="document.getElementById('previewMateriSpinner').style.display='none';"></iframe>
-      </div>
-      <div class="modal-footer border-0 bg-dark rounded-bottom-4">
-        <button type="button" class="btn btn-outline-light rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
-        <a id="previewMateriDownloadBtn" href="#" target="_blank" class="btn btn-primary rounded-pill px-4">
-          <i class="bi bi-download me-1"></i>Unduh
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ==================== MODAL DETAIL ==================== -->
-<div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content border-0 shadow-lg">
-      <div class="modal-header bg-primary text-white border-0 rounded-top-4">
-        <h5 class="modal-title" id="detailModalLabel">Detail</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body p-4" id="detailModalBody"></div>
-      <div class="modal-footer border-0">
-        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ==================== TOAST NOTIFICATION ==================== -->
-<div class="toast-container">
-  <div id="notificationToast" class="toast border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
-    <div class="toast-header bg-white border-0">
-      <i class="bi me-2" id="toastIcon"></i>
-      <strong class="me-auto" id="toastTitle">Berhasil</strong>
-      <small>baru saja</small>
-      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-    </div>
-    <div class="toast-body" id="toastMessage"></div>
-  </div>
-</div>
 
 <!-- ==================== KONTEN UTAMA ==================== -->
 <div id="contentArea">
@@ -355,37 +310,38 @@
       <div class="col-lg-6">
         <p style="font-size:1.2rem; line-height:1.7;">Portal digital <strong>Pelatihan Kepemimpinan Dasar (PKD) GP Ansor Kabupaten Bantul</strong>.</p>
         <p class="mb-4">Gunakan menu di bawah untuk mengakses fitur:</p>
-        <!-- MENU GRID DENGAN IKON DI ATAS TEKS, SERAGAM DAN RAPI -->
-        <div class="row g-4">
+        
+        <!-- MENU GRID -->
+        <div class="row g-4" id="menuGrid">
           <!-- Pre-test -->
           <div class="col-6 col-md-4 col-lg-6 col-xl-4">
-            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="window.location.href='pretest.html'" role="button">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="navigateTo('pretest.html')" role="button">
               <div class="feature-icon mb-3"><i class="bi bi-pencil-square"></i></div>
               <div><strong>Pre-test</strong><br><span class="text-muted small">Uji pengetahuan awal sebelum pelatihan.</span></div>
             </div>
           </div>
           <!-- Post-test -->
           <div class="col-6 col-md-4 col-lg-6 col-xl-4">
-            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="window.location.href='posttest.html'" role="button">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="navigateTo('posttest.html')" role="button">
               <div class="feature-icon mb-3"><i class="bi bi-trophy"></i></div>
               <div><strong>Post-test</strong><br><span class="text-muted small">Evaluasi setelah materi selesai.</span></div>
             </div>
           </div>
           <!-- Absen Digital -->
           <div class="col-6 col-md-4 col-lg-6 col-xl-4">
-            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="window.location.href='absen.html'" role="button">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="navigateTo('absen.html')" role="button">
               <div class="feature-icon mb-3"><i class="bi bi-qr-code"></i></div>
               <div><strong>Absen Digital</strong><br><span class="text-muted small">Scan QR atau masukkan password sesi.</span></div>
             </div>
           </div>
           <!-- Skrining -->
           <div class="col-6 col-md-4 col-lg-6 col-xl-4">
-            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="window.location.href='skrining.html'" role="button">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="navigateTo('skrining.html')" role="button">
               <div class="feature-icon mb-3"><i class="bi bi-clipboard-check"></i></div>
               <div><strong>Skrining</strong><br><span class="text-muted small">Form pendataan awal peserta.</span></div>
             </div>
           </div>
-          <!-- Peserta (link langsung ke halaman pendaftaran) -->
+          <!-- Peserta -->
           <div class="col-6 col-md-4 col-lg-6 col-xl-4">
             <a href="https://pkd-ansorbantul.github.io/bisa/peserta.html" class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card text-decoration-none text-dark" target="_blank" rel="noopener noreferrer">
               <div class="feature-icon mb-3"><i class="bi bi-person-badge"></i></div>
@@ -394,32 +350,38 @@
           </div>
           <!-- Materi -->
           <div class="col-6 col-md-4 col-lg-6 col-xl-4">
-            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="window.location.href='materi.html'" role="button">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="navigateTo('materi.html')" role="button">
               <div class="feature-icon mb-3"><i class="bi bi-file-earmark-pdf"></i></div>
               <div><strong>Materi</strong><br><span class="text-muted small">Akses materi pelatihan, tayangkan langsung.</span></div>
             </div>
           </div>
           <!-- Tentang Kami -->
           <div class="col-6 col-md-4 col-lg-6 col-xl-4">
-            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="window.location.href='about.html'" role="button">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="navigateTo('about.html')" role="button">
               <div class="feature-icon mb-3"><i class="bi bi-info-circle"></i></div>
               <div><strong>Tentang Kami</strong><br><span class="text-muted small">Informasi seputar PKD GP Ansor Bantul.</span></div>
             </div>
           </div>
           <!-- INFORMASI (TAMBAHAN) -->
           <div class="col-6 col-md-4 col-lg-6 col-xl-4">
-            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="window.location.href='informasi.html'" role="button">
+            <div class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card" onclick="navigateTo('informasi.html')" role="button">
               <div class="feature-icon mb-3"><i class="bi bi-newspaper"></i></div>
               <div><strong>Informasi</strong><br><span class="text-muted small">Flyer, galeri, video & timeline PKD.</span></div>
             </div>
           </div>
-          <!-- Verifikasi Sertifikat (mengarah ke halaman terpisah) -->
+          <!-- Verifikasi Sertifikat -->
           <div class="col-6 col-md-4 col-lg-6 col-xl-4">
             <a href="verifikasi.html" class="d-flex flex-column align-items-center justify-content-center text-center h-100 p-3 border rounded-4 shadow-sm menu-card text-decoration-none text-dark" role="button">
               <div class="feature-icon mb-3"><i class="bi bi-qr-code-scan"></i></div>
               <div><strong>Verifikasi Sertifikat</strong><br><span class="text-muted small">Scan QR untuk cek keaslian sertifikat.</span></div>
             </a>
           </div>
+        </div>
+        <!-- Login Prompt (jika mode login aktif) -->
+        <div id="loginPrompt" style="display:none;">
+          <h5><i class="bi bi-shield-lock"></i> Akses Terbatas</h5>
+          <p>Anda harus login untuk mengakses menu.</p>
+          <button class="btn btn-primary rounded-pill px-4" onclick="window.location.href='login.html'">Login</button>
         </div>
       </div>
       <div class="col-lg-6 text-center">
@@ -429,7 +391,6 @@
       </div>
     </div>
     <hr class="my-5">
-    <!-- Baris tambahan (kosong) -->
   </section>
 </div>
 
@@ -468,7 +429,7 @@
         <div class="text-muted small">Materi pelatihan meliputi kepemimpinan, keorganisasian, dan wawasan kebangsaan. Akses di menu "Materi".</div>
       </div>
 
-      <!-- Kontak Admin via WhatsApp dengan autentikasi sederhana (penjumlahan) dan format WA yang lebih rapi -->
+      <!-- Kontak Admin via WhatsApp -->
       <div class="faq-item" id="waContactItem"></div>
 
       <div class="faq-item">
@@ -491,11 +452,12 @@
   // =====================================================
   //   KONFIGURASI & STATE
   // =====================================================
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbxbsEY1R97mxLuCpiuu6MosJ6rzPuX_F2zuNGgA27B5mYm0oFO4cjq-QjqX35xd1fwq/exec'; // GANTI DENGAN URL ANDA!
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec'; // GANTI DENGAN URL ANDA!
 
   let userRole = null;        // null, 'admin', 'member'
   let userData = {};          // { username, nama, email, nohp } untuk member, { username, nama } untuk admin
   let realtimeEnabled = false; // status fitur realtime
+  let requireLogin = false;   // mode login dari server
 
   // =====================================================
   //   FUNGSI BANTU
@@ -664,32 +626,15 @@
   }
 
   // =====================================================
-  //   TOAST
+  //   NAVIGASI DENGAN MODE LOGIN
   // =====================================================
-  function showToast(message, type = 'success') {
-    const toastEl = document.getElementById('notificationToast');
-    const toastMessage = document.getElementById('toastMessage');
-    const toastIcon = document.getElementById('toastIcon');
-    const toastTitle = document.getElementById('toastTitle');
-
-    toastMessage.innerText = message;
-
-    if (type === 'success') {
-      toastEl.classList.add('border-success');
-      toastEl.classList.remove('border-danger');
-      toastIcon.className = 'bi bi-check-circle-fill me-2 text-success';
-      toastTitle.innerText = 'Berhasil';
-      toastTitle.style.color = '#28a745';
+  function navigateTo(url) {
+    if (requireLogin && !userRole) {
+      // Mode login aktif & belum login → alihkan ke login
+      window.location.href = `login.html?redirect=${encodeURIComponent(url)}`;
     } else {
-      toastEl.classList.add('border-danger');
-      toastEl.classList.remove('border-success');
-      toastIcon.className = 'bi bi-x-circle-fill me-2 text-danger';
-      toastTitle.innerText = 'Gagal';
-      toastTitle.style.color = '#dc3545';
+      window.location.href = url;
     }
-
-    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-    toast.show();
   }
 
   // =====================================================
@@ -723,7 +668,28 @@
   }
 
   // =====================================================
-  //   UPDATE TAMPILAN KONTAK WHATSAPP (dengan autentikasi penjumlahan dan format WA rapi)
+  //   MODE LOGIN CHECK
+  // =====================================================
+  async function checkLoginMode() {
+    try {
+      const res = await callAppsScript({ action: 'getLoginMode' }, 'GET');
+      requireLogin = res.success ? res.enabled : false;
+
+      // Jika mode login aktif & user belum login → tampilkan prompt, sembunyikan menu
+      if (requireLogin && !userRole) {
+        document.getElementById('menuGrid').style.display = 'none';
+        document.getElementById('loginPrompt').style.display = 'block';
+      } else {
+        document.getElementById('menuGrid').style.display = '';
+        document.getElementById('loginPrompt').style.display = 'none';
+      }
+    } catch (e) {
+      console.warn('Gagal memeriksa mode login', e);
+    }
+  }
+
+  // =====================================================
+  //   UPDATE TAMPILAN KONTAK WHATSAPP (dengan autentikasi penjumlahan)
   // =====================================================
   function updateWAContact() {
     const waItem = document.getElementById('waContactItem');
@@ -830,7 +796,20 @@
   window.onload = function() {
     loadAuthState();      // memuat status login dan memanggil updateWAContact()
     loadRealtimeSetting();
+    checkLoginMode();     // tambahan: cek mode login
   };
+
+  // Tutup navbar saat klik di luar (opsional)
+  document.addEventListener('click', function(event) {
+    const navbar = document.getElementById('navbarMain');
+    const toggler = document.querySelector('.navbar-toggler');
+    if (!navbar || !toggler) return;
+    const isClickInside = navbar.contains(event.target) || toggler.contains(event.target);
+    if (!isClickInside && navbar.classList.contains('show')) {
+      const bsCollapse = bootstrap.Collapse.getInstance(navbar);
+      if (bsCollapse) bsCollapse.hide();
+    }
+  });
 </script>
 </body>
 </html>

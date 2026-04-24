@@ -16,89 +16,20 @@
 
   <style>
     * { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
-    .navbar-brand {
-      line-height: 1.2;
-    }
-    .brand-title {
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: #0a3d62;
-    }
-    .brand-sub {
-      font-size: 0.9rem;
-      font-weight: 400;
-      color: #6c757d;
-      display: block;
-      margin-top: 2px;
-      letter-spacing: 0.5px;
-    }
-    .navbar-brand img {
-      height: 45px;
-      width: auto;
-      margin-right: 12px;
-      transition: transform 0.3s ease;
-      will-change: transform;
-    }
-    .navbar-brand img:hover {
-      transform: scale(1.05);
-    }
-    body {
-      background: #f8fafc;
-      color: #0f172a;
-      line-height: 1.6;
-    }
-    .container-card {
-      max-width: 1000px;
-      background: white;
-      border-radius: 32px;
-      padding: 2rem;
-      margin: 30px auto;
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
-      border: 1px solid rgba(226,232,240,0.6);
-    }
-    .section-title {
-      font-weight: 650;
-      font-size: 1.75rem;
-      margin-bottom: 1.8rem;
-      color: #0f172a;
-      border-left: 6px solid #2563eb;
-      padding-left: 1.2rem;
-    }
-    .footer-modern {
-      font-size: 0.85rem;
-      color: #64748b;
-      margin-top: 3rem;
-      text-align: center;
-      padding: 1.5rem 0;
-      border-top: 1px solid #e2e8f0;
-      background: white;
-    }
-    .toast-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 9999;
-    }
-    .toast {
-      background: white;
-      border-left: 5px solid;
-      box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
-      border-radius: 16px;
-    }
+    body { background: #f8fafc; color: #0f172a; }
+    .navbar { background: rgba(255,255,255,0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(203,213,225,0.3); }
+    .navbar-brand img { max-height: 45px; margin-right: 12px; }
+    .brand-title { font-size: 1.35rem; font-weight: 700; color: #0a3d62; }
+    .brand-sub { font-size: 0.9rem; color: #6c757d; display: block; margin-top: 2px; }
+    .container-card { max-width: 1000px; background: white; border-radius: 32px; padding: 2rem; margin: 30px auto; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid rgba(226,232,240,0.6); }
+    .section-title { font-weight: 650; font-size: 1.75rem; border-left: 6px solid #2563eb; padding-left: 1.2rem; margin-bottom: 1.8rem; }
+    .footer-modern { font-size: 0.85rem; color: #64748b; margin-top: 3rem; text-align: center; padding: 1.5rem 0; border-top: 1px solid #e2e8f0; background: white; }
+    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+    .toast { background: white; border-left: 5px solid; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15); border-radius: 16px; }
     .toast.border-success { border-left-color: #28a745; }
     .toast.border-danger { border-left-color: #dc3545; }
-    #utusanLuarContainer {
-      transition: all 0.3s ease;
-    }
-    /* Signature canvas */
-    #signatureCanvas {
-      width: 100%;
-      height: 200px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background: #fff;
-      touch-action: none;
-    }
+    #signatureCanvas { width: 100%; height: 200px; border: 1px solid #ccc; border-radius: 8px; background: #fff; touch-action: none; }
+    .admin-contact { background: #eff6ff; border-left: 4px solid #2563eb; border-radius: 12px; padding: 1rem; margin-bottom: 2rem; }
   </style>
 </head>
 <body>
@@ -131,13 +62,21 @@
 <footer class="footer-modern container">
   <div class="d-flex justify-content-center align-items-center gap-2">
     <i class="bi bi-c-circle"></i>
-    <span>Hak Cipta 2026 - Tim Instruktur GP Ansor Kabupaten Bantul. Semua Hak Dilindungi</span>
+    <span>Hak Cipta 2026 - Tim Instruktur GP Ansor Kabupaten Bantul</span>
   </div>
 </footer>
 
-<!-- Toast notifikasi -->
+<!-- Loading Overlay -->
+<div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 99999; justify-content: center; align-items: center; flex-direction: column;">
+  <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>
+  <p class="mt-3 fw-bold">Mengirim data, harap tunggu...</p>
+</div>
+
+<!-- Toast Notification -->
 <div class="toast-container">
-  <div id="notificationToast" class="toast border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
+  <div id="notificationToast" class="toast border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
     <div class="toast-header bg-white border-0">
       <i class="bi me-2" id="toastIcon"></i>
       <strong class="me-auto" id="toastTitle">Berhasil</strong>
@@ -148,35 +87,18 @@
   </div>
 </div>
 
-<!-- Loading Overlay -->
-<div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 99999; justify-content: center; align-items: center; flex-direction: column;">
-  <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-    <span class="visually-hidden">Loading...</span>
-  </div>
-  <p class="mt-3 fw-bold">Mengirim data, harap tunggu...</p>
-</div>
-
-<!-- Bootstrap JS & dependencies -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-  // =====================================================
-  //   KONFIGURASI & STATE
-  // =====================================================
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbxbsEY1R97mxLuCpiuu6MosJ6rzPuX_F2zuNGgA27B5mYm0oFO4cjq-QjqX35xd1fwq/exec'; // GANTI DENGAN URL DEPLOY ANDA
-  let signaturePad; // untuk akses global
+  // Konfigurasi
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec'; // GANTI
+  let signaturePad;
 
-  // =====================================================
+  // =====================
   //   FUNGSI BANTU
-  // =====================================================
+  // =====================
   function escapeHtml(unsafe) {
     if (!unsafe) return '';
-    return unsafe
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+    return String(unsafe).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
   }
 
   function showToast(message, type = 'success') {
@@ -184,9 +106,7 @@
     const toastMessage = document.getElementById('toastMessage');
     const toastIcon = document.getElementById('toastIcon');
     const toastTitle = document.getElementById('toastTitle');
-
     toastMessage.innerText = message;
-
     if (type === 'success') {
       toastEl.classList.add('border-success');
       toastEl.classList.remove('border-danger');
@@ -200,41 +120,25 @@
       toastTitle.innerText = 'Gagal';
       toastTitle.style.color = '#dc3545';
     }
-
-    const toast = new bootstrap.Toast(toastEl, { delay: 5000 });
-    toast.show();
+    new bootstrap.Toast(toastEl).show();
   }
 
-  // =====================================================
-  //   PANGGILAN APPS SCRIPT (POST dengan JSON response)
-  // =====================================================
   async function callAppsScript(params) {
     const body = new URLSearchParams();
-    for (const key in params) {
-      body.append(key, params[key]);
-    }
-
+    for (const key in params) body.append(key, params[key]);
     const response = await fetch(scriptUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: body
     });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error ${response.status}`);
-    }
-
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const text = await response.text();
-    try {
-      return JSON.parse(text);
-    } catch (e) {
-      throw new Error('Respons server bukan JSON: ' + text.substring(0, 100));
-    }
+    try { return JSON.parse(text); } catch (e) { throw new Error('Respon bukan JSON'); }
   }
 
-  // =====================================================
-  //   FUNGSI PESERTA (form, preview, submit)
-  // =====================================================
+  // =====================
+  //   STATE & SIGNATURE
+  // =====================
   function savePesertaFormState() {
     const form = document.getElementById('formPesertaDinamis');
     if (!form) return;
@@ -262,54 +166,40 @@
     localStorage.removeItem('pesertaFormState');
   }
 
+  // =====================
+  //   FORM PESERTA
+  // =====================
   async function loadPesertaForm() {
     const container = document.getElementById('pesertaFormContainer');
-    container.innerHTML = 'Memuat form...';
 
-    // Form dengan urutan baru: Tanda Tangan dipindah ke bawah setelah Pengalaman Organisasi
     let html = `
+      <div class="admin-contact">
+        <h6><i class="bi bi-telephone-fill me-2"></i>Konfirmasi Administrasi ke Panitia Lokal</h6>
+        <p class="mb-1">Sebelum mengisi formulir, silakan hubungi panitia untuk memastikan kelengkapan administrasi.</p>
+        <a href="https://wa.me/6283866675521?text=Halo%20Panitia%20PKD%2C%20saya%20ingin%20konfirmasi%20administrasi%20peserta." target="_blank" class="btn btn-success btn-sm rounded-pill mt-2">
+          <i class="bi bi-whatsapp me-1"></i> Atau 
+          Menghubungi via Admin Instruktur (0838-6667-5521)
+        </a>
+        <p class="small text-muted mt-2 mb-0">Nomor kontak sesuai flyer resmi PKD GP Ansor Bantul.</p>
+      </div>
+
       <form id="formPesertaDinamis">
-        <div class="mb-3">
-          <label class="form-label fw-bold">📸 Foto</label>
+        <div class="mb-3"><label class="form-label fw-bold">📸 Foto</label>
           <input type="file" class="form-control" name="foto" accept="image/*" id="pesertaFotoInput">
           <img id="pesertaFotoPreview" src="#" alt="Preview" style="max-width: 200px; display: none;" class="mt-2 rounded border">
         </div>
-        <!-- SURAT REKOMENDASI -->
-        <div class="mb-3">
-          <label class="form-label fw-bold">📎 Surat Rekomendasi (dari PAC/PC/PW) <span class="text-danger">*</span></label>
+        <div class="mb-3"><label class="form-label fw-bold">📎 Surat Rekomendasi (dari PAC/PC/PW) <span class="text-danger">*</span></label>
           <input type="file" class="form-control" name="surat_rekomendasi" accept=".pdf,image/*" required id="suratRekomendasiInput">
           <div id="suratRekomendasiPreview" class="mt-2 small text-muted"></div>
         </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">👤 Nama Lengkap</label>
-          <input type="text" class="form-control" name="nama_lengkap" placeholder="Contoh: Ahmad Fauzi" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">📍 Tempat dan Tanggal Lahir</label>
-          <input type="text" class="form-control" name="tempat_tgl_lahir" placeholder="Contoh: Bantul, 1 Januari 2000">
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">💼 Pekerjaan</label>
-          <input type="text" class="form-control" name="pekerjaan" placeholder="Contoh: Mahasiswa / Guru">
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">🎓 Pendidikan Terakhir</label>
-          <input type="text" class="form-control" name="pendidikan_terakhir" placeholder="Contoh: S1 Manajemen">
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">🏠 Alamat</label>
-          <textarea class="form-control" name="alamat" rows="2" placeholder="Contoh: Demangan RT 8 Bangunharjo Sewon"></textarea>
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">📞 No HP</label>
-          <input type="tel" class="form-control" name="no_hp" placeholder="Contoh: 08123456789">
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">📧 Email</label>
-          <input type="email" class="form-control" name="email" placeholder="Contoh: ahmad@example.com">
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">🤝 Utusan (PAC)</label>
+        <div class="mb-3"><label class="form-label fw-bold">👤 Nama Lengkap</label><input type="text" class="form-control" name="nama_lengkap" placeholder="Contoh: Ahmad Fauzi" required></div>
+        <div class="mb-3"><label class="form-label fw-bold">📍 Tempat dan Tanggal Lahir</label><input type="text" class="form-control" name="tempat_tgl_lahir" placeholder="Contoh: Bantul, 1 Januari 2000"></div>
+        <div class="mb-3"><label class="form-label fw-bold">💼 Pekerjaan</label><input type="text" class="form-control" name="pekerjaan" placeholder="Contoh: Mahasiswa / Guru"></div>
+        <div class="mb-3"><label class="form-label fw-bold">🎓 Pendidikan Terakhir</label><input type="text" class="form-control" name="pendidikan_terakhir" placeholder="Contoh: S1 Manajemen"></div>
+        <div class="mb-3"><label class="form-label fw-bold">🏠 Alamat</label><textarea class="form-control" name="alamat" rows="2" placeholder="Contoh: Demangan RT 8 Bangunharjo Sewon"></textarea></div>
+        <div class="mb-3"><label class="form-label fw-bold">📞 No HP</label><input type="tel" class="form-control" name="no_hp" placeholder="Contoh: 08123456789"></div>
+        <div class="mb-3"><label class="form-label fw-bold">📧 Email</label><input type="email" class="form-control" name="email" placeholder="Contoh: ahmad@example.com"></div>
+        <div class="mb-3"><label class="form-label fw-bold">🤝 Utusan (PAC)</label>
           <select class="form-select" name="utusan" required>
             <option value="" disabled selected>-- Pilih Utusan --</option>
             <option value="PAC Bantul">PAC Bantul</option>
@@ -336,26 +226,19 @@
             <input type="text" class="form-control" name="utusan_luar" placeholder="Contoh: PAC Sleman, Luar DIY, dll">
           </div>
         </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">📋 Pengalaman Organisasi</label>
-          <textarea class="form-control" name="pengalaman_organisasi" rows="3" placeholder="Tuliskan pengalaman organisasi Anda"></textarea>
-        </div>
-
-        <!-- TANDA TANGAN DIGITAL (dipindah ke sini) -->
+        <div class="mb-3"><label class="form-label fw-bold">📋 Pengalaman Organisasi</label><textarea class="form-control" name="pengalaman_organisasi" rows="3" placeholder="Tuliskan pengalaman organisasi Anda"></textarea></div>
         <div class="mb-3">
           <label class="form-label fw-bold">✍️ Tanda Tangan Digital</label>
-          <div class="border rounded p-2" style="background: #fff;">
-            <canvas id="signatureCanvas"></canvas>
-          </div>
+          <div class="border rounded p-2" style="background: #fff;"><canvas id="signatureCanvas"></canvas></div>
           <div class="mt-2">
             <button type="button" class="btn btn-sm btn-outline-secondary" id="clearSignature"><i class="bi bi-eraser"></i> Hapus</button>
             <small class="text-muted ms-2">Gambar tanda tangan dengan mouse atau jari (pada layar sentuh).</small>
           </div>
         </div>
-
         <button type="submit" class="btn btn-primary btn-lg w-100 rounded-pill">📤 Kirim Data Peserta</button>
       </form>
     `;
+
     container.innerHTML = html;
 
     // Preview foto
@@ -382,59 +265,37 @@
       }
     });
 
-    // Inisialisasi Signature Pad
+    // Signature pad
     const canvas = document.getElementById('signatureCanvas');
     if (canvas) {
-      signaturePad = new SignaturePad(canvas, {
-        backgroundColor: 'rgb(255,255,255)',
-        penColor: 'rgb(0,0,0)'
-      });
-
+      signaturePad = new SignaturePad(canvas, { backgroundColor: 'rgb(255,255,255)', penColor: 'rgb(0,0,0)' });
       function resizeCanvas() {
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
         canvas.width = canvas.offsetWidth * ratio;
         canvas.height = canvas.offsetHeight * ratio;
         canvas.getContext("2d").scale(ratio, ratio);
-        signaturePad.clear(); // clear after resize agar tidak ada coretan aneh
+        signaturePad.clear();
       }
       window.addEventListener("resize", resizeCanvas);
       resizeCanvas();
-
-      document.getElementById('clearSignature').addEventListener('click', function() {
-        signaturePad.clear();
-      });
+      document.getElementById('clearSignature').addEventListener('click', () => signaturePad.clear());
     }
 
-    // Restore state
-    restorePesertaFormState();
-
-    // Dropdown dinamis
+    // Dropdown luar
     const utusanSelect = document.querySelector('select[name="utusan"]');
     const luarContainer = document.getElementById('utusanLuarContainer');
-    const luarInput = document.querySelector('input[name="utusan_luar"]');
-
-    if (utusanSelect) {
-      utusanSelect.addEventListener('change', function() {
-        if (this.value === 'Luar Kabupaten Bantul') {
-          luarContainer.style.display = 'block';
-        } else {
-          luarContainer.style.display = 'none';
-          if (luarInput) luarInput.value = '';
-        }
-      });
-    }
-
-    if (utusanSelect) {
-      utusanSelect.dispatchEvent(new Event('change'));
-    }
-
-    // Auto-save (hanya field teks, tidak termasuk file)
-    document.querySelectorAll('#formPesertaDinamis input:not([type="file"]), #formPesertaDinamis textarea, #formPesertaDinamis select').forEach(el => {
-      const eventType = el.tagName === 'SELECT' ? 'change' : 'input';
-      el.addEventListener(eventType, savePesertaFormState);
+    utusanSelect.addEventListener('change', function() {
+      luarContainer.style.display = this.value === 'Luar Kabupaten Bantul' ? 'block' : 'none';
     });
 
-    // Submit
+    // Auto-save fields
+    document.querySelectorAll('#formPesertaDinamis input:not([type="file"]), #formPesertaDinamis textarea, #formPesertaDinamis select').forEach(el => {
+      el.addEventListener('input', savePesertaFormState);
+      el.addEventListener('change', savePesertaFormState);
+    });
+
+    restorePesertaFormState();
+
     document.getElementById('formPesertaDinamis').addEventListener('submit', submitPesertaForm);
   }
 
@@ -444,81 +305,59 @@
     const formData = new FormData(form);
     const data = { action: 'submitPeserta' };
 
-    // Validasi ukuran file foto
     const fotoFile = formData.get('foto');
     if (fotoFile && fotoFile.size > 5 * 1024 * 1024) {
       showToast('Ukuran foto maksimal 5 MB', 'danger');
       return;
     }
-    // Validasi ukuran file surat rekomendasi
     const suratFile = formData.get('surat_rekomendasi');
     if (suratFile && suratFile.size > 5 * 1024 * 1024) {
       showToast('Ukuran surat rekomendasi maksimal 5 MB', 'danger');
       return;
     }
 
-    // Tampilkan loading overlay dan nonaktifkan form
     document.getElementById('loadingOverlay').style.display = 'flex';
     document.querySelectorAll('#formPesertaDinamis input, #formPesertaDinamis textarea, #formPesertaDinamis select').forEach(el => el.disabled = true);
-
     const btn = e.target.querySelector('button[type="submit"]');
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengirim...';
 
     try {
-      // Proses file foto
+      // Foto
       if (fotoFile && fotoFile.size > 0) {
-        const reader = new FileReader();
-        reader.readAsDataURL(fotoFile);
-        await new Promise((resolve, reject) => {
-          reader.onload = () => {
-            data.foto = reader.result;
-            resolve();
-          };
+        data.foto = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
           reader.onerror = reject;
+          reader.readAsDataURL(fotoFile);
         });
       }
-
-      // Proses file surat rekomendasi
+      // Surat rekomendasi
       if (suratFile && suratFile.size > 0) {
-        const reader = new FileReader();
-        reader.readAsDataURL(suratFile);
-        await new Promise((resolve, reject) => {
-          reader.onload = () => {
-            data.surat_rekomendasi = reader.result;
-            resolve();
-          };
+        data.surat_rekomendasi = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
           reader.onerror = reject;
+          reader.readAsDataURL(suratFile);
         });
       }
-
-      // Proses tanda tangan digital
+      // Tanda tangan
       if (signaturePad && !signaturePad.isEmpty()) {
-        data.tanda_tangan = signaturePad.toDataURL(); // PNG base64
+        data.tanda_tangan = signaturePad.toDataURL();
       }
 
-      // Ambil data field lainnya (kecuali file)
       formData.forEach((value, key) => {
         if (key !== 'foto' && key !== 'surat_rekomendasi') data[key] = value;
       });
 
-      // Gabungkan utusan jika memilih Luar
       if (data.utusan === 'Luar Kabupaten Bantul') {
         const luarValue = data.utusan_luar ? data.utusan_luar.trim() : '';
-        if (luarValue) {
-          data.utusan = 'Luar Kabupaten Bantul - ' + luarValue;
-        } else {
-          data.utusan = 'Luar Kabupaten Bantul (tidak diisi)';
-        }
+        data.utusan = luarValue ? 'Luar Kabupaten Bantul - ' + luarValue : 'Luar Kabupaten Bantul (tidak diisi)';
       }
       delete data.utusan_luar;
 
-      // Kirim data ke Apps Script
       const result = await callAppsScript(data);
-      
-      if (result.error) {
-        throw new Error(result.error);
-      }
+      if (result.error) throw new Error(result.error);
 
       showToast('✅ Data peserta berhasil dikirim!', 'success');
       form.reset();
@@ -528,10 +367,8 @@
       clearPesertaFormState();
       document.getElementById('utusanLuarContainer').style.display = 'none';
     } catch (err) {
-      console.error(err);
       showToast('❌ Gagal mengirim: ' + err.message, 'danger');
     } finally {
-      // Sembunyikan loading overlay dan aktifkan kembali form
       document.getElementById('loadingOverlay').style.display = 'none';
       document.querySelectorAll('#formPesertaDinamis input, #formPesertaDinamis textarea, #formPesertaDinamis select').forEach(el => el.disabled = false);
       btn.disabled = false;
@@ -539,24 +376,22 @@
     }
   }
 
-  // =====================================================
-  //   INISIALISASI
-  // =====================================================
-  window.onload = function() {
-    loadPesertaForm();
-
-    // Tutup navbar otomatis
-    document.addEventListener('click', function(event) {
-      const navbar = document.getElementById('navbarMain');
-      const toggler = document.querySelector('.navbar-toggler');
-      if (!navbar || !toggler) return;
-      const isClickInside = navbar.contains(event.target) || toggler.contains(event.target);
-      if (!isClickInside && navbar.classList.contains('show')) {
-        const bsCollapse = bootstrap.Collapse.getInstance(navbar);
-        if (bsCollapse) bsCollapse.hide();
+  // ========== MODE LOGIN CHECK ==========
+  (async function() {
+    try {
+      const res = await fetch(`${scriptUrl}?action=getLoginMode`);
+      const data = await res.json();
+      const requireLogin = data.success ? data.enabled : false;
+      if (requireLogin) {
+        const auth = localStorage.getItem('pkd_auth') || sessionStorage.getItem('pkd_auth');
+        if (!auth) {
+          window.location.href = 'login.html';
+          return;
+        }
       }
-    });
-  };
+    } catch(e) { console.warn('Gagal cek mode login', e); }
+    loadPesertaForm();
+  })();
 </script>
 </body>
 </html>
