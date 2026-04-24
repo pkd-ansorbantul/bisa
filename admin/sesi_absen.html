@@ -103,7 +103,7 @@
 <!-- ==================== NAVBAR (sama dengan admin) ==================== -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
   <div class="container">
-    <a class="navbar-brand d-flex align-items-center" href="index.html">
+    <a class="navbar-brand d-flex align-items-center" href="/bisa/index.html">
       <img src="LOGO ANSOR.webp" alt="GP Ansor">
       <span><span class="brand-title">PKD GP Ansor</span><span class="brand-sub">Kabupaten Bantul</span></span>
     </a>
@@ -694,7 +694,18 @@
     try {
       const qrLib = typeof qrcodeGenerator === 'function' ? qrcodeGenerator : qrcode;
       
-      const baseUrl = window.location.origin + window.location.pathname.replace('sesi_absen.html', 'absen.html');
+      // Hitung link ke halaman absen publik (di luar folder /admin/)
+const currentPath = window.location.pathname;          // contoh: "/bisa/admin/sesi_absen.html"
+const adminDir = '/admin/';
+const idx = currentPath.lastIndexOf(adminDir);
+let basePath;
+if (idx !== -1) {
+  basePath = currentPath.substring(0, idx);           // ambil bagian sebelum "/admin/"
+} else {
+  // fallback: buang segmen terakhir (nama file) dari path
+  basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+}
+const baseUrl = window.location.origin + basePath + '/absen.html';
       const qrUrl = `${baseUrl}?sesi_id=${encodeURIComponent(sesiId)}&token=${encodeURIComponent(qrToken)}`;
 
       const qr = qrLib(0, 'M');
