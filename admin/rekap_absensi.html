@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>PKD GP Ansor Bantul · Rekap Absensi</title>
+
+  <!-- Favicon & Font -->
+  <link rel="icon" type="image/png" href="LOGO ANSOR.webp">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <!-- Bootstrap + Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <style>
+    /* ===== GAYA UMUM (sama seperti admin) ===== */
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #f8fafc; color: #0f172a; }
+    .navbar { background: rgba(255,255,255,0.8) !important; backdrop-filter: blur(12px); border-bottom: 1px solid rgba(203,213,225,0.3); }
+    .navbar-brand { font-weight: 700; }
+    .navbar-brand img { max-height: 40px; margin-right: 12px; }
+    .brand-title { font-size: 1.35rem; font-weight: 700; color: #0a3d62; }
+    .brand-sub { font-size: 0.9rem; color: #6c757d; display: block; }
+    .nav-link { font-weight: 500; border-radius: 9999px; padding: 0.5rem 1.2rem; color: #334155 !important; transition: all 0.15s; }
+    .nav-link:hover { background: rgba(37,99,235,0.06); color: #2563eb !important; }
+    .nav-link.active { background: #2563eb !important; color: white !important; box-shadow: 0 4px 10px rgba(37,99,235,0.2); }
+    .nav-link i { margin-right: 6px; }
+
+    .container-card { max-width: 1400px; background: white; border-radius: 32px; padding: 2rem; margin: 30px auto; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid rgba(226,232,240,0.6); }
+    .section-title { font-weight: 650; font-size: 1.75rem; border-left: 6px solid #2563eb; padding-left: 1.2rem; margin-bottom: 1.8rem; }
+
+    /* Sidebar vertikal */
+    .nav-pills .nav-link { border-radius: 12px; padding: 0.6rem 1rem; margin-bottom: 4px; color: #334155; font-weight: 500; }
+    .nav-pills .nav-link i { font-size: 1.1rem; }
+    .nav-pills .nav-link.active { background-color: #2563eb; color: white !important; }
+    .sidebar-sticky { position: sticky; top: 80px; z-index: 1; }
+
+    /* Skeleton loading */
+    .skeleton-loader { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: skeleton-shimmer 1.5s infinite linear; border-radius: 8px; height: 1.2em; width: 100%; }
+    @keyframes skeleton-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    .fade-in { animation: fadeIn 0.3s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+    .toast { background: white; border-left: 5px solid; border-radius: 16px; }
+
+    /* Sticky header tabel */
+    .table thead.sticky-top th {
+      background-color: #f8fafc;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: inset 0 -1px 0 #dee2e6;
+    }
+
+    /* ===== SIDEBAR MINIMIZED MODE ===== */
+    .sidebar-minimized .col-md-3.col-lg-2 { flex: 0 0 auto; width: auto; max-width: 70px; }
+    .sidebar-minimized .col-md-9.col-lg-10 { flex: 1 0 0; width: auto; min-width: 0; }
+    .sidebar-minimized .sidebar-sticky .nav-link span,
+    .sidebar-minimized .sidebar-sticky h6 span,
+    .sidebar-minimized .sidebar-sticky hr {
+      display: none;
+    }
+    .sidebar-minimized .sidebar-sticky .nav-link {
+      padding: 0.6rem 0.8rem;
+      text-align: center;
+    }
+    .sidebar-minimized .sidebar-sticky .nav-link i {
+      font-size: 1.4rem;
+      margin-right: 0;
+    }
+    .sidebar-minimized .sidebar-sticky h6 i {
+      font-size: 1.5rem;
+    }
+    .sidebar-minimized .sidebar-sticky #toggleSidebarBtn {
+      margin-left: auto;
+      display: block;
+    }
+    .sidebar-minimized .nav-link[title]:hover::after {
+      content: attr(title);
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #1e293b;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      z-index: 1000;
+      margin-left: 8px;
+      pointer-events: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .sidebar-minimized .nav-link {
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ==================== NAVBAR (sama dengan admin) ==================== -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center" href="index.html">
+      <img src="LOGO ANSOR.webp" alt="GP Ansor">
+      <span><span class="brand-title">PKD GP Ansor</span><span class="brand-sub">Kabupaten Bantul</span></span>
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" href="pretest.html"><i class="bi bi-pencil-square"></i>Pre-test</a></li>
+        <li class="nav-item"><a class="nav-link" href="posttest.html"><i class="bi bi-trophy"></i>Post-test</a></li>
+        <li class="nav-item"><a class="nav-link" href="absen.html"><i class="bi bi-qr-code"></i>Absen</a></li>
+        <li class="nav-item"><a class="nav-link" href="skrining.html"><i class="bi bi-clipboard-check"></i>Skrining</a></li>
+        <li class="nav-item"><a class="nav-link" href="peserta.html"><i class="bi bi-person-badge"></i>Peserta</a></li>
+        <li class="nav-item"><a class="nav-link" href="materi.html"><i class="bi bi-file-earmark-pdf"></i>Materi</a></li>
+        <li class="nav-item"><a class="nav-link active" href="rekap_absensi.html"><i class="bi bi-bar-chart"></i>Rekap Absensi</a></li>
+      </ul>
+      <!-- Tempat untuk menu user (akan diisi JS) -->
+      <div class="d-flex align-items-center gap-2" id="navbarUserMenu"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- ==================== KONTEN UTAMA + SIDEBAR ==================== -->
+<section class="container container-card">
+  <div class="row g-4">
+    <!-- Sidebar kiri (sama dengan admin) -->
+    <div class="col-md-3 col-lg-2">
+      <div class="sidebar-sticky">
+        <div class="bg-light p-3 rounded-4 shadow-sm">
+          <!-- Header dengan tombol minimize -->
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-bold mb-0"><i class="bi bi-grid me-2"></i><span>Menu Admin</span></h6>
+            <button class="btn btn-sm btn-outline-secondary" id="toggleSidebarBtn" title="Minimize/Maximize sidebar">
+              <i class="bi bi-arrow-left-right"></i>
+            </button>
+          </div>
+          <div class="nav flex-column nav-pills">
+            <a class="nav-link" href="/bisa/admin/skrining.html" title="Skrining"><i class="bi bi-clipboard-check me-2"></i><span>Skrining</span></a>
+            <a class="nav-link" href="/bisa/admin/pretest.html" title="Pre-test"><i class="bi bi-pencil-square me-2"></i><span>Pre-test</span></a>
+            <a class="nav-link" href="/bisa/admin/posttest.html" title="Post-test"><i class="bi bi-trophy me-2"></i><span>Post-test</span></a>
+            <a class="nav-link" href="/bisa/admin/sesi_absen.html" title="Sesi Absen"><i class="bi bi-calendar-event me-2"></i><span>Sesi Absen</span></a>
+            <a class="nav-link" href="/bisa/admin/materi.html" title="Materi"><i class="bi bi-file-earmark-pdf me-2"></i><span>Materi</span></a>
+            <a class="nav-link" href="/bisa/admin/peserta.html" title="Peserta"><i class="bi bi-person-badge me-2"></i><span>Peserta</span></a>
+            <a class="nav-link" href="/bisa/admin/kader.html" title="Kader"><i class="bi bi-people-fill me-2"></i><span>Kader</span></a>
+            <a class="nav-link" href="/bisa/admin/informasi.html" title="Informasi"><i class="bi bi-info-circle me-2"></i><span>Informasi</span></a>
+            <a class="nav-link" href="/bisa/admin/data_absensi.html" title="Data Absensi"><i class="bi bi-table me-2"></i><span>Data Absensi</span></a>
+            <a class="nav-link active" href="/bisa/admin/rekap_absensi.html" title="Rekap Absensi"><i class="bi bi-bar-chart me-2"></i><span>Rekap Absensi</span></a>
+            <a class="nav-link" href="/bisa/admin/sertifikat.html" title="Sertifikat"><i class="bi bi-patch-check me-2"></i><span>Sertifikat</span></a>
+            <a class="nav-link" href="/bisa/admin/pengaturan.html" title="Pengaturan"><i class="bi bi-gear me-2"></i><span>Pengaturan</span></a>
+            <hr class="my-2">
+            <a class="nav-link text-danger" href="#" id="sidebarLogoutBtn" title="Logout">
+              <i class="bi bi-box-arrow-right me-2"></i><span>Logout</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Konten kanan: Rekap Absensi -->
+    <div class="col-md-9 col-lg-10">
+      <div class="bg-white p-4 rounded-4 shadow-sm">
+        <h2 class="section-title"><i class="bi bi-bar-chart me-2"></i>Rekap Kehadiran Peserta per Sesi</h2>
+        <div id="rekapContainer">Memuat...</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer-modern container text-center py-3 border-top mt-4">
+  <i class="bi bi-c-circle"></i> Hak Cipta 2026 - Tim Instruktur GP Ansor Kabupaten Bantul
+</footer>
+
+<!-- ==================== MODAL LOGIN (salin dari admin) ==================== -->
+<div class="modal fade" id="adminLoginModal" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white border-0 rounded-top-4">
+        <h5 class="modal-title"><i class="bi bi-shield-lock me-2"></i>Login Admin</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Username</label>
+          <input type="text" id="adminUsername" class="form-control rounded-3" placeholder="Masukkan username" autocomplete="off">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Password</label>
+          <div class="input-group">
+            <input type="password" id="adminPassword" class="form-control rounded-start-3" placeholder="Masukkan password" autocomplete="off">
+            <button class="btn btn-outline-secondary rounded-end-3" type="button" onclick="togglePasswordVisibility('adminPassword')">
+              <i class="bi bi-eye"></i>
+            </button>
+          </div>
+        </div>
+        <div id="adminLoginError" class="text-danger mt-2 small" style="display: none;"></div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary rounded-pill px-4" id="adminLoginSubmit">Login</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TOAST NOTIFIKASI ==================== -->
+<div class="toast-container">
+  <div id="notificationToast" class="toast border-0 shadow-lg" role="alert" data-bs-delay="3000">
+    <div class="toast-header bg-white border-0">
+      <i class="bi me-2" id="toastIcon"></i>
+      <strong class="me-auto" id="toastTitle">Berhasil</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+    </div>
+    <div class="toast-body" id="toastMessage"></div>
+  </div>
+</div>
+
+<!-- ==================== SCRIPT (gabungan autentikasi + fungsi rekap absensi) ==================== -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // =====================================================
+  // KONFIGURASI (GANTI DENGAN URL APPS SCRIPT ANDA)
+  // =====================================================
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec'; // GANTI!
+
+  // =====================================================
+  // AUTENTIKASI (salin dari admin)
+  // =====================================================
+  let userRole = null;
+  let userData = {};
+
+  function persistAuthState() {
+    const state = { role: userRole, data: userData };
+    sessionStorage.setItem('pkd_auth', JSON.stringify(state));
+    localStorage.setItem('pkd_auth', JSON.stringify(state));
+  }
+
+  function loadAuthState() {
+    let serialized = sessionStorage.getItem('pkd_auth');
+    if (!serialized) serialized = localStorage.getItem('pkd_auth');
+    if (serialized) {
+      try {
+        const state = JSON.parse(serialized);
+        userRole = state.role || null;
+        userData = state.data || {};
+      } catch (e) {}
+    }
+    updateNavbarMenu();
+  }
+
+  function updateNavbarMenu() {
+    const menu = document.getElementById('navbarUserMenu');
+    if (!menu) return;
+    if (userRole === 'admin') {
+      menu.innerHTML = `
+        <span class="badge bg-light text-dark px-3 py-2 rounded-pill me-2">
+          <i class="bi bi-shield-fill me-1"></i>Admin
+        </span>
+        <div class="dropdown">
+          <button class="btn btn-outline-primary rounded-pill px-4 dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+            <i class="bi bi-person-circle me-1"></i> ${escapeHtml(userData.nama || 'Admin')}
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="admin.html"><i class="bi bi-gear-wide me-2"></i>Dashboard</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><button class="dropdown-item" id="logoutBtn"><i class="bi bi-box-arrow-right me-2"></i>Logout</button></li>
+          </ul>
+        </div>
+      `;
+    } else {
+      menu.innerHTML = `
+        <span class="badge bg-light text-dark px-3 py-2 rounded-pill me-2">
+          <i class="bi bi-person-circle me-1"></i>Guest
+        </span>
+        <button class="btn btn-outline-primary rounded-pill px-4" id="loginBtn">Login</button>
+      `;
+    }
+
+    document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      logout();
+    });
+    document.getElementById('loginBtn')?.addEventListener('click', () => {
+      new bootstrap.Modal(document.getElementById('adminLoginModal')).show();
+    });
+  }
+
+  function logout() {
+    userRole = null;
+    userData = {};
+    sessionStorage.removeItem('pkd_auth');
+    localStorage.removeItem('pkd_auth');
+    window.location.href = 'index.html';
+  }
+
+  window.togglePasswordVisibility = function(inputId) {
+    const input = document.getElementById(inputId);
+    input.type = input.type === 'password' ? 'text' : 'password';
+  };
+
+  // =====================================================
+  // FUNGSI BANTU (dari rekap_absensi.html asli + tambahan)
+  // =====================================================
+  function escapeHtml(unsafe) {
+    if (unsafe == null) return '';
+    return String(unsafe).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  }
+
+  function showToast(message, type = 'success') {
+    const toastEl = document.getElementById('notificationToast');
+    document.getElementById('toastMessage').innerText = message;
+    if (type === 'success') {
+      toastEl.classList.add('border-success'); toastEl.classList.remove('border-danger');
+      document.getElementById('toastIcon').className = 'bi bi-check-circle-fill me-2 text-success';
+      document.getElementById('toastTitle').innerText = 'Berhasil';
+    } else {
+      toastEl.classList.add('border-danger'); toastEl.classList.remove('border-success');
+      document.getElementById('toastIcon').className = 'bi bi-x-circle-fill me-2 text-danger';
+      document.getElementById('toastTitle').innerText = 'Gagal';
+    }
+    new bootstrap.Toast(toastEl).show();
+  }
+
+  function callAppsScript(params, method = 'GET') {
+    return new Promise((resolve, reject) => {
+      if (method === 'GET') {
+        fetch(scriptUrl + '?' + new URLSearchParams(params), { method: 'GET', mode: 'cors' })
+          .then(r => r.json())
+          .then(resolve)
+          .catch(reject);
+      } else {
+        fetch(scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(params)
+        }).then(() => resolve({ success: true })).catch(reject);
+      }
+    });
+  }
+
+  function renderSkeletonTable(rows = 5, cols = 6) {
+    let html = '<div class="skeleton-table p-3">';
+    for (let r = 0; r < rows; r++) {
+      html += '<div class="d-flex gap-2 mb-3">';
+      for (let c = 0; c < cols; c++) {
+        html += '<div class="skeleton-loader" style="flex:1; height:1.5rem;"></div>';
+      }
+      html += '</div>';
+    }
+    return html + '</div>';
+  }
+
+  // =====================================================
+  // MANAJEMEN CACHE
+  // =====================================================
+  function getCachedData(key, maxAge = 3600000) {
+    try {
+      const data = sessionStorage.getItem(key + '_data');
+      const time = sessionStorage.getItem(key + '_time');
+      if (data && time && (Date.now() - parseInt(time)) < maxAge) {
+        return JSON.parse(data);
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function saveCachedData(key, data) {
+    try {
+      sessionStorage.setItem(key + '_data', JSON.stringify(data));
+      sessionStorage.setItem(key + '_time', Date.now().toString());
+    } catch (e) {}
+  }
+
+  async function fetchRekapFromServer() {
+    const res = await callAppsScript({ action: 'getAttendanceMatrix' }, 'GET');
+    if (!res.success) throw new Error('Gagal mengambil data rekap');
+    return {
+      peserta: res.peserta || [],
+      sesi: res.sesi || [],
+      hadirSet: new Set(res.hadirSet || []) // Set untuk pengecekan cepat
+    };
+  }
+
+  // =====================================================
+  // FUNGSI RENDER REKAP
+  // =====================================================
+  function renderRekapTable({ peserta, sesi, hadirSet }, container) {
+    // Batasi sesi yang ditampilkan (misal maks 11 seperti di admin)
+    const sesiTampil = sesi.slice(0, 11);
+
+    let html = `
+      <div class="d-flex justify-content-between mb-3">
+        <h5>Matriks Kehadiran</h5>
+        <div>
+          <button class="btn btn-success btn-sm me-2" id="exportRekapCSVBtn">📥 Ekspor CSV</button>
+          <span class="badge bg-success me-1">✅ Hadir</span>
+          <span class="badge bg-secondary">❌ Tidak Hadir</span>
+        </div>
+      </div>
+      <div class="table-responsive" style="max-height:600px; overflow-y:auto;">
+        <table class="table table-bordered table-sm table-striped table-hover">
+          <thead class="sticky-top bg-light">
+            <tr>
+              <th>No</th>
+              <th>Nama Peserta</th>
+              ${sesiTampil.map(s => `<th>${escapeHtml(s.nama)}</th>`).join('')}
+              <th>Total Hadir</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+
+    peserta.forEach((p, idx) => {
+      const namaLower = p.nama.toLowerCase();
+      let totalHadir = 0;
+      let baris = `<tr>
+        <td>${idx + 1}</td>
+        <td>${escapeHtml(p.nama)}</td>`;
+
+      sesiTampil.forEach(s => {
+        const key = `${namaLower}|${s.id}`;
+        const hadir = hadirSet.has(key);
+        if (hadir) totalHadir++;
+        baris += `<td class="text-center">${hadir ? '✅' : '❌'}</td>`;
+      });
+
+      baris += `<td class="text-center fw-bold">${totalHadir}</td>`;
+      baris += `</tr>`;
+      html += baris;
+    });
+
+    html += `</tbody></table></div>`;
+    container.innerHTML = html;
+    container.classList.add('fade-in');
+
+    // Ekspor CSV
+    document.getElementById('exportRekapCSVBtn').addEventListener('click', () => exportRekapCSV());
+  }
+
+  async function exportRekapCSV() {
+    try {
+      const res = await callAppsScript({ action: 'exportAttendanceMatrixCSV' }, 'GET');
+      if (res.success && res.csv) {
+        downloadCSV(res.csv, `rekap_absensi_${new Date().toISOString().slice(0,10)}.csv`);
+        showToast('Ekspor berhasil', 'success');
+      } else {
+        showToast('Gagal mengekspor data', 'danger');
+      }
+    } catch (e) {
+      showToast('Error: ' + e.message, 'danger');
+    }
+  }
+
+  function downloadCSV(csvContent, filename) {
+    const bom = "\uFEFF";
+    const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+  }
+
+  // =====================================================
+  // FUNGSI UTAMA: LOAD REKAP ABSENSI (dengan cache)
+  // =====================================================
+  async function loadRekapAbsensi() {
+    const container = document.getElementById('rekapContainer');
+    const cached = getCachedData('rekapAbsensi');
+
+    if (cached) {
+      // Tampilkan data cache segera
+      renderRekapTable(cached, container);
+      // Ambil data terbaru di latar belakang
+      fetchRekapFromServer().then(newData => {
+        // Bandingkan (konversi Set ke array untuk pembandingan)
+        const cachedForCompare = {
+          peserta: cached.peserta,
+          sesi: cached.sesi,
+          hadirSet: Array.from(cached.hadirSet)
+        };
+        const newForCompare = {
+          peserta: newData.peserta,
+          sesi: newData.sesi,
+          hadirSet: Array.from(newData.hadirSet)
+        };
+        if (JSON.stringify(cachedForCompare) !== JSON.stringify(newForCompare)) {
+          renderRekapTable(newData, container);
+          saveCachedData('rekapAbsensi', newData);
+        }
+      }).catch(console.warn);
+    } else {
+      // Tidak ada cache, tampilkan spinner dan ambil dari server
+      container.innerHTML = `<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>`;
+      try {
+        const data = await fetchRekapFromServer();
+        renderRekapTable(data, container);
+        saveCachedData('rekapAbsensi', data);
+      } catch (e) {
+        container.innerHTML = `<div class="alert alert-danger">Gagal memuat: ${escapeHtml(e.message)}</div>`;
+      }
+    }
+  }
+
+  // =====================================================
+  // INISIALISASI
+  // =====================================================
+  document.addEventListener('DOMContentLoaded', () => {
+    loadAuthState();
+
+    // Jika belum login, tampilkan modal login
+    if (userRole !== 'admin') {
+      const loginModal = new bootstrap.Modal(document.getElementById('adminLoginModal'));
+      loginModal.show();
+    } else {
+      loadRekapAbsensi(); // Muat data setelah login
+    }
+
+    // Tombol login di modal
+    document.getElementById('adminLoginSubmit').addEventListener('click', async function() {
+      const username = document.getElementById('adminUsername').value.trim();
+      const password = document.getElementById('adminPassword').value;
+      const errorDiv = document.getElementById('adminLoginError');
+      if (!username || !password) {
+        errorDiv.innerText = 'Username dan password harus diisi';
+        errorDiv.style.display = 'block';
+        return;
+      }
+      try {
+        const res = await callAppsScript({ action: 'verifyAdmin', username, password }, 'GET');
+        if (res.success) {
+          userRole = 'admin';
+          userData = { nama: username };
+          persistAuthState();
+          updateNavbarMenu();
+          bootstrap.Modal.getInstance(document.getElementById('adminLoginModal')).hide();
+          loadRekapAbsensi(); // Muat data setelah login
+        } else {
+          errorDiv.innerText = res.message || 'Login gagal';
+          errorDiv.style.display = 'block';
+        }
+      } catch (err) {
+        errorDiv.innerText = 'Kesalahan: ' + err.message;
+        errorDiv.style.display = 'block';
+      }
+    });
+
+    // Tombol logout di sidebar
+    document.getElementById('sidebarLogoutBtn')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      logout();
+    });
+
+    // Toggle sidebar
+    const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
+    if (toggleSidebarBtn) {
+      toggleSidebarBtn.addEventListener('click', function() {
+        const row = document.querySelector('.row.g-4');
+        row.classList.toggle('sidebar-minimized');
+        const icon = this.querySelector('i');
+        if (icon.classList.contains('bi-arrow-left-right')) {
+          icon.classList.remove('bi-arrow-left-right');
+          icon.classList.add('bi-arrow-right-left');
+        } else {
+          icon.classList.remove('bi-arrow-right-left');
+          icon.classList.add('bi-arrow-left-right');
+        }
+      });
+    }
+
+    // Tutup navbar saat klik di luar
+    document.addEventListener('click', function(e) {
+      const navbar = document.getElementById('navbarMain');
+      const toggler = document.querySelector('.navbar-toggler');
+      if (navbar && toggler && !navbar.contains(e.target) && !toggler.contains(e.target) && navbar.classList.contains('show')) {
+        bootstrap.Collapse.getInstance(navbar)?.hide();
+      }
+    });
+  });
+</script>
+</body>
+</html>
