@@ -101,7 +101,7 @@
 </head>
 <body>
 
-<!-- ==================== NAVBAR (sama dengan admin) ==================== -->
+<!-- ==================== NAVBAR ==================== -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
   <div class="container">
     <a class="navbar-brand d-flex align-items-center" href="/bisa/index.html">
@@ -142,18 +142,18 @@
             </button>
           </div>
           <div class="nav flex-column nav-pills">
-            <a class="nav-link" href="/bisa/admin/skrining.html" title="Skrining"><i class="bi bi-clipboard-check me-2"></i><span>Skrining</span></a>
-            <a class="nav-link" href="/bisa/admin/pretest.html" title="Pre-test"><i class="bi bi-pencil-square me-2"></i><span>Pre-test</span></a>
-            <a class="nav-link" href="/bisa/admin/posttest.html" title="Post-test"><i class="bi bi-trophy me-2"></i><span>Post-test</span></a>
-            <a class="nav-link" href="/bisa/admin/sesi_absen.html" title="Sesi Absen"><i class="bi bi-calendar-event me-2"></i><span>Sesi Absen</span></a>
-            <a class="nav-link" href="/bisa/admin/materi.html" title="Materi"><i class="bi bi-file-earmark-pdf me-2"></i><span>Materi</span></a>
-            <a class="nav-link active" href="/bisa/admin/peserta.html" title="Peserta"><i class="bi bi-person-badge me-2"></i><span>Peserta</span></a>
-            <a class="nav-link" href="/bisa/admin/kader.html" title="Kader"><i class="bi bi-people-fill me-2"></i><span>Kader</span></a>
-            <a class="nav-link" href="/bisa/admin/informasi.html" title="Informasi"><i class="bi bi-info-circle me-2"></i><span>Informasi</span></a>
-            <a class="nav-link" href="/bisa/admin/data_absensi.html" title="Data Absensi"><i class="bi bi-table me-2"></i><span>Data Absensi</span></a>
-            <a class="nav-link" href="/bisa/admin/rekap_absensi.html" title="Rekap Absensi"><i class="bi bi-bar-chart me-2"></i><span>Rekap Absensi</span></a>
-            <a class="nav-link" href="/bisa/admin/sertifikat.html" title="Sertifikat"><i class="bi bi-patch-check me-2"></i><span>Sertifikat</span></a>
-            <a class="nav-link" href="/bisa/admin/pengaturan.html" title="Pengaturan"><i class="bi bi-gear me-2"></i><span>Pengaturan</span></a>
+            <a class="nav-link" href="skrining.html" title="Skrining"><i class="bi bi-clipboard-check me-2"></i><span>Skrining</span></a>
+            <a class="nav-link" href="pretest.html" title="Pre-test"><i class="bi bi-pencil-square me-2"></i><span>Pre-test</span></a>
+            <a class="nav-link" href="posttest.html" title="Post-test"><i class="bi bi-trophy me-2"></i><span>Post-test</span></a>
+            <a class="nav-link" href="sesi_absen.html" title="Sesi Absen"><i class="bi bi-calendar-event me-2"></i><span>Sesi Absen</span></a>
+            <a class="nav-link" href="materi.html" title="Materi"><i class="bi bi-file-earmark-pdf me-2"></i><span>Materi</span></a>
+            <a class="nav-link active" href="peserta.html" title="Peserta"><i class="bi bi-person-badge me-2"></i><span>Peserta</span></a>
+            <a class="nav-link" href="kader.html" title="Kader"><i class="bi bi-people-fill me-2"></i><span>Kader</span></a>
+            <a class="nav-link" href="informasi.html" title="Informasi"><i class="bi bi-info-circle me-2"></i><span>Informasi</span></a>
+            <a class="nav-link" href="data_absensi.html" title="Data Absensi"><i class="bi bi-table me-2"></i><span>Data Absensi</span></a>
+            <a class="nav-link" href="rekap_absensi.html" title="Rekap Absensi"><i class="bi bi-bar-chart me-2"></i><span>Rekap Absensi</span></a>
+            <a class="nav-link" href="sertifikat.html" title="Sertifikat"><i class="bi bi-patch-check me-2"></i><span>Sertifikat</span></a>
+            <a class="nav-link" href="pengaturan.html" title="Pengaturan"><i class="bi bi-gear me-2"></i><span>Pengaturan</span></a>
             <hr class="my-2">
             <a class="nav-link text-danger" href="#" id="sidebarLogoutBtn" title="Logout">
               <i class="bi bi-box-arrow-right me-2"></i><span>Logout</span>
@@ -194,7 +194,7 @@
   <i class="bi bi-c-circle"></i> Hak Cipta 2026 - Tim Instruktur GP Ansor Kabupaten Bantul
 </footer>
 
-<!-- ==================== MODAL LOGIN (salin dari admin) ==================== -->
+<!-- ==================== MODAL LOGIN (diperlukan jika belum login) ==================== -->
 <div class="modal fade" id="adminLoginModal" tabindex="-1" data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg">
@@ -226,7 +226,7 @@
   </div>
 </div>
 
-<!-- ==================== MODAL PESERTA (tetap) ==================== -->
+<!-- ==================== MODAL PESERTA ==================== -->
 <div class="modal fade" id="pesertaModal" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -330,142 +330,22 @@
   </div>
 </div>
 
-<!-- ==================== SCRIPT (gabungan autentikasi + fungsi peserta) ==================== -->
+<!-- ==================== SCRIPT ==================== -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="api.js"></script>
 <script>
-  // =====================================================
-  // KONFIGURASI (GANTI DENGAN URL APPS SCRIPT ANDA)
-  // =====================================================
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec'; // GANTI!
-
-  // =====================================================
-  // AUTENTIKASI (salin dari admin)
-  // =====================================================
-  let userRole = null;
-  let userData = {};
-
-  function persistAuthState() {
-    const state = { role: userRole, data: userData };
-    sessionStorage.setItem('pkd_auth', JSON.stringify(state));
-    localStorage.setItem('pkd_auth', JSON.stringify(state));
-  }
-
-  function loadAuthState() {
-    let serialized = sessionStorage.getItem('pkd_auth');
-    if (!serialized) serialized = localStorage.getItem('pkd_auth');
-    if (serialized) {
-      try {
-        const state = JSON.parse(serialized);
-        userRole = state.role || null;
-        userData = state.data || {};
-      } catch (e) {}
-    }
-    updateNavbarMenu();
-  }
-
-  function updateNavbarMenu() {
-    const menu = document.getElementById('navbarUserMenu');
-    if (!menu) return;
-    if (userRole === 'admin') {
-      menu.innerHTML = `
-        <span class="badge bg-light text-dark px-3 py-2 rounded-pill me-2">
-          <i class="bi bi-shield-fill me-1"></i>Admin
-        </span>
-        <div class="dropdown">
-          <button class="btn btn-outline-primary rounded-pill px-4 dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
-            <i class="bi bi-person-circle me-1"></i> ${escapeHtml(userData.nama || 'Admin')}
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="admin.html"><i class="bi bi-gear-wide me-2"></i>Dashboard</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><button class="dropdown-item" id="logoutBtn"><i class="bi bi-box-arrow-right me-2"></i>Logout</button></li>
-          </ul>
-        </div>
-      `;
-    } else {
-      menu.innerHTML = `
-        <span class="badge bg-light text-dark px-3 py-2 rounded-pill me-2">
-          <i class="bi bi-person-circle me-1"></i>Guest
-        </span>
-        <button class="btn btn-outline-primary rounded-pill px-4" id="loginBtn">Login</button>
-      `;
-    }
-
-    document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      logout();
-    });
-    document.getElementById('loginBtn')?.addEventListener('click', () => {
-      new bootstrap.Modal(document.getElementById('adminLoginModal')).show();
-    });
-  }
-
-  function logout() {
-    userRole = null;
-    userData = {};
-    sessionStorage.removeItem('pkd_auth');
-    localStorage.removeItem('pkd_auth');
-    window.location.href = 'index.html';
-  }
-
+  // Fungsi toggle password (untuk modal login)
   window.togglePasswordVisibility = function(inputId) {
     const input = document.getElementById(inputId);
-    input.type = input.type === 'password' ? 'text' : 'password';
+    if (input) input.type = input.type === 'password' ? 'text' : 'password';
   };
 
-  // =====================================================
-  // FUNGSI BANTU (dari peserta.html asli + tambahan)
-  // =====================================================
-  function escapeHtml(unsafe) {
-    if (unsafe == null) return '';
-    return String(unsafe).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-  }
+  // Shortcut ke fungsi PKD
+  const { escapeHtml, showToast, getCached, saveCached } = PKD;
 
-  function showToast(message, type = 'success') {
-    const toastEl = document.getElementById('notificationToast');
-    document.getElementById('toastMessage').innerText = message;
-    if (type === 'success') {
-      toastEl.classList.add('border-success'); toastEl.classList.remove('border-danger');
-      document.getElementById('toastIcon').className = 'bi bi-check-circle-fill me-2 text-success';
-      document.getElementById('toastTitle').innerText = 'Berhasil';
-    } else {
-      toastEl.classList.add('border-danger'); toastEl.classList.remove('border-success');
-      document.getElementById('toastIcon').className = 'bi bi-x-circle-fill me-2 text-danger';
-      document.getElementById('toastTitle').innerText = 'Gagal';
-    }
-    new bootstrap.Toast(toastEl).show();
-  }
-
-  function callAppsScript(params, method = 'GET') {
-    return new Promise((resolve, reject) => {
-      if (method === 'GET') {
-        fetch(scriptUrl + '?' + new URLSearchParams(params), { method: 'GET', mode: 'cors' })
-          .then(r => r.json())
-          .then(resolve)
-          .catch(reject);
-      } else {
-        fetch(scriptUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams(params)
-        }).then(() => resolve({ success: true })).catch(reject);
-      }
-    });
-  }
-
-  function renderSkeletonTable(rows = 5, cols = 12) {
-    let html = '<div class="skeleton-table p-3">';
-    for (let r = 0; r < rows; r++) {
-      html += '<div class="d-flex gap-2 mb-3">';
-      for (let c = 0; c < cols; c++) {
-        html += '<div class="skeleton-loader" style="flex:1; height:1.5rem;"></div>';
-      }
-      html += '</div>';
-    }
-    return html + '</div>';
-  }
-
+  // -------------------------------------------------------
+  // Fungsi bantu lokal (readFileAsBase64, downloadCSV)
+  // -------------------------------------------------------
   function readFileAsBase64(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -485,35 +365,26 @@
     URL.revokeObjectURL(link.href);
   }
 
-  // =====================================================
-  // MANAJEMEN CACHE
-  // =====================================================
-  function getCachedData(key, maxAge = 3600000) {
-    try {
-      const data = sessionStorage.getItem(key + '_data');
-      const time = sessionStorage.getItem(key + '_time');
-      if (data && time && (Date.now() - parseInt(time)) < maxAge) {
-        return JSON.parse(data);
-      }
-    } catch (e) {}
-    return null;
-  }
-
-  function saveCachedData(key, data) {
-    try {
-      sessionStorage.setItem(key + '_data', JSON.stringify(data));
-      sessionStorage.setItem(key + '_time', Date.now().toString());
-    } catch (e) {}
-  }
-
+  // -------------------------------------------------------
+  // Data peserta dari server
+  // -------------------------------------------------------
   async function fetchPesertaFromServer() {
-    const res = await callAppsScript({ action: 'getPesertaList' }, 'GET');
-    return res.data || [];
+    return await PKD.getPesertaList(true);
   }
 
-  // =====================================================
-  // FUNGSI RENDER TABEL PESERTA
-  // =====================================================
+  function renderSkeletonTable(rows = 5, cols = 12) {
+    let html = '<div class="skeleton-table p-3">';
+    for (let r = 0; r < rows; r++) {
+      html += '<div class="d-flex gap-2 mb-3">';
+      for (let c = 0; c < cols; c++) {
+        html += '<div class="skeleton-loader" style="flex:1; height:1.5rem;"></div>';
+      }
+      html += '</div>';
+    }
+    return html + '</div>';
+  }
+
+  // Render tabel dari data array
   function renderPesertaTable(data, container) {
     if (!data.length) {
       container.innerHTML = '<p class="text-muted">Belum ada data peserta.</p>';
@@ -565,7 +436,7 @@
     container.innerHTML = html;
     container.classList.add('fade-in');
 
-    // Event listener untuk tombol edit/hapus
+    // Pasang event listener untuk edit dan hapus
     document.querySelectorAll('.edit-peserta').forEach(btn => {
       btn.addEventListener('click', function() {
         const id = this.dataset.id;
@@ -579,19 +450,18 @@
         if (!confirm('Hapus data peserta ini?')) return;
         const id = this.dataset.id;
         try {
-          await callAppsScript({ action: 'deletePeserta', id }, 'POST');
+          await PKD.deletePeserta(id);
           showToast('Peserta dihapus', 'success');
-          loadPeserta(); // reload dengan cache
+          loadPeserta(); // reload data setelah hapus
         } catch (e) {
           showToast('Gagal menghapus: ' + e.message, 'danger');
         }
       });
     });
 
-    // Filter search
+    // Pasang filter pencarian
     const searchInput = document.getElementById('searchPeserta');
     if (searchInput) {
-      // Hapus listener lama, ganti baru
       const newSearch = searchInput.cloneNode(true);
       searchInput.parentNode.replaceChild(newSearch, searchInput);
       newSearch.addEventListener('input', function(e) {
@@ -606,19 +476,19 @@
     }
   }
 
-  // =====================================================
-  // FUNGSI UTAMA: LOAD PESERTA (dengan cache)
-  // =====================================================
+  // -------------------------------------------------------
+  // Load data peserta dengan cache
+  // -------------------------------------------------------
   async function loadPeserta() {
     const container = document.getElementById('pesertaContainer');
-    const cached = getCachedData('pesertaList');
+    const cached = getCached('pesertaList');
 
     if (cached) {
       renderPesertaTable(cached, container);
       fetchPesertaFromServer().then(newData => {
         if (JSON.stringify(newData) !== JSON.stringify(cached)) {
           renderPesertaTable(newData, container);
-          saveCachedData('pesertaList', newData);
+          saveCached('pesertaList', newData);
         }
       }).catch(console.warn);
     } else {
@@ -626,16 +496,16 @@
       try {
         const data = await fetchPesertaFromServer();
         renderPesertaTable(data, container);
-        saveCachedData('pesertaList', data);
+        saveCached('pesertaList', data);
       } catch (e) {
         container.innerHTML = `<div class="alert alert-danger">Gagal memuat: ${escapeHtml(e.message)}</div>`;
       }
     }
   }
 
-  // =====================================================
-  // MODAL TAMBAH/EDIT PESERTA (dari peserta.html asli)
-  // =====================================================
+  // -------------------------------------------------------
+  // Modal Tambah/Edit Peserta
+  // -------------------------------------------------------
   function showPesertaModal(peserta = null) {
     const isEdit = !!peserta;
     document.getElementById('pesertaModalLabel').innerText = isEdit ? 'Edit Peserta' : 'Tambah Peserta';
@@ -684,8 +554,6 @@
       }
 
       const params = {
-        action: isEdit ? 'updatePeserta' : 'submitPeserta',
-        id: id || undefined,
         nama_lengkap,
         tempat_tgl_lahir: document.getElementById('pesertaTempatTglLahir').value,
         pekerjaan: document.getElementById('pesertaPekerjaan').value,
@@ -699,20 +567,57 @@
       if (fotoBase64) params.foto = fotoBase64;
 
       try {
-        await callAppsScript(params, 'POST');
+        if (isEdit) {
+          params.id = id;
+          await PKD.updatePeserta(params);
+        } else {
+          await PKD.submitPeserta(params);
+        }
         showToast(isEdit ? 'Data diperbarui' : 'Data ditambahkan', 'success');
         modal.hide();
-        loadPeserta(); // reload dengan cache
+        loadPeserta(); // reload data
       } catch (err) {
         document.getElementById('pesertaModalError').innerText = err.message;
         document.getElementById('pesertaModalError').style.display = 'block';
       }
     };
+
+    // Preview foto saat file dipilih
+    document.getElementById('pesertaFoto').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          preview.src = ev.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        preview.style.display = 'none';
+      }
+    });
   }
 
-  // =====================================================
-  // IMPOR CSV (dari peserta.html asli)
-  // =====================================================
+  // -------------------------------------------------------
+  // Ekspor CSV
+  // -------------------------------------------------------
+  document.getElementById('exportPesertaBtn')?.addEventListener('click', async () => {
+    try {
+      const res = await PKD.exportPesertaCSV();
+      if (res.success && res.csv) {
+        downloadCSV(res.csv, 'data_peserta.csv');
+        showToast('Ekspor berhasil', 'success');
+      } else {
+        showToast('Gagal mengekspor data', 'danger');
+      }
+    } catch (e) {
+      showToast('Error: ' + e.message, 'danger');
+    }
+  });
+
+  // -------------------------------------------------------
+  // Impor CSV
+  // -------------------------------------------------------
   document.getElementById('importPesertaBtn')?.addEventListener('click', () => {
     new bootstrap.Modal(document.getElementById('importPesertaModal')).show();
   });
@@ -742,16 +647,12 @@
     reader.onload = async function(e) {
       const base64Data = e.target.result.split(',')[1];
       try {
-        const res = await callAppsScript({
-          action: 'importPesertaCSV',
-          csvData: base64Data,
-          fileName: file.name
-        }, 'POST');
+        const res = await PKD.importPesertaCSV(base64Data, file.name);
         if (res.success) {
           showToast(`Berhasil mengimpor ${res.count || 0} data`, 'success');
           bootstrap.Modal.getInstance(document.getElementById('importPesertaModal')).hide();
           fileInput.value = '';
-          loadPeserta(); // reload dengan cache
+          loadPeserta(); // reload data
         } else {
           throw new Error(res.message || 'Gagal impor');
         }
@@ -765,38 +666,23 @@
     reader.readAsDataURL(file);
   });
 
-  // =====================================================
-  // EKSPOR CSV (dari peserta.html asli)
-  // =====================================================
-  document.getElementById('exportPesertaBtn')?.addEventListener('click', async () => {
-    try {
-      const res = await callAppsScript({ action: 'exportPesertaCSV' }, 'GET');
-      if (res.success && res.csv) {
-        downloadCSV(res.csv, 'data_peserta.csv');
-        showToast('Ekspor berhasil', 'success');
-      } else {
-        showToast('Gagal mengekspor data', 'danger');
-      }
-    } catch (e) {
-      showToast('Error: ' + e.message, 'danger');
-    }
-  });
+  // -------------------------------------------------------
+  // Tombol tambah peserta
+  document.getElementById('tambahPesertaBtn').addEventListener('click', () => showPesertaModal());
 
-  // =====================================================
-  // INISIALISASI
-  // =====================================================
+  // -------------------------------------------------------
+  // Inisialisasi
+  // -------------------------------------------------------
   document.addEventListener('DOMContentLoaded', () => {
-    loadAuthState();
-
-    // Jika belum login, tampilkan modal login
-    if (userRole !== 'admin') {
+    // Auth check
+    if (PKD.getUserRole() !== 'admin') {
       const loginModal = new bootstrap.Modal(document.getElementById('adminLoginModal'));
       loginModal.show();
     } else {
       loadPeserta();
     }
 
-    // Tombol login di modal
+    // Handler login
     document.getElementById('adminLoginSubmit').addEventListener('click', async function() {
       const username = document.getElementById('adminUsername').value.trim();
       const password = document.getElementById('adminPassword').value;
@@ -807,14 +693,14 @@
         return;
       }
       try {
-        const res = await callAppsScript({ action: 'verifyAdmin', username, password }, 'GET');
+        const res = await PKD.verifyAdmin(username, password);
         if (res.success) {
-          userRole = 'admin';
-          userData = { nama: username };
-          persistAuthState();
-          updateNavbarMenu();
+          PKD.setUserRole('admin');
+          PKD.setUserData({ nama: username });
+          PKD.persistAuthState();
+          PKD.updateNavbarMenu();
           bootstrap.Modal.getInstance(document.getElementById('adminLoginModal')).hide();
-          loadPeserta(); // Muat data setelah login
+          loadPeserta();
         } else {
           errorDiv.innerText = res.message || 'Login gagal';
           errorDiv.style.display = 'block';
@@ -825,10 +711,10 @@
       }
     });
 
-    // Tombol logout di sidebar
+    // Sidebar logout
     document.getElementById('sidebarLogoutBtn')?.addEventListener('click', (e) => {
       e.preventDefault();
-      logout();
+      PKD.logout();
     });
 
     // Toggle sidebar
@@ -848,10 +734,7 @@
       });
     }
 
-    // Tombol tambah peserta
-    document.getElementById('tambahPesertaBtn').addEventListener('click', () => showPesertaModal());
-
-    // Tutup navbar saat klik di luar
+    // Navbar collapse
     document.addEventListener('click', function(e) {
       const navbar = document.getElementById('navbarMain');
       const toggler = document.querySelector('.navbar-toggler');

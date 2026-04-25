@@ -17,7 +17,7 @@
     body { background: #f8fafc; color: #0f172a; }
     .navbar { background: rgba(255,255,255,0.8) !important; backdrop-filter: blur(12px); border-bottom: 1px solid rgba(203,213,225,0.3); }
     .navbar-brand { font-weight: 700; }
-    .navbar-brand img { max-height: 45px; margin-right: 12px; } /* logo lebih besar */
+    .navbar-brand img { max-height: 45px; margin-right: 12px; }
     .brand-title { font-size: 1.35rem; font-weight: 700; color: #0a3d62; }
     .brand-sub { font-size: 0.9rem; color: #6c757d; display: block; }
     .nav-link { font-weight: 500; border-radius: 9999px; padding: 0.5rem 1.2rem; color: #334155 !important; transition: all 0.15s; }
@@ -36,10 +36,9 @@
     .skeleton-loader { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: skeleton-shimmer 1.5s infinite linear; border-radius: 8px; height: 1.2em; width: 100%; }
     @keyframes skeleton-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; }
-    .toast { background: white; border-left: 5px solid; border-radius: 16px; }
     .info-thumb { max-width: 80px; max-height: 60px; border-radius: 4px; cursor: pointer; object-fit: cover; }
 
+    /* -----Sidebar minimized (opsional, tetap dipertahankan)----- */
     .sidebar-minimized .col-md-3.col-lg-2 { flex: 0 0 auto; width: auto; max-width: 70px; }
     .sidebar-minimized .col-md-9.col-lg-10 { flex: 1 0 0; width: auto; min-width: 0; }
     .sidebar-minimized .sidebar-sticky .nav-link span,
@@ -53,10 +52,12 @@
       background: #1e293b; color: white; padding: 4px 8px; border-radius: 6px; font-size: 0.8rem;
       white-space: nowrap; z-index: 1000; margin-left: 8px; pointer-events: none; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
+    .sidebar-minimized .nav-link { position: relative; }
+
     .status-badge { font-size: 0.8rem; padding: 2px 8px; border-radius: 12px; }
     .status-aktif { background: #dbeafe; color: #1e40af; }
     .status-selesai { background: #dcfce7; color: #166534; }
-    .btn-action { min-width: 70px; } /* supaya tombol tidak berubah ukuran saat loading */
+    .btn-action { min-width: 70px; }
   </style>
 </head>
 <body>
@@ -64,7 +65,7 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
   <div class="container">
     <a class="navbar-brand d-flex align-items-center" href="/bisa/index.html">
-      <img src="/bisa/admin/LOGO ANSOR.webp" alt="GP Ansor">
+      <img src="LOGO ANSOR.webp" alt="GP Ansor">
       <span><span class="brand-title">PKD GP Ansor</span><span class="brand-sub">Kabupaten Bantul</span></span>
     </a>
     <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
@@ -80,9 +81,7 @@
         <li class="nav-item"><a class="nav-link" href="materi.html"><i class="bi bi-file-earmark-pdf"></i>Materi</a></li>
         <li class="nav-item"><a class="nav-link active" href="informasi.html"><i class="bi bi-info-circle"></i>Informasi</a></li>
       </ul>
-      <div class="d-flex align-items-center gap-2" id="navbarUserMenu">
-        <!-- akan diisi oleh updateNavbar -->
-      </div>
+      <div class="d-flex align-items-center gap-2" id="navbarUserMenu"></div>
     </div>
   </div>
 </nav>
@@ -100,18 +99,18 @@
             </button>
           </div>
           <div class="nav flex-column nav-pills">
-            <a class="nav-link" href="/bisa/admin/skrining.html" title="Skrining"><i class="bi bi-clipboard-check me-2"></i><span>Skrining</span></a>
-            <a class="nav-link" href="/bisa/admin/pretest.html" title="Pre-test"><i class="bi bi-pencil-square me-2"></i><span>Pre-test</span></a>
-            <a class="nav-link" href="/bisa/admin/posttest.html" title="Post-test"><i class="bi bi-trophy me-2"></i><span>Post-test</span></a>
-            <a class="nav-link" href="/bisa/admin/sesi_absen.html" title="Sesi Absen"><i class="bi bi-calendar-event me-2"></i><span>Sesi Absen</span></a>
-            <a class="nav-link" href="/bisa/admin/materi.html" title="Materi"><i class="bi bi-file-earmark-pdf me-2"></i><span>Materi</span></a>
-            <a class="nav-link" href="/bisa/admin/peserta.html" title="Peserta"><i class="bi bi-person-badge me-2"></i><span>Peserta</span></a>
-            <a class="nav-link" href="/bisa/admin/kader.html" title="Kader"><i class="bi bi-people-fill me-2"></i><span>Kader</span></a>
-            <a class="nav-link active" href="/bisa/admin/informasi.html" title="Informasi"><i class="bi bi-info-circle me-2"></i><span>Informasi</span></a>
-            <a class="nav-link" href="/bisa/admin/data_absensi.html" title="Data Absensi"><i class="bi bi-table me-2"></i><span>Data Absensi</span></a>
-            <a class="nav-link" href="/bisa/admin/rekap_absensi.html" title="Rekap Absensi"><i class="bi bi-bar-chart me-2"></i><span>Rekap Absensi</span></a>
-            <a class="nav-link" href="/bisa/admin/sertifikat.html" title="Sertifikat"><i class="bi bi-patch-check me-2"></i><span>Sertifikat</span></a>
-            <a class="nav-link" href="/bisa/admin/pengaturan.html" title="Pengaturan"><i class="bi bi-gear me-2"></i><span>Pengaturan</span></a>
+            <a class="nav-link" href="skrining.html" title="Skrining"><i class="bi bi-clipboard-check me-2"></i><span>Skrining</span></a>
+            <a class="nav-link" href="pretest.html" title="Pre-test"><i class="bi bi-pencil-square me-2"></i><span>Pre-test</span></a>
+            <a class="nav-link" href="posttest.html" title="Post-test"><i class="bi bi-trophy me-2"></i><span>Post-test</span></a>
+            <a class="nav-link" href="sesi_absen.html" title="Sesi Absen"><i class="bi bi-calendar-event me-2"></i><span>Sesi Absen</span></a>
+            <a class="nav-link" href="materi.html" title="Materi"><i class="bi bi-file-earmark-pdf me-2"></i><span>Materi</span></a>
+            <a class="nav-link" href="peserta.html" title="Peserta"><i class="bi bi-person-badge me-2"></i><span>Peserta</span></a>
+            <a class="nav-link" href="kader.html" title="Kader"><i class="bi bi-people-fill me-2"></i><span>Kader</span></a>
+            <a class="nav-link active" href="informasi.html" title="Informasi"><i class="bi bi-info-circle me-2"></i><span>Informasi</span></a>
+            <a class="nav-link" href="data_absensi.html" title="Data Absensi"><i class="bi bi-table me-2"></i><span>Data Absensi</span></a>
+            <a class="nav-link" href="rekap_absensi.html" title="Rekap Absensi"><i class="bi bi-bar-chart me-2"></i><span>Rekap Absensi</span></a>
+            <a class="nav-link" href="sertifikat.html" title="Sertifikat"><i class="bi bi-patch-check me-2"></i><span>Sertifikat</span></a>
+            <a class="nav-link" href="pengaturan.html" title="Pengaturan"><i class="bi bi-gear me-2"></i><span>Pengaturan</span></a>
             <hr class="my-2">
             <a class="nav-link text-danger" href="#" id="sidebarLogoutBtn" title="Logout">
               <i class="bi bi-box-arrow-right me-2"></i><span>Logout</span>
@@ -121,6 +120,7 @@
       </div>
     </div>
 
+    <!-- Konten kanan -->
     <div class="col-md-9 col-lg-10">
       <div class="bg-white p-4 rounded-4 shadow-sm">
         <h2 class="section-title"><i class="bi bi-calendar3 me-2"></i>Manajemen Jadwal & Flyer PKD</h2>
@@ -174,116 +174,43 @@
   <i class="bi bi-c-circle"></i> Hak Cipta 2026 - Tim Instruktur GP Ansor Kabupaten Bantul
 </footer>
 
-<div class="toast-container">
-  <div id="notificationToast" class="toast border-0 shadow-lg" role="alert" data-bs-delay="3000">
-    <div class="toast-header bg-white border-0"><i class="bi me-2" id="toastIcon"></i><strong class="me-auto" id="toastTitle">Berhasil</strong><button type="button" class="btn-close" data-bs-dismiss="toast"></button></div>
-    <div class="toast-body" id="toastMessage"></div>
-  </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="api.js"></script>
 <script>
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec'; // Ganti dengan URL Anda
-
-  let userRole = null, userData = {};
-  let allItems = [], usulanData = [];
-
-  const storage = (() => {
-    try { localStorage.setItem('test','test'); localStorage.removeItem('test'); return localStorage; }
-    catch(e) {
-      try { sessionStorage.setItem('test','test'); sessionStorage.removeItem('test'); return sessionStorage; }
-      catch(e2) { const m = new Map(); return { getItem: k => m.get(k)||null, setItem: (k,v) => m.set(k,v), removeItem: k => m.delete(k) }; }
-    }
-  })();
-
-  // AUTH
-  function checkAuth() {
-    const authData = storage.getItem('pkd_auth');
-    if (!authData) return false;
-    try {
-      const auth = JSON.parse(authData);
-      if (auth.role === 'admin') { userRole = auth.role; userData = auth.data || {}; return true; }
-    } catch(e) {}
-    return false;
-  }
-  function logout() { try { storage.removeItem('pkd_auth'); } catch(e) {} window.location.href = 'index.html'; }
-  function updateNavbar() {
-    const menu = document.getElementById('navbarUserMenu');
-    if (menu) {
-      menu.innerHTML = `
-        <span class="badge bg-light text-dark px-3 py-2 rounded-pill me-2"><i class="bi bi-shield-fill me-1"></i>${escapeHtml(userData.nama||'Admin')}</span>
-        <div class="dropdown">
-          <button class="btn btn-outline-primary rounded-pill px-4 dropdown-toggle" type="button" data-bs-toggle="dropdown"><i class="bi bi-person-circle me-1"></i> ${escapeHtml(userData.nama||'Admin')}</button>
-          <ul class="dropdown-menu dropdown-menu-end"><li><a class="dropdown-item" href="admin.html"><i class="bi bi-gear-wide me-2"></i>Dashboard</a></li><li><hr class="dropdown-divider"></li><li><button class="dropdown-item" id="logoutBtn"><i class="bi bi-box-arrow-right me-2"></i>Logout</button></li></ul>
-        </div>`;
-      document.getElementById('logoutBtn')?.addEventListener('click', e => { e.preventDefault(); logout(); });
-    }
+  // Tidak ada lagi modal login – jika bukan admin, langsung redirect
+  if (PKD.getUserRole() !== 'admin') {
+    window.location.href = '/bisa/login.html';
+    throw new Error('Akses ditolak'); // hentikan eksekusi
   }
 
-  function escapeHtml(s) { return s ? String(s).replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]) : ''; }
-  function showToast(msg, type='success') {
-    const container = document.querySelector('.toast-container');
-    const toast = document.createElement('div'); toast.className = `toast show`; toast.style.borderLeftColor = type==='success'?'#10b981':type==='danger'?'#ef4444':'#3b82f6';
-    toast.innerHTML = `<div class="toast-body">${escapeHtml(msg)}</div>`; container.appendChild(toast); setTimeout(() => toast.remove(), 4000);
-  }
+  // Shortcut ke fungsi PKD
+  const { escapeHtml, showToast, getCached, saveCached, callApi } = PKD;
 
-  // API CALL (POST CORS)
-  async function callApi(action, data = {}, method = 'POST') {
-    const params = { action, ...data };
-    if (method === 'GET') {
-      const q = new URLSearchParams(params).toString();
-      const res = await fetch(`${scriptUrl}?${q}`, { method: 'GET', mode: 'cors' });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json(); if (json.error) throw new Error(json.error);
-      return json;
-    } else {
-      const body = new URLSearchParams(); for (let k in params) if (params[k] !== null && params[k] !== undefined) body.append(k, params[k]);
-      const res = await fetch(scriptUrl, { method: 'POST', mode: 'cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body });
-      const text = await res.text(); if (!text) return { success: true };
-      try { const json = JSON.parse(text); if (json.error) throw new Error(json.error); return json; }
-      catch(e) { throw new Error('Respons server tidak valid'); }
-    }
-  }
-
-  // LOAD DATA - dengan cache sessionStorage dan background update
-  const CACHE_KEY = 'adminInfoCache', CACHE_TIME = 'adminInfoCacheTime', MAX_AGE = 300000; // 5 menit
-
-  function getCachedInfo() {
-    try {
-      const data = sessionStorage.getItem(CACHE_KEY);
-      const time = sessionStorage.getItem(CACHE_TIME);
-      if (data && time && (Date.now() - parseInt(time)) < MAX_AGE) return JSON.parse(data);
-    } catch(e) {}
-    return null;
-  }
-  function saveCachedInfo(info) {
-    try { sessionStorage.setItem(CACHE_KEY, JSON.stringify(info)); sessionStorage.setItem(CACHE_TIME, Date.now().toString()); } catch(e) {}
-  }
+  let allItems = [];
+  let usulanData = [];
 
   async function loadInfoList(force = false) {
     if (!force) {
-      const cached = getCachedInfo();
+      const cached = getCached('adminInfoCache');
       if (cached) { allItems = cached; renderJadwalTable(); return; }
     }
     try {
-      const r = await callApi('getInfoList', {}, 'GET');
-      allItems = r.data || [];
-      saveCachedInfo(allItems);
+      allItems = await PKD.getInfoList(true);
+      saveCached('adminInfoCache', allItems);
       renderJadwalTable();
-    } catch(e) { showToast('Gagal load info: '+e.message, 'danger'); }
+    } catch (e) { showToast('Gagal load info: '+e.message, 'danger'); }
   }
 
   async function loadUsulanList() {
     try {
-      const r = await callApi('getUsulanList', {}, 'GET');
-      usulanData = (r.data||[]).filter(u => u.status==='pending');
+      const res = await PKD.getUsulanList();
+      usulanData = (res.data || []).filter(u => u.status === 'pending');
       renderUsulanTable();
-    } catch(e) { showToast('Gagal load usulan: '+e.message, 'danger'); }
+    } catch (e) { showToast('Gagal load usulan: '+e.message, 'danger'); }
   }
 
   async function loadAllData() { await Promise.all([loadInfoList(), loadUsulanList()]); }
 
-  // RENDER TABEL JADWAL
   function renderJadwalTable() {
     const container = document.getElementById('jadwalTableContainer');
     if (!allItems.length) { container.innerHTML = '<div class="text-center py-4 text-muted">Belum ada data.</div>'; return; }
@@ -294,15 +221,11 @@
       let tanggal = item.tanggal_mulai ? new Date(item.tanggal_mulai).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'}) : '';
       if (item.tanggal_akhir) tanggal += ' - ' + new Date(item.tanggal_akhir).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
       let lokasi = item.lokasi ? `<br><small class="text-muted"><i class="bi bi-geo-alt"></i> ${escapeHtml(item.lokasi)}</small>` : '';
-      let preview = '-';
-      if (isFlyer && item.url) preview = `<img src="https://lh3.googleusercontent.com/d/${item.url}=w100" class="info-thumb" onclick="window.open('https://lh3.googleusercontent.com/d/${item.url}')">`;
-
+      let preview = isFlyer && item.url ? `<img src="https://lh3.googleusercontent.com/d/${item.url}=w100" class="info-thumb" onclick="window.open('https://lh3.googleusercontent.com/d/${item.url}')">` : '-';
       const currentStatus = item.status || 'aktif';
       const statusLabel = currentStatus === 'selesai' ? '✅ Selesai' : '🔄 Aktif';
       const statusClass = currentStatus === 'selesai' ? 'status-selesai' : 'status-aktif';
       const toggleLabel = currentStatus === 'selesai' ? 'Aktifkan' : 'Tandai Selesai';
-      const toggleClass = currentStatus === 'selesai' ? 'btn-outline-warning' : 'btn-outline-success';
-
       html += `<tr data-id="${item.id}">
         <td><span class="badge ${isFlyer?'bg-info':'bg-primary'}">${isFlyer?'Flyer':'Timeline'}</span></td>
         <td><strong>${escapeHtml(item.judul)}</strong></td>
@@ -310,8 +233,8 @@
         <td>${tanggal||'-'}${lokasi}</td>
         <td>${preview}</td>
         <td>${item.urutan||''}</td>
-        <td><span class="status-badge ${statusClass} status-label">${statusLabel}</span> <button class="btn btn-sm ${toggleClass} toggle-status-btn btn-action" data-id="${item.id}">${toggleLabel}</button></td>
-        <td><button class="btn btn-sm btn-warning me-1 edit-btn btn-action" data-id="${item.id}"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-danger delete-btn btn-action" data-id="${item.id}"><i class="bi bi-trash"></i></button></td>
+        <td><span class="status-badge ${statusClass}">${statusLabel}</span> <button class="btn btn-sm btn-outline-${currentStatus==='selesai'?'warning':'success'} toggle-status-btn btn-action" data-id="${item.id}">${toggleLabel}</button></td>
+        <td><button class="btn btn-sm btn-warning me-1 edit-btn" data-id="${item.id}"><i class="bi bi-pencil"></i></button><button class="btn btn-sm btn-danger delete-btn" data-id="${item.id}"><i class="bi bi-trash"></i></button></td>
       </tr>`;
     });
     html += `</tbody></table>`; container.innerHTML = html;
@@ -320,176 +243,94 @@
 
   function attachJadwalEvents() {
     document.querySelectorAll('.edit-btn').forEach(b => b.addEventListener('click', () => {
-      const item = allItems.find(i => i.id == b.dataset.id);
-      if (item) editItem(item);
+      const item = allItems.find(i => i.id == b.dataset.id); if(item) editItem(item);
     }));
     document.querySelectorAll('.delete-btn').forEach(b => b.addEventListener('click', async function() {
-      if (!confirm('Hapus item ini?')) return;
-      const id = this.dataset.id;
-      const originalHtml = this.innerHTML;
-      this.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-      this.disabled = true;
-      try {
-        await callApi('deleteInfo', { id });
-        // hapus dari array lokal
-        allItems = allItems.filter(i => i.id != id);
-        saveCachedInfo(allItems);
-        renderJadwalTable();
-        showToast('Item dihapus', 'success');
-      } catch(e) {
-        showToast('Gagal: '+e.message, 'danger');
-        this.innerHTML = originalHtml;
-        this.disabled = false;
-      }
+      if(!confirm('Hapus item ini?')) return;
+      const id = this.dataset.id; const orig = this.innerHTML; this.innerHTML='<span class="spinner-border spinner-border-sm"></span>'; this.disabled=true;
+      try { await PKD.deleteInfo(id); allItems = allItems.filter(i => i.id != id); saveCached('adminInfoCache', allItems); renderJadwalTable(); showToast('Item dihapus','success'); }
+      catch(e) { showToast('Gagal: '+e.message,'danger'); this.innerHTML=orig; this.disabled=false; }
     }));
-    document.querySelectorAll('.toggle-status-btn').forEach(btn => {
-      btn.addEventListener('click', async function() {
-        const id = this.dataset.id;
-        const originalHtml = this.innerHTML;
-        this.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-        this.disabled = true;
-        try {
-          const res = await callApi('toggleInfoStatus', { id });
-          // update lokal
-          const item = allItems.find(i => i.id == id);
-          if (item) item.status = res.status;
-          saveCachedInfo(allItems);
-          renderJadwalTable();
-          showToast(`Status diubah menjadi ${res.status}`, 'success');
-        } catch(e) {
-          showToast('Gagal: '+e.message, 'danger');
-          this.innerHTML = originalHtml;
-          this.disabled = false;
-        }
-      });
-    });
+    document.querySelectorAll('.toggle-status-btn').forEach(btn => btn.addEventListener('click', async function() {
+      const id = this.dataset.id; const orig=this.innerHTML; this.innerHTML='<span class="spinner-border spinner-border-sm"></span>'; this.disabled=true;
+      try { const res = await PKD.toggleInfoStatus(id); const item = allItems.find(i=>i.id==id); if(item) item.status = res.status; saveCached('adminInfoCache', allItems); renderJadwalTable(); showToast(`Status diubah`, 'success'); }
+      catch(e) { showToast('Gagal: '+e.message,'danger'); this.innerHTML=orig; this.disabled=false; }
+    }));
   }
 
-  // RENDER USULAN
   function renderUsulanTable() {
     const container = document.getElementById('usulanTableContainer');
-    if (!usulanData.length) { container.innerHTML = '<div class="text-center py-4 text-muted">Tidak ada usulan pending.</div>'; return; }
-    let html = `<table class="table table-sm table-hover mb-0"><thead class="table-light"><tr><th>Nama</th><th>Usulan (PAC)</th><th>Tanggal</th><th>Lokasi</th><th>No HP</th><th>Aksi</th></tr></thead><tbody>`;
+    if(!usulanData.length) { container.innerHTML='<div class="text-center py-4 text-muted">Tidak ada usulan pending.</div>'; return; }
+    let html=`<table class="table table-sm table-hover mb-0"><thead class="table-light"><tr><th>Nama</th><th>Usulan (PAC)</th><th>Tanggal</th><th>Lokasi</th><th>No HP</th><th>Aksi</th></tr></thead><tbody>`;
     usulanData.forEach(u => {
       let tgl = u.tanggal_mulai ? new Date(u.tanggal_mulai).toLocaleDateString('id-ID') : '';
-      if (u.tanggal_akhir) tgl += ' - ' + new Date(u.tanggal_akhir).toLocaleDateString('id-ID');
-      html += `<tr data-id="${u.id}"><td>${escapeHtml(u.nama)}</td><td><strong>${escapeHtml(u.usulan)}</strong></td><td>${tgl}</td><td>${escapeHtml(u.lokasi)}</td><td>${escapeHtml(u.no_hp)}</td><td><button class="btn btn-sm btn-success me-1 approve-btn btn-action" data-id="${u.id}"><i class="bi bi-check-lg"></i> ACC</button><button class="btn btn-sm btn-danger reject-btn btn-action" data-id="${u.id}"><i class="bi bi-x-lg"></i> Tolak</button></td></tr>`;
+      if(u.tanggal_akhir) tgl += ' - ' + new Date(u.tanggal_akhir).toLocaleDateString('id-ID');
+      html+=`<tr><td>${escapeHtml(u.nama)}</td><td>${escapeHtml(u.usulan)}</td><td>${tgl}</td><td>${escapeHtml(u.lokasi)}</td><td>${escapeHtml(u.no_hp)}</td><td><button class="btn btn-sm btn-success approve-btn me-1" data-id="${u.id}">ACC</button><button class="btn btn-sm btn-danger reject-btn" data-id="${u.id}">Tolak</button></td></tr>`;
     });
-    html += `</tbody></table>`; container.innerHTML = html;
+    html+=`</tbody></table>`; container.innerHTML=html;
     document.querySelectorAll('.approve-btn').forEach(b => b.addEventListener('click', async function() {
-      const id = this.dataset.id;
-      const originalHtml = this.innerHTML;
-      this.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-      this.disabled = true;
-      try {
-        await callApi('updateUsulanStatus', { id, status:'approved', adminName: userData.nama||'admin' });
-        // hapus dari daftar pending
-        usulanData = usulanData.filter(u => u.id != id);
-        renderUsulanTable();
-        showToast('Usulan disetujui', 'success');
-        // refresh info list karena ada item baru
-        loadInfoList(true);
-      } catch(e) {
-        showToast('Gagal: '+e.message, 'danger');
-        this.innerHTML = originalHtml;
-        this.disabled = false;
-      }
+      const id = this.dataset.id; const orig=this.innerHTML; this.innerHTML='<span class="spinner-border spinner-border-sm"></span>'; this.disabled=true;
+      try { await PKD.updateUsulanStatus(id, 'approved', PKD.getUserData().nama||'admin'); usulanData = usulanData.filter(u => u.id != id); renderUsulanTable(); showToast('Disetujui','success'); loadInfoList(true); }
+      catch(e) { showToast('Gagal: '+e.message,'danger'); this.innerHTML=orig; this.disabled=false; }
     }));
     document.querySelectorAll('.reject-btn').forEach(b => b.addEventListener('click', async function() {
-      const id = this.dataset.id;
-      const originalHtml = this.innerHTML;
-      this.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-      this.disabled = true;
-      try {
-        await callApi('updateUsulanStatus', { id, status:'rejected', adminName: userData.nama||'admin' });
-        usulanData = usulanData.filter(u => u.id != id);
-        renderUsulanTable();
-        showToast('Usulan ditolak', 'success');
-      } catch(e) {
-        showToast('Gagal: '+e.message, 'danger');
-        this.innerHTML = originalHtml;
-        this.disabled = false;
-      }
+      const id = this.dataset.id; const orig=this.innerHTML; this.innerHTML='<span class="spinner-border spinner-border-sm"></span>'; this.disabled=true;
+      try { await PKD.updateUsulanStatus(id, 'rejected', PKD.getUserData().nama||'admin'); usulanData = usulanData.filter(u => u.id != id); renderUsulanTable(); showToast('Ditolak','success'); }
+      catch(e) { showToast('Gagal: '+e.message,'danger'); this.innerHTML=orig; this.disabled=false; }
     }));
   }
 
-  // FORM
   function editItem(item) {
-    document.getElementById('formTitle').innerText = 'Edit Jadwal / Flyer';
-    document.getElementById('editId').value = item.id;
-    document.getElementById('judulItem').value = item.judul || '';
-    document.getElementById('deskripsiItem').value = item.deskripsi || '';
-    document.getElementById('urutanItem').value = item.urutan || 0;
-    document.getElementById('tanggalMulaiItem').value = item.tanggal_mulai || '';
-    document.getElementById('tanggalAkhirItem').value = item.tanggal_akhir || '';
-    document.getElementById('lokasiItem').value = item.lokasi || '';
-    document.getElementById('fileItem').value = '';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.getElementById('formTitle').innerText='Edit Jadwal / Flyer'; document.getElementById('editId').value=item.id;
+    document.getElementById('judulItem').value=item.judul||''; document.getElementById('deskripsiItem').value=item.deskripsi||'';
+    document.getElementById('urutanItem').value=item.urutan||0; document.getElementById('tanggalMulaiItem').value=item.tanggal_mulai||'';
+    document.getElementById('tanggalAkhirItem').value=item.tanggal_akhir||''; document.getElementById('lokasiItem').value=item.lokasi||'';
+    document.getElementById('fileItem').value=''; window.scrollTo({top:0,behavior:'smooth'});
   }
 
-  document.getElementById('cancelEditBtn').addEventListener('click', () => {
-    document.getElementById('infoForm').reset(); document.getElementById('editId').value = '';
-    document.getElementById('formTitle').innerText = 'Tambah Jadwal / Flyer';
-  });
-
-  document.getElementById('infoForm').addEventListener('submit', async (e) => {
+  document.getElementById('cancelEditBtn').addEventListener('click', ()=>{ document.getElementById('infoForm').reset(); document.getElementById('editId').value=''; document.getElementById('formTitle').innerText='Tambah Jadwal / Flyer'; });
+  document.getElementById('infoForm').addEventListener('submit', async (e)=>{
     e.preventDefault();
-    const id = document.getElementById('editId').value;
-    const judul = document.getElementById('judulItem').value.trim();
-    const deskripsi = document.getElementById('deskripsiItem').value;
-    const urutan = parseInt(document.getElementById('urutanItem').value) || 0;
-    const tglMulai = document.getElementById('tanggalMulaiItem').value;
-    const tglAkhir = document.getElementById('tanggalAkhirItem').value;
-    const lokasi = document.getElementById('lokasiItem').value.trim();
-    const msgDiv = document.getElementById('formMessage');
-    if (!judul) { msgDiv.innerHTML = '<div class="alert alert-danger">Judul wajib</div>'; return; }
-    if (!tglMulai) { msgDiv.innerHTML = '<div class="alert alert-danger">Tanggal mulai wajib</div>'; return; }
-
-    const fileInput = document.getElementById('fileItem');
-    const hasFile = fileInput.files.length > 0;
-    const jenis = hasFile ? 'flyer' : 'timeline';
-
-    let params = { action: id ? 'updateInfo' : 'addInfo', jenis, judul, deskripsi, urutan, tanggal_mulai: tglMulai, tanggal_akhir: tglAkhir, lokasi };
-    if (id) params.id = id;
-
-    if (hasFile) {
-      const file = fileInput.files[0];
-      if (file.size > 2*1024*1024) { msgDiv.innerHTML = '<div class="alert alert-danger">File > 2MB</div>'; return; }
-      params.fileData = await new Promise(r => { const reader = new FileReader(); reader.onload = e => r(e.target.result); reader.readAsDataURL(file); });
-      params.fileName = file.name;
+    const id=document.getElementById('editId').value; const judul=document.getElementById('judulItem').value.trim();
+    const deskripsi=document.getElementById('deskripsiItem').value; const urutan=parseInt(document.getElementById('urutanItem').value)||0;
+    const tglMulai=document.getElementById('tanggalMulaiItem').value; const tglAkhir=document.getElementById('tanggalAkhirItem').value;
+    const lokasi=document.getElementById('lokasiItem').value.trim(); const msgDiv=document.getElementById('formMessage');
+    if(!judul){ msgDiv.innerHTML='<div class="alert alert-danger">Judul wajib</div>'; return; }
+    if(!tglMulai){ msgDiv.innerHTML='<div class="alert alert-danger">Tanggal mulai wajib</div>'; return; }
+    const fileInput=document.getElementById('fileItem'); const hasFile=fileInput.files.length>0;
+    const jenis=hasFile?'flyer':'timeline';
+    let params = { action: id?'updateInfo':'addInfo', jenis, judul, deskripsi, urutan, tanggal_mulai: tglMulai, tanggal_akhir: tglAkhir, lokasi };
+    if(id) params.id=id;
+    if(hasFile){
+      const file=fileInput.files[0]; if(file.size>2*1024*1024){ msgDiv.innerHTML='<div class="alert alert-danger">File > 2MB</div>'; return; }
+      params.fileData = await new Promise(r=>{ const reader=new FileReader(); reader.onload=e=>r(e.target.result); reader.readAsDataURL(file); });
+      params.fileName=file.name;
     }
-
-    const btn = document.getElementById('saveBtn'); btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyimpan...';
-    try {
+    const btn=document.getElementById('saveBtn'); btn.disabled=true; btn.innerHTML='<span class="spinner-border spinner-border-sm"></span> Menyimpan...';
+    try{
       const res = await callApi(params.action, params);
-      if (res.success) {
-        showToast(id ? 'Diperbarui' : 'Ditambahkan', 'success');
-        document.getElementById('infoForm').reset(); document.getElementById('editId').value = '';
-        document.getElementById('formTitle').innerText = 'Tambah Jadwal / Flyer';
-        // reload data dari server (karena ada data baru/gambar baru)
-        loadInfoList(true);
+      if(res.success){
+        showToast(id?'Diperbarui':'Ditambahkan','success'); document.getElementById('infoForm').reset(); document.getElementById('editId').value='';
+        document.getElementById('formTitle').innerText='Tambah Jadwal / Flyer'; loadInfoList(true);
       } else throw new Error(res.error);
-    } catch(err) { msgDiv.innerHTML = `<div class="alert alert-danger">${err.message}</div>`; }
-    finally { btn.disabled = false; btn.innerHTML = '<i class="bi bi-save"></i> Simpan'; }
+    } catch(err){ msgDiv.innerHTML=`<div class="alert alert-danger">${err.message}</div>`; }
+    finally{ btn.disabled=false; btn.innerHTML='<i class="bi bi-save"></i> Simpan'; }
   });
 
-  // INIT
-  document.getElementById('refreshJadwalBtn').addEventListener('click', () => loadInfoList(true));
+  document.getElementById('refreshJadwalBtn').addEventListener('click', ()=>loadInfoList(true));
   document.getElementById('refreshUsulanBtn').addEventListener('click', loadUsulanList);
-  document.getElementById('sidebarLogoutBtn')?.addEventListener('click', e => { e.preventDefault(); logout(); });
-  document.getElementById('toggleSidebarBtn')?.addEventListener('click', function() {
-    document.querySelector('.row.g-4').classList.toggle('sidebar-minimized');
-    this.querySelector('i').classList.toggle('bi-arrow-left-right'); this.querySelector('i').classList.toggle('bi-arrow-right-left');
+  document.getElementById('sidebarLogoutBtn')?.addEventListener('click', e => { e.preventDefault(); PKD.logout(); });
+
+  // Sidebar toggle
+  document.getElementById('toggleSidebarBtn').addEventListener('click', function() {
+    const row = document.querySelector('.row.g-4');
+    row.classList.toggle('sidebar-minimized');
+    const icon = this.querySelector('i');
+    icon.classList.toggle('bi-arrow-left-right'); icon.classList.toggle('bi-arrow-right-left');
   });
 
-  window.addEventListener('DOMContentLoaded', () => {
-    if (!checkAuth()) {
-      window.location.href = 'login.html';
-      return;
-    }
-    updateNavbar();
-    loadAllData();
-  });
+  // Load data di awal
+  loadAllData();
 </script>
 </body>
 </html>
