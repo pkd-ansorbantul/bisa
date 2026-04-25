@@ -31,9 +31,6 @@
     .nav-pills .nav-link.active { background-color: #2563eb; color: white !important; }
     .sidebar-sticky { position: sticky; top: 80px; z-index: 1; }
 
-    .skeleton-loader { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: skeleton-shimmer 1.5s infinite linear; border-radius: 8px; height: 1.2em; width: 100%; }
-    @keyframes skeleton-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
     .info-thumb { max-width: 80px; max-height: 60px; border-radius: 4px; cursor: pointer; object-fit: cover; }
     .sidebar-minimized .col-md-3.col-lg-2 { flex: 0 0 auto; width: auto; max-width: 70px; }
     .sidebar-minimized .col-md-9.col-lg-10 { flex: 1 0 0; width: auto; min-width: 0; }
@@ -84,7 +81,6 @@
 
 <section class="container container-card">
   <div class="row g-4">
-    <!-- Sidebar kiri -->
     <div class="col-md-3 col-lg-2">
       <div class="sidebar-sticky">
         <div class="bg-light p-3 rounded-4 shadow-sm">
@@ -114,7 +110,6 @@
       </div>
     </div>
 
-    <!-- Konten kanan -->
     <div class="col-md-9 col-lg-10">
       <div class="bg-white p-4 rounded-4 shadow-sm">
         <h2 class="section-title"><i class="bi bi-calendar3 me-2"></i>Manajemen Jadwal & Flyer PKD</h2>
@@ -171,10 +166,9 @@
   // ---------- HANYA ADMIN YANG BISA AKSES ----------
   (function() {
     if (PKD.getUserRole() !== 'admin') {
-      window.location.href = 'login.html';
+      window.location.href = '/bisa/login.html';   // path absolut ke root login
       return;
     }
-    // Setelah dipastikan admin, jalankan inisialisasi halaman
     initPage();
   })();
 
@@ -281,7 +275,6 @@
       document.getElementById('fileItem').value=''; window.scrollTo({top:0,behavior:'smooth'});
     }
 
-    // Event listener untuk form dan tombol
     document.getElementById('cancelEditBtn').addEventListener('click', ()=>{ document.getElementById('infoForm').reset(); document.getElementById('editId').value=''; document.getElementById('formTitle').innerText='Tambah Jadwal / Flyer'; });
     document.getElementById('infoForm').addEventListener('submit', async (e)=>{
       e.preventDefault();
