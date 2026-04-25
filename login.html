@@ -47,7 +47,7 @@
     <div class="logo">
       <img src="LOGO ANSOR.webp" alt="Logo Ansor">
       <h4 class="fw-bold">Masuk ke Sistem</h4>
-      <p class="text-muted">Gunakan akun Admin atau Member</p>
+      <p class="text-muted">Gunakan akun Admin, Ketua PAC, atau Member</p>
     </div>
     <div class="mb-3">
       <label class="form-label fw-semibold">Username</label>
@@ -69,56 +69,16 @@
     </div>
   </div>
 
+  <!-- Sertakan api.js -->
+  <script src="api.js"></script>
   <script>
-    // =====================================================
-    //   KONFIGURASI – GANTI DENGAN URL APPS SCRIPT ANDA!
-    // =====================================================
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec';
-
     // Fungsi toggle visibility password
     function togglePassword() {
       const pwd = document.getElementById('password');
       pwd.type = pwd.type === 'password' ? 'text' : 'password';
     }
 
-    // =====================================================
-    //   PANGGIL APPS SCRIPT DENGAN FALLBACK JSONP
-    // =====================================================
-    async function callAppsScript(params) {
-      const queryString = new URLSearchParams(params).toString();
-      try {
-        const res = await fetch(`${scriptUrl}?${queryString}`, { method: 'GET', mode: 'cors' });
-        return await res.json();
-      } catch (e) {
-        // Fallback JSONP jika CORS gagal
-        return new Promise((resolve, reject) => {
-          const callbackName = 'jsonp_' + Date.now();
-          window[callbackName] = (data) => { resolve(data); delete window[callbackName]; };
-          const script = document.createElement('script');
-          script.src = `${scriptUrl}?${queryString}&callback=${callbackName}`;
-          script.onerror = () => reject(new Error('Gagal terhubung ke server'));
-          document.head.appendChild(script);
-          setTimeout(() => reject(new Error('Timeout')), 10000);
-        });
-      }
-    }
-
-    // =====================================================
-    //   HANDLER LOGIN DENGAN INDIKATOR LOADING
-    // =====================================================
-    const loginBtn = document.getElementById('loginBtn');
-    const originalButtonText = loginBtn.innerHTML; // simpan teks asli tombol
-
-    function setLoading(state) {
-      if (state) {
-        loginBtn.disabled = true;
-        loginBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
-      } else {
-        loginBtn.disabled = false;
-        loginBtn.innerHTML = originalButtonText;
-      }
-    }
-
+    // Tombol login
     document.getElementById('loginBtn').addEventListener('click', async () => {
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value.trim();
@@ -131,73 +91,72 @@
         return;
       }
 
-      // Mulai loading
-      setLoading(true);
+      // Indikator loading
+      const btn = document.getElementById('loginBtn');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Memeriksa...';
       errorDiv.style.display = 'none';
 
       // 1. Coba login sebagai admin
       try {
-        const adminRes = await callAppsScript({ action: 'verifyAdmin', username, password });
+        const adminRes = await PKD.verifyAdmin(username, password);
         if (adminRes.success && adminRes.role) {
           // Simpan state admin
-          const authState = {
-            role: 'admin',
-            data: {
-              username: username,
-              nama: username // admin tidak memiliki nama lengkap
-            }
-          };
-          sessionStorage.setItem('pkd_auth', JSON.stringify(authState));
-          localStorage.setItem('pkd_auth', JSON.stringify(authState));
+          PKD.setUserRole('admin');
+          PKD.setUserData({ nama: username });
+          PKD.persistAuthState();
           window.location.href = 'admin.html';
-          return; // redirect, hentikan eksekusi
+          return;
         }
       } catch (e) {
-        // Abaikan, lanjut cek member
+        console.warn('Admin login error:', e);
       }
 
-      // 2. Coba login sebagai member
+      // 2. Coba login sebagai ketua PAC
       try {
-        const memberRes = await callAppsScript({ action: 'verifyMember', username, password });
-        if (memberRes.success && memberRes.role === 'member') {
-          const authState = {
-            role: 'member',
-            data: {
-              username: memberRes.username,
-              nama: memberRes.nama,
-              email: memberRes.email,
-              nohp: memberRes.nohp
-            }
-          };
-          sessionStorage.setItem('pkd_auth', JSON.stringify(authState));
-          localStorage.setItem('pkd_auth', JSON.stringify(authState));
-          window.location.href = 'member.html';
-          return; // redirect, hentikan eksekusi
+        const pacRes = await PKD.verifyKetuaPAC(username, password);
+        if (pacRes.success && pacRes.role === 'ketua_pac') {
+          PKD.setUserRole('ketua_pac');
+          PKD.setUserData(pacRes.data || { nama: username });
+          PKD.persistAuthState();
+          window.location.href = 'ketua_pac.html';
+          return;
         }
       } catch (e) {
-        // Abaikan
+        console.warn('Ketua PAC login error:', e);
       }
 
-      // 3. Jika keduanya gagal
+      // 3. Coba login sebagai member
+      try {
+        const memberRes = await PKD.verifyMember(username, password);
+        if (memberRes.success && memberRes.role === 'member') {
+          PKD.setUserRole('member');
+          PKD.setUserData(memberRes.data || { nama: username });
+          PKD.persistAuthState();
+          window.location.href = 'member.html';
+          return;
+        }
+      } catch (e) {
+        console.warn('Member login error:', e);
+      }
+
+      // 4. Jika semua gagal
       errorDiv.innerText = 'Username atau password salah!';
       errorDiv.style.display = 'block';
-      setLoading(false); // matikan loading karena gagal
+      btn.disabled = false;
+      btn.innerHTML = originalText;
     });
 
-    // =====================================================
-    //   CEK APAKAH SUDAH LOGIN – LANGSUNG REDIRECT
-    // =====================================================
+    // Cek apakah sudah login – langsung redirect
     (function() {
-      const auth = sessionStorage.getItem('pkd_auth') || localStorage.getItem('pkd_auth');
-      if (auth) {
-        try {
-          const state = JSON.parse(auth);
-          if (state.role === 'admin') {
-            window.location.href = 'admin.html';
-          } else if (state.role === 'member') {
-            window.location.href = 'member.html';
-          }
-        } catch (e) {}
+      const role = PKD.getUserRole();
+      if (role === 'admin') {
+        window.location.href = 'admin.html';
+      } else if (role === 'ketua_pac') {
+        window.location.href = 'ketua_pac.html';
+      } else if (role === 'member') {
+        window.location.href = 'member.html';
       }
     })();
   </script>

@@ -13,21 +13,6 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <!-- Html5-Qrcode untuk scan QR -->
   <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
-  <script>
-    // Fallback jika library dari unpkg gagal
-    window.onerror = function(msg, url, line, col, error) {
-      if (msg.includes('Html5QrcodeScanner') || (error && error.message && error.message.includes('Html5QrcodeScanner'))) {
-        var script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/html5-qrcode@2.2.1/minified/html5-qrcode.min.js';
-        document.head.appendChild(script);
-      }
-    };
-    if (typeof Html5QrcodeScanner === 'undefined') {
-      var script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/html5-qrcode@2.2.1/minified/html5-qrcode.min.js';
-      document.head.appendChild(script);
-    }
-  </script>
 
   <style>
     * {
@@ -111,7 +96,6 @@
       padding: 0.6rem 2rem;
       font-weight: 600;
     }
-    /* Animasi ringan */
     .container-card {
       animation: fadeInUp 0.5s ease-out;
     }
@@ -119,7 +103,6 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    /* Spinner */
     #loadingSpinner {
       display: none;
     }
@@ -225,122 +208,28 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- api.js -->
+<script src="api.js"></script>
 
-<!-- Script Verifikasi -->
 <script>
-  // Konfigurasi Apps Script (sama dengan di index.html)
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec'; // Ganti jika perlu
-  const BASE_URL = 'https://pkd-ansorbantul.github.io'; // Ganti dengan domain sebenarnya
-
-  // Utility: escape HTML
-  function escapeHtml(unsafe) {
-    if (!unsafe) return '';
-    return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  // Fungsi bantu lokal
+  function escapeHtmlLocal(unsafe) {
+    return PKD.escapeHtml(unsafe);
   }
 
-  // Fungsi call Apps Script (dengan fallback JSONP)
-  async function callAppsScript(params, method = 'GET', timeout = 30000) {
-    return new Promise(async (resolve, reject) => {
-      const queryString = new URLSearchParams(params).toString();
-      if (method === 'GET') {
-        try {
-          const res = await fetch(`${scriptUrl}?${queryString}`, { method: 'GET', mode: 'cors' });
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const data = await res.json();
-          resolve(data);
-        } catch (fetchError) {
-          console.warn('Fetch gagal, fallback JSONP:', fetchError);
-          // Fallback JSONP sederhana
-          const callbackName = 'jsonp_callback_' + Date.now();
-          const script = document.createElement('script');
-          let isResolved = false;
-          const timer = setTimeout(() => {
-            if (!isResolved) {
-              isResolved = true;
-              document.head.removeChild(script);
-              delete window[callbackName];
-              reject(new Error('Timeout JSONP'));
-            }
-          }, timeout);
-
-          window[callbackName] = function(data) {
-            if (!isResolved) {
-              isResolved = true;
-              clearTimeout(timer);
-              resolve(data || {});
-            }
-            delete window[callbackName];
-            document.head.removeChild(script);
-          };
-
-          script.onerror = () => {
-            if (!isResolved) {
-              isResolved = true;
-              clearTimeout(timer);
-              delete window[callbackName];
-              reject(new Error('Gagal memuat JSONP'));
-            }
-          };
-
-          const cleanParams = { ...params };
-          delete cleanParams.tandaTangan;
-          delete cleanParams.signature;
-          script.src = `${scriptUrl}?${new URLSearchParams({ ...cleanParams, callback: callbackName }).toString()}`;
-          document.head.appendChild(script);
-        }
-      } else {
-        // POST no-cors (tidak digunakan di halaman ini, tapi tetap ada)
-        fetch(scriptUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams(params)
-        }).then(() => resolve({ success: true })).catch(reject);
-      }
-    });
-  }
-
-  // Tampilkan hasil verifikasi
-  function showResult(content, isValid = true) {
-    const resultDiv = document.getElementById('verifyResult');
-    const spinner = document.getElementById('loadingSpinner');
-    spinner.style.display = 'none';
-    resultDiv.style.display = 'block';
-    resultDiv.innerHTML = content;
-    // Scroll ke hasil
-    resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
-
-  // Simpan hasil ke sessionStorage agar tidak perlu request ulang
+  // Cache hasil verifikasi
   function cacheResult(nomor, data) {
-    try {
-      const cache = {
-        data: data,
-        timestamp: Date.now()
-      };
-      sessionStorage.setItem('verify_' + nomor, JSON.stringify(cache));
-    } catch (e) {}
+    PKD.saveCached('verify_' + nomor, data);
   }
 
   function getCachedResult(nomor) {
-    try {
-      const cached = sessionStorage.getItem('verify_' + nomor);
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        // Cache berlaku 1 jam
-        if (Date.now() - parsed.timestamp < 3600000) {
-          return parsed.data;
-        }
-      }
-    } catch (e) {}
-    return null;
+    return PKD.getCached('verify_' + nomor, 3600000);
   }
 
   // Verifikasi sertifikat berdasarkan nomor
   async function verifyCertificate(nomor) {
     const resultDiv = document.getElementById('verifyResult');
     const spinner = document.getElementById('loadingSpinner');
-    // Sembunyikan hasil sebelumnya, tampilkan spinner
     resultDiv.style.display = 'none';
     spinner.style.display = 'block';
 
@@ -360,17 +249,17 @@
     }
 
     try {
-      const res = await callAppsScript({ action: 'verifyCertificate', nomor: cleanedNomor }, 'GET');
+      const res = await PKD.verifyCertificate(cleanedNomor);
       spinner.style.display = 'none';
       if (res.success && res.data) {
         cacheResult(cleanedNomor, res.data);
         renderVerificationResult(res.data);
       } else {
-        showResult(`<div class="alert alert-danger mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i>Sertifikat dengan nomor "${escapeHtml(cleanedNomor)}" tidak ditemukan.</div>`, false);
+        showResult(`<div class="alert alert-danger mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i>Sertifikat dengan nomor "${escapeHtmlLocal(cleanedNomor)}" tidak ditemukan.</div>`, false);
       }
     } catch (e) {
       spinner.style.display = 'none';
-      showResult(`<div class="alert alert-danger mb-0">Gagal memverifikasi: ${escapeHtml(e.message)}</div>`, false);
+      showResult(`<div class="alert alert-danger mb-0">Gagal memverifikasi: ${escapeHtmlLocal(e.message)}</div>`, false);
     }
   }
 
@@ -379,16 +268,23 @@
       <div class="verification-result verification-valid">
         <h5 class="alert-heading fw-bold"><i class="bi bi-check-circle-fill me-2"></i>Sertifikat VALID</h5>
         <hr>
-        <p class="mb-1"><strong>Nama:</strong> ${escapeHtml(data.nama_peserta)}</p>
-        <p class="mb-1"><strong>Nomor Sertifikat:</strong> ${escapeHtml(data.nomor_sertifikat)}</p>
-        <p class="mb-1"><strong>Lokasi PKD:</strong> ${escapeHtml(data.lokasi || 'Kabupaten Bantul')}</p>
-        <p class="mb-1"><strong>Tanggal Terbit:</strong> ${escapeHtml(data.createdAt || '-')}</p>
-        <a href="${escapeHtml(data.pdf_url)}" target="_blank" class="btn btn-sm btn-outline-success mt-2 rounded-pill">
+        <p class="mb-1"><strong>Nama:</strong> ${escapeHtmlLocal(data.nama_peserta)}</p>
+        <p class="mb-1"><strong>Nomor Sertifikat:</strong> ${escapeHtmlLocal(data.nomor_sertifikat)}</p>
+        <p class="mb-1"><strong>Lokasi PKD:</strong> ${escapeHtmlLocal(data.lokasi || 'Kabupaten Bantul')}</p>
+        <p class="mb-1"><strong>Tanggal Terbit:</strong> ${escapeHtmlLocal(data.createdAt || '-')}</p>
+        <a href="${escapeHtmlLocal(data.pdf_url)}" target="_blank" class="btn btn-sm btn-outline-success mt-2 rounded-pill">
           <i class="bi bi-file-pdf"></i> Lihat Sertifikat
         </a>
       </div>
     `;
     showResult(html, true);
+  }
+
+  function showResult(content, isValid = true) {
+    const resultDiv = document.getElementById('verifyResult');
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = content;
+    resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
   // Ambil parameter dari URL
@@ -411,7 +307,7 @@
     html5QrcodeScanner = new Html5QrcodeScanner(
       "qr-reader",
       { fps: 10, qrbox: { width: 250, height: 250 } },
-      /* verbose= */ false
+      false
     );
     html5QrcodeScanner.render(onScanSuccess, onScanError);
   }
@@ -421,7 +317,6 @@
       html5QrcodeScanner.clear();
     }
 
-    // Ambil teks hasil scan
     let nomor = decodedText.trim();
 
     // Coba ekstrak nomor jika formatnya "Sertifikat No: ... - ..."
@@ -456,31 +351,28 @@
     console.log(errorMessage);
   }
 
-  // Event listener tombol cek manual
+  // Event listener
   document.getElementById('verifyByNumberBtn').addEventListener('click', function() {
     const nomor = document.getElementById('certNumberInput').value;
     verifyCertificate(nomor);
   });
 
-  // Enter di input juga memicu verifikasi
   document.getElementById('certNumberInput').addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
       document.getElementById('verifyByNumberBtn').click();
     }
   });
 
-  // Saat halaman dimuat, cek parameter 'nomor' dan inisialisasi scanner
   window.addEventListener('load', function() {
     const nomorFromUrl = getQueryParam('nomor');
     if (nomorFromUrl) {
       document.getElementById('certNumberInput').value = nomorFromUrl;
-      // Langsung verifikasi dengan spinner
+      // Langsung verifikasi
       verifyCertificate(nomorFromUrl);
     }
     initQrScanner();
   });
 
-  // Bersihkan scanner saat pindah halaman (opsional)
   window.addEventListener('beforeunload', function() {
     if (html5QrcodeScanner) {
       html5QrcodeScanner.clear();

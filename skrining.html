@@ -32,41 +32,6 @@
 </head>
 <body>
 
-<!-- ==================== MODE LOGIN CHECK (DIPERBAIKI) ==================== -->
-<script>
-  (function() {
-    // Gunakan URL Apps Script yang sama dengan pengaturan.html
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec';
-
-    async function checkLoginThenLoad() {
-      try {
-        const res = await fetch(`${SCRIPT_URL}?action=getLoginMode`);
-        const data = await res.json();
-        const requireLogin = data.success ? data.enabled : false;
-
-        if (requireLogin) {
-          const auth = localStorage.getItem('pkd_auth') || sessionStorage.getItem('pkd_auth');
-          if (!auth) {
-            window.location.href = 'login.html';
-            return;
-          }
-        }
-      } catch (e) {
-        console.warn('Gagal cek mode login, lanjut tanpa login:', e);
-      }
-
-      // Jalankan pemuat konten setelah pengecekan selesai
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadSkriningForm);
-      } else {
-        loadSkriningForm();
-      }
-    }
-
-    checkLoginThenLoad();
-  })();
-</script>
-
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg bg-white sticky-top shadow-sm">
   <div class="container">
@@ -74,9 +39,7 @@
       <img src="LOGO ANSOR.webp" alt="GP Ansor" class="me-2">
       <span><span class="brand-title">PKD GP Ansor</span><span class="brand-sub">Kabupaten Bantul</span></span>
     </a>
-    <a href="index.html" class="btn btn-outline-primary rounded-pill px-4 ms-auto">
-      <i class="bi bi-arrow-left"></i> Kembali
-    </a>
+    <a href="index.html" class="btn btn-outline-primary rounded-pill px-4 ms-auto"><i class="bi bi-arrow-left"></i> Kembali</a>
   </div>
 </nav>
 
@@ -113,175 +76,27 @@
   </div>
 </div>
 
-<!-- Toast notifikasi -->
-<div class="toast-container">
-  <div id="notificationToast" class="toast border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
-    <div class="toast-header bg-white border-0">
-      <i class="bi me-2" id="toastIcon"></i>
-      <strong class="me-auto" id="toastTitle">Berhasil</strong>
-      <small>baru saja</small>
-      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-    </div>
-    <div class="toast-body" id="toastMessage"></div>
-  </div>
-</div>
+<!-- Toast notifikasi (dibuat oleh api.js) -->
 
-<!-- Bootstrap JS & dependencies -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
-
+<script src="api.js"></script>
 <script>
-  // =====================================================
-  //   KONFIGURASI & STATE
-  // =====================================================
-  // Gunakan URL yang sama dengan pengecekan login di atas
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbxhkFxLG4RZd4tm3w_4j761hXz0gn4cmQFt-2JO0IEIBS-frohWV_c9CDA1fdM65lee/exec';
-  const CACHE_DURATION = 3600000; // 1 jam
-
-  let globalCache = {
-    skriningQuestions: null,
-    lastFetch: 0
-  };
+  // Bantuan lokal
+  function escapeHtml(unsafe) { return PKD.escapeHtml(unsafe); }
+  function showToast(message, type = 'success') { PKD.showToast(message, type); }
 
   // =====================================================
-  //   FUNGSI BANTU
+  //   CACHE SKRINING (menggunakan PKD)
   // =====================================================
-  function escapeHtml(unsafe) {
-    if (!unsafe) return '';
-    return unsafe
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
-
-  function showToast(message, type = 'success') {
-    const toastEl = document.getElementById('notificationToast');
-    const toastMessage = document.getElementById('toastMessage');
-    const toastIcon = document.getElementById('toastIcon');
-    const toastTitle = document.getElementById('toastTitle');
-
-    toastMessage.innerText = message;
-
-    if (type === 'success') {
-      toastEl.classList.add('border-success');
-      toastEl.classList.remove('border-danger');
-      toastIcon.className = 'bi bi-check-circle-fill me-2 text-success';
-      toastTitle.innerText = 'Berhasil';
-      toastTitle.style.color = '#28a745';
-    } else {
-      toastEl.classList.add('border-danger');
-      toastEl.classList.remove('border-success');
-      toastIcon.className = 'bi bi-x-circle-fill me-2 text-danger';
-      toastTitle.innerText = 'Gagal';
-      toastTitle.style.color = '#dc3545';
-    }
-
-    const toast = new bootstrap.Toast(toastEl, { delay: 5000 });
-    toast.show();
-  }
-
-  // =====================================================
-  //   PANGGILAN APPS SCRIPT (GET & POST)
-  // =====================================================
-  function callAppsScript(params, method = 'POST', timeout = 30000) {
-    return new Promise(async (resolve, reject) => {
-      if (method === 'GET') {
-        try {
-          const queryString = new URLSearchParams(params).toString();
-          const response = await fetch(`${scriptUrl}?${queryString}`, {
-            method: 'GET',
-            mode: 'cors',
-            headers: { 'Accept': 'application/json' }
-          });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const data = await response.json();
-          return resolve(data);
-        } catch (fetchError) {
-          console.warn('Fetch GET gagal, fallback ke JSONP:', fetchError);
-          const callbackName = 'jsonp_callback_' + Date.now();
-          const script = document.createElement('script');
-          let isResolved = false;
-          let timer = setTimeout(() => {
-            if (!isResolved) {
-              isResolved = true;
-              if (document.head.contains(script)) document.head.removeChild(script);
-              delete window[callbackName];
-              reject(new Error('⏱️ Timeout: Server tidak merespon JSONP.'));
-            }
-          }, timeout);
-
-          window[callbackName] = function(data) {
-            if (!isResolved) {
-              isResolved = true;
-              clearTimeout(timer);
-              resolve(data || {});
-            }
-            delete window[callbackName];
-            if (document.head.contains(script)) document.head.removeChild(script);
-          };
-
-          script.onerror = (err) => {
-            if (!isResolved) {
-              isResolved = true;
-              clearTimeout(timer);
-              delete window[callbackName];
-              if (document.head.contains(script)) document.head.removeChild(script);
-              reject(new Error('❌ Gagal memuat script JSONP. Pastikan endpoint mendukung JSONP.'));
-            }
-          };
-
-          const cleanParams = { ...params };
-          delete cleanParams.tandaTangan;
-          delete cleanParams.signature;
-          const queryString = new URLSearchParams({ ...cleanParams, callback: callbackName }).toString();
-          script.src = `${scriptUrl}?${queryString}`;
-          document.head.appendChild(script);
-        }
-      } else {
-        fetch(scriptUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams(params)
-        })
-          .then(() => resolve({ success: true, message: 'Request sent (no-cors)' }))
-          .catch(reject);
-      }
-    });
-  }
-
-  // =====================================================
-  //   CACHE SKRINING
-  // =====================================================
-  function getCachedSkriningQuestions() {
-    try {
-      const cached = sessionStorage.getItem('skriningQuestionsCache');
-      const time = sessionStorage.getItem('skriningQuestionsCacheTime');
-      if (cached && time && (Date.now() - parseInt(time)) < CACHE_DURATION) {
-        return JSON.parse(cached);
-      }
-    } catch (e) {}
-    return null;
-  }
-
-  function saveCachedSkriningQuestions(data) {
-    try {
-      sessionStorage.setItem('skriningQuestionsCache', JSON.stringify(data));
-      sessionStorage.setItem('skriningQuestionsCacheTime', Date.now().toString());
-    } catch (e) {}
-  }
-
   async function fetchSkriningQuestions(forceRefresh = false) {
     if (!forceRefresh) {
-      const cached = getCachedSkriningQuestions();
+      const cached = PKD.getCached('skriningQuestionsCache', 3600000);
       if (cached) return cached;
     }
     try {
-      const res = await callAppsScript({ action: 'getSkriningQuestions' }, 'GET');
-      const questions = res.data || [];
-      saveCachedSkriningQuestions(questions);
+      const questions = await PKD.getSkriningQuestions(true);
+      PKD.saveCached('skriningQuestionsCache', questions);
       return questions;
     } catch (e) {
       console.error('Gagal memuat soal skrining:', e);
@@ -290,7 +105,7 @@
   }
 
   // =====================================================
-  //   FUNGSI SKRINING (form, signature, preview, submit)
+  //   STATE & SIGNATURE
   // =====================================================
   function saveSkriningFormState() {
     const form = document.getElementById('formSkriningDinamis');
@@ -361,7 +176,8 @@
 
   function showSkriningPreview(data, signatureDataURL) {
     const modalBody = document.getElementById('previewSkriningBody');
-    const extraQuestions = globalCache.skriningQuestions || [];
+    // Ambil pertanyaan tambahan yang sudah disimpan di global
+    const extraQuestions = window._skriningQuestions || [];
 
     let html = `<table class="table table-bordered preview-table">`;
     html += `<tr><th>Nama Lengkap</th><td>${escapeHtml(data.nama || '')}</td></tr>`;
@@ -385,11 +201,10 @@
 
     modalBody.innerHTML = html;
     window.__skriningPreviewData = { data, signatureDataURL };
-    const modal = new bootstrap.Modal(document.getElementById('previewSkriningModal'));
-    modal.show();
+    new bootstrap.Modal(document.getElementById('previewSkriningModal')).show();
   }
 
-  // Submit skrining
+  // Submit skrining dari modal preview
   document.getElementById('previewKirimBtn')?.addEventListener('click', async function() {
     if (!window.__skriningPreviewData) return;
     const btn = this;
@@ -397,10 +212,15 @@
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengirim...';
 
     const { data, signatureDataURL } = window.__skriningPreviewData;
-    delete data.signature;
+    delete data.signature; // hapus field signature dari form (karena sudah diwakili oleh signatureDataURL)
     const params = { action: 'submitSkrining', ...data, signature: signatureDataURL };
+
     try {
-      await callAppsScript(params, 'POST');
+      // Gunakan callApi atau submitSkrining? Di api.js ada submitSkrining(formData), jadi kita bisa langsung panggil itu
+      // Namun fungsi submitSkrining di api.js menerima satu object formData, jadi bisa langsung dikirim.
+      // Pastikan properti 'action' tidak ikut terkirim ke server (api.js akan menambahkan action dari fungsi spesifik).
+      // Kita gunakan PKD.submitSkrining({...data, signature: signatureDataURL})
+      await PKD.submitSkrining(params);
       showToast('✅ Skrining berhasil dikirim!', 'success');
       document.getElementById('formSkriningDinamis')?.reset();
       if (window.sigPadSkrining) window.sigPadSkrining.clear();
@@ -464,6 +284,10 @@
     initSkriningSignaturePad();
     restoreSkriningFormState();
 
+    // Simpan pertanyaan ke global untuk preview
+    window._skriningQuestions = extraQuestions;
+
+    // Auto-save input
     document.querySelectorAll('#formSkriningDinamis input, #formSkriningDinamis textarea, #formSkriningDinamis select').forEach(el => {
       el.addEventListener('input', saveSkriningFormState);
       el.addEventListener('change', saveSkriningFormState);
@@ -472,6 +296,7 @@
       window.sigPadSkrining.addEventListener('endStroke', saveSkriningFormState);
     }
 
+    // Submit form -> preview
     document.getElementById('formSkriningDinamis').addEventListener('submit', previewSkriningForm);
   }
 
@@ -482,25 +307,35 @@
     const container = document.getElementById('skriningFormContainer');
     container.innerHTML = '<div class="text-center my-4"><div class="loading-spinner"></div><p class="mt-2 text-muted">Memuat form...</p></div>';
 
-    let extraQuestions = getCachedSkriningQuestions();
+    let extraQuestions = PKD.getCached('skriningQuestionsCache', 3600000);
     if (extraQuestions) {
-      globalCache.skriningQuestions = extraQuestions;
       renderSkriningForm(extraQuestions);
       fetchSkriningQuestions(true).then(newQ => {
         if (JSON.stringify(newQ) !== JSON.stringify(extraQuestions)) {
-          globalCache.skriningQuestions = newQ;
           renderSkriningForm(newQ);
         }
       }).catch(console.warn);
     } else {
       extraQuestions = await fetchSkriningQuestions(true);
-      globalCache.skriningQuestions = extraQuestions;
       renderSkriningForm(extraQuestions);
     }
   }
 
-  // Pastikan fungsi tersedia di global scope (dipanggil oleh pengecekan login)
-  window.loadSkriningForm = loadSkriningForm;
+  // ========== MODE LOGIN CHECK ==========
+  (async function() {
+    try {
+      const loginMode = await PKD.getLoginMode();
+      const requireLogin = loginMode.success ? loginMode.enabled : false;
+      if (requireLogin) {
+        const auth = localStorage.getItem('pkd_auth') || sessionStorage.getItem('pkd_auth');
+        if (!auth) {
+          window.location.href = 'login.html';
+          return;
+        }
+      }
+    } catch(e) { console.warn('Gagal cek mode login', e); }
+    loadSkriningForm();
+  })();
 </script>
 </body>
 </html>

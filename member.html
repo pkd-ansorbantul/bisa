@@ -212,92 +212,48 @@
     <i class="bi bi-c-circle"></i> Hak Cipta 2026 - Tim Instruktur GP Ansor Kabupaten Bantul
   </footer>
 
-  <!-- Bootstrap JS -->
+  <!-- Bootstrap JS & api.js -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="api.js"></script>
 
   <script>
-    // =====================================================
-    //   KONFIGURASI
-    // =====================================================
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbxbsEY1R97mxLuCpiuu6MosJ6rzPuX_F2zuNGgA27B5mYm0oFO4cjq-QjqX35xd1fwq/exec'; // GANTI DENGAN URL ANDA!
-
-    let userRole = null;
-    let userData = {};
-    let currentMenu = 'dashboard';
-
-    // =====================================================
-    //   FUNGSI ESCAPE HTML
-    // =====================================================
-    function escapeHtml(unsafe) {
-      if (unsafe == null) return '';
-      const str = String(unsafe);
-      return str.replace(/[&<>"']/g, function(match) {
-        switch (match) {
-          case '&': return '&amp;';
-          case '<': return '&lt;';
-          case '>': return '&gt;';
-          case '"': return '&quot;';
-          case "'": return '&#039;';
-          default: return match;
-        }
+    // -------------------------------------------------------
+    // Fungsi bantu lokal
+    // -------------------------------------------------------
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
       });
     }
 
-    // =====================================================
-    //   LOAD AUTH STATE
-    // =====================================================
-    function loadAuth() {
-      const serialized = sessionStorage.getItem('pkd_auth') || localStorage.getItem('pkd_auth');
-      if (serialized) {
-        try {
-          const state = JSON.parse(serialized);
-          userRole = state.role || null;
-          userData = state.data || {};
-        } catch (e) {}
-      }
-      if (userRole !== 'member') {
-        window.location.href = 'index.html';
-      } else {
-        document.getElementById('sidebarUserName').innerText = userData.nama || 'Member';
-      }
+    // -------------------------------------------------------
+    // Logout lokal
+    // -------------------------------------------------------
+    function logout() {
+      PKD.logout();  // akan mereset state dan redirect ke index.html
     }
 
-    // =====================================================
-    //   PANGGIL API
-    // =====================================================
-    async function callAppsScript(params, method = 'GET') {
-      const queryString = new URLSearchParams(params).toString();
-      if (method === 'GET') {
-        try {
-          const res = await fetch(`${scriptUrl}?${queryString}`, { method: 'GET', mode: 'cors' });
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          return await res.json();
-        } catch (e) {
-          return new Promise((resolve, reject) => {
-            const callbackName = 'jsonp_' + Date.now();
-            window[callbackName] = (data) => { resolve(data); delete window[callbackName]; };
-            const script = document.createElement('script');
-            script.src = `${scriptUrl}?${queryString}&callback=${callbackName}`;
-            script.onerror = () => reject(new Error('Gagal terhubung ke server'));
-            document.head.appendChild(script);
-            setTimeout(() => reject(new Error('Timeout')), 10000);
-          });
-        }
-      } else {
-        const res = await fetch(scriptUrl, {
-          method: 'POST',
-          mode: 'cors',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams(params)
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return await res.json();
+    // -------------------------------------------------------
+    // Inisialisasi & pengecekan role
+    // -------------------------------------------------------
+    let currentMenu = 'dashboard';
+
+    function checkMemberAccess() {
+      if (PKD.getUserRole() !== 'member') {
+        window.location.href = 'login.html';
+        return false;
       }
+      // Tampilkan nama member di sidebar
+      document.getElementById('sidebarUserName').innerText = PKD.getUserData().nama || 'Member';
+      return true;
     }
 
-    // =====================================================
-    //   LOAD KONTEN BERDASARKAN MENU
-    // =====================================================
+    // -------------------------------------------------------
+    // Load konten berdasarkan menu
+    // -------------------------------------------------------
     async function loadContent(menu) {
       currentMenu = menu;
       // Update active class di sidebar
@@ -321,36 +277,37 @@
           default: container.innerHTML = '<h3>Menu tidak ditemukan</h3>';
         }
       } catch (err) {
-        container.innerHTML = `<div class="alert alert-danger">Error: ${escapeHtml(err.message)}</div>`;
+        container.innerHTML = `<div class="alert alert-danger">Error: ${PKD.escapeHtml(err.message)}</div>`;
       }
     }
 
-    // =====================================================
-    //   RENDER DASHBOARD
-    // =====================================================
+    // -------------------------------------------------------
+    // Render dashboard
+    // -------------------------------------------------------
     async function renderDashboard(container) {
-      // Ambil data member (sudah termasuk pretest/posttest)
-      const res = await callAppsScript({ action: 'getMemberData', username: userData.username }, 'GET');
+      const user = PKD.getUserData();
+      // Ambil data member lengkap
+      const res = await PKD.getMemberData(user.username);
       const member = res.member || {};
       const pretestCount = res.pretest?.length || 0;
       const posttestCount = res.posttest?.length || 0;
-      // Ambil data absensi
-      const absenRes = await callAppsScript({ action: 'getMemberAbsensi', nama: member.nama_lengkap }, 'GET');
+      // Absensi
+      const absenRes = await PKD.callApi('getMemberAbsensi', { nama: member.nama_lengkap }, 'GET');
       const absenCount = absenRes.data?.length || 0;
-      // Ambil total peserta (dari backend)
-      const totalRes = await callAppsScript({ action: 'getTotalPeserta' }, 'GET');
+      // Total peserta
+      const totalRes = await PKD.getTotalPeserta();
       const totalPeserta = totalRes.total || 0;
-      // Ambil jumlah sertifikat yang dimiliki
-      const sertifikatRes = await callAppsScript({ action: 'getMemberSertifikat', nama: member.nama_lengkap }, 'GET');
+      // Sertifikat
+      const sertifikatRes = await PKD.getMemberSertifikat(member.nama_lengkap);
       const sertifikatCount = sertifikatRes.data?.length || 0;
-      // Ambil notifikasi sertifikat baru (7 hari terakhir)
-      const infoRes = await callAppsScript({ action: 'getInfoList' }, 'GET');
-      const newCertNotif = infoRes.data.filter(item => item.jenis === 'sertifikat' && new Date(item.createdAt) > Date.now() - 7*24*60*60*1000).length;
+      // Notifikasi sertifikat baru (info list jenis sertifikat)
+      const infoRes = await PKD.getInfoList();
+      const newCertNotif = infoRes.filter(item => item.jenis === 'sertifikat' && new Date(item.createdAt) > Date.now() - 7*24*60*60*1000).length;
 
       let html = `
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h2 class="section-title">Dashboard</h2>
-          <span class="badge bg-primary px-3 py-2">Selamat datang, ${escapeHtml(member.nama_lengkap || 'Member')}</span>
+          <span class="badge bg-primary px-3 py-2">Selamat datang, ${PKD.escapeHtml(member.nama_lengkap || 'Member')}</span>
         </div>
         <div class="row g-4">
           <div class="col-md-3">
@@ -414,11 +371,12 @@
       container.innerHTML = html;
     }
 
-    // =====================================================
-    //   RENDER PROFIL (dengan edit foto)
-    // =====================================================
+    // -------------------------------------------------------
+    // Render Profil (dengan edit foto)
+    // -------------------------------------------------------
     async function renderProfil(container) {
-      const res = await callAppsScript({ action: 'getMemberData', username: userData.username }, 'GET');
+      const user = PKD.getUserData();
+      const res = await PKD.getMemberData(user.username);
       if (!res.success) throw new Error('Gagal memuat data profil');
       const member = res.member || {};
       const fotoDriveId = res.fotoDriveId;
@@ -431,23 +389,23 @@
             <div class="col-md-4 text-center">
               ${fotoUrl ? `<img src="${fotoUrl}" class="profile-photo" alt="Foto">` : 
                 `<div class="photo-placeholder"><i class="bi bi-person-fill"></i></div>`}
-              <h4>${escapeHtml(member.nama_lengkap || '-')}</h4>
-              <p class="text-muted"><i class="bi bi-envelope"></i> ${escapeHtml(member.email || '-')}</p>
-              <p class="text-muted"><i class="bi bi-telephone"></i> ${escapeHtml(member.no_hp || '-')}</p>
+              <h4>${PKD.escapeHtml(member.nama_lengkap || '-')}</h4>
+              <p class="text-muted"><i class="bi bi-envelope"></i> ${PKD.escapeHtml(member.email || '-')}</p>
+              <p class="text-muted"><i class="bi bi-telephone"></i> ${PKD.escapeHtml(member.no_hp || '-')}</p>
             </div>
             <div class="col-md-8">
               <form id="profilForm">
                 <div class="mb-3">
                   <label class="form-label fw-semibold">Nama Lengkap</label>
-                  <input type="text" class="form-control" id="profilNama" value="${escapeHtml(member.nama_lengkap || '')}" required>
+                  <input type="text" class="form-control" id="profilNama" value="${PKD.escapeHtml(member.nama_lengkap || '')}" required>
                 </div>
                 <div class="mb-3">
                   <label class="form-label fw-semibold">Email</label>
-                  <input type="email" class="form-control" id="profilEmail" value="${escapeHtml(member.email || '')}" required>
+                  <input type="email" class="form-control" id="profilEmail" value="${PKD.escapeHtml(member.email || '')}" required>
                 </div>
                 <div class="mb-3">
                   <label class="form-label fw-semibold">No. HP</label>
-                  <input type="text" class="form-control" id="profilNohp" value="${escapeHtml(member.no_hp || '')}">
+                  <input type="text" class="form-control" id="profilNohp" value="${PKD.escapeHtml(member.no_hp || '')}">
                 </div>
                 <div class="mb-3">
                   <label class="form-label fw-semibold">Foto Profil</label>
@@ -501,30 +459,18 @@
           return;
         }
 
-        const params = {
-          action: 'updateMemberProfile',
-          username: userData.username,
-          nama_lengkap: nama,
-          email: email,
-          no_hp: nohp
-        };
-        if (password) params.password = password;
-        if (fotoFile) {
-          const base64 = await fileToBase64(fotoFile);
-          params.foto = base64;
-        }
+        let fotoBase64 = null;
+        if (fotoFile && fotoFile.size > 0) fotoBase64 = await fileToBase64(fotoFile);
 
+        const user = PKD.getUserData();
         try {
-          const res = await callAppsScript(params, 'POST');
+          const res = await PKD.updateMemberProfile(user.username, nama, email, nohp, password, fotoBase64);
           if (res.success) {
             alert('Profil berhasil diperbarui');
-            userData.nama = nama;
-            userData.email = email;
-            userData.nohp = nohp;
-            persistAuth();
-            // Refresh sidebar name
+            // Update local storage data
+            PKD.setUserData({ ...PKD.getUserData(), nama, email, nohp });
+            PKD.persistAuthState();
             document.getElementById('sidebarUserName').innerText = nama;
-            // Muat ulang profil
             renderProfil(container);
           } else {
             alert('Gagal memperbarui profil');
@@ -535,16 +481,12 @@
       });
     }
 
-    // =====================================================
-    //   RENDER MATERI
-    // =====================================================
+    // -------------------------------------------------------
+    // Render Materi
+    // -------------------------------------------------------
     async function renderMateri(container) {
-      const res = await callAppsScript({ action: 'getMateriList' }, 'GET');
-      const materi = res.data || [];
-      let html = `
-        <h2 class="section-title">Materi Pembelajaran</h2>
-        <div class="row g-4">
-      `;
+      const materi = await PKD.getMateriList();
+      let html = `<h2 class="section-title">Materi Pembelajaran</h2><div class="row g-4">`;
       if (materi.length === 0) {
         html += '<p class="text-muted">Belum ada materi.</p>';
       } else {
@@ -553,8 +495,8 @@
           html += `
             <div class="col-md-6">
               <div class="card-dashboard">
-                <h5><i class="bi bi-file-earmark-${m.tipe === 'pdf' ? 'pdf' : 'ppt'} me-2"></i>${escapeHtml(m.judul)}</h5>
-                <p class="small text-muted">${escapeHtml(m.deskripsi || '')}</p>
+                <h5><i class="bi bi-file-earmark-${m.tipe === 'pdf' ? 'pdf' : 'ppt'} me-2"></i>${PKD.escapeHtml(m.judul)}</h5>
+                <p class="small text-muted">${PKD.escapeHtml(m.deskripsi || '')}</p>
                 <a href="${fileUrl}" target="_blank" class="btn btn-sm btn-outline-primary">Lihat Materi</a>
               </div>
             </div>
@@ -565,57 +507,53 @@
       container.innerHTML = html;
     }
 
-    // =====================================================
-    //   RENDER SKRINING
-    // =====================================================
+    // -------------------------------------------------------
+    // Render Skrining
+    // -------------------------------------------------------
     async function renderSkrining(container) {
-      const res = await callAppsScript({ action: 'getMemberSkrining', nama: userData.nama }, 'GET');
+      const user = PKD.getUserData();
+      const res = await PKD.callApi('getMemberSkrining', { nama: user.nama }, 'GET');
       const data = res.data;
       if (!data) {
         container.innerHTML = `
           <h2 class="section-title">Skrining</h2>
           <div class="card-dashboard">
             <p>Anda belum mengisi skrining. Silakan <a href="skrining.html">klik di sini</a> untuk mengisi.</p>
-          </div>
-        `;
+          </div>`;
       } else {
         container.innerHTML = `
           <h2 class="section-title">Hasil Skrining</h2>
           <div class="card-dashboard">
-            <p><strong>Tanggal:</strong> ${escapeHtml(data.timestamp)}</p>
-            <p><strong>Nama:</strong> ${escapeHtml(data.nama)}</p>
-            <p><strong>Alamat:</strong> ${escapeHtml(data.alamat)}</p>
-            <p><strong>Info:</strong> ${escapeHtml(data.info)}</p>
-            <p><strong>Pengetahuan:</strong> ${escapeHtml(data.pengetahuan)}</p>
-            <p><strong>Qunut:</strong> ${escapeHtml(data.qunut)}</p>
-            <p><strong>Penyakit:</strong> ${escapeHtml(data.penyakit)}</p>
-            <p><strong>Pernah:</strong> ${escapeHtml(data.pernah)}</p>
-            <p><strong>Alasan:</strong> ${escapeHtml(data.alasan)}</p>
-            <p><strong>Catatan:</strong> ${escapeHtml(data.catatan)}</p>
-          </div>
-        `;
+            <p><strong>Tanggal:</strong> ${PKD.escapeHtml(data.timestamp)}</p>
+            <p><strong>Nama:</strong> ${PKD.escapeHtml(data.nama)}</p>
+            <p><strong>Alamat:</strong> ${PKD.escapeHtml(data.alamat)}</p>
+            <p><strong>Info:</strong> ${PKD.escapeHtml(data.info)}</p>
+            <p><strong>Pengetahuan:</strong> ${PKD.escapeHtml(data.pengetahuan)}</p>
+            <p><strong>Qunut:</strong> ${PKD.escapeHtml(data.qunut)}</p>
+            <p><strong>Penyakit:</strong> ${PKD.escapeHtml(data.penyakit)}</p>
+            <p><strong>Pernah:</strong> ${PKD.escapeHtml(data.pernah)}</p>
+            <p><strong>Alasan:</strong> ${PKD.escapeHtml(data.alasan)}</p>
+            <p><strong>Catatan:</strong> ${PKD.escapeHtml(data.catatan)}</p>
+          </div>`;
       }
     }
 
-    // =====================================================
-    //   RENDER PRETEST
-    // =====================================================
+    // -------------------------------------------------------
+    // Render Pretest
+    // -------------------------------------------------------
     async function renderPretest(container) {
-      const res = await callAppsScript({ action: 'getMemberData', username: userData.username }, 'GET');
+      const user = PKD.getUserData();
+      const res = await PKD.getMemberData(user.username);
       const pretest = res.pretest || [];
-      let html = `
-        <h2 class="section-title">Riwayat Pretest</h2>
-        <div class="card-dashboard">
-      `;
+      let html = `<h2 class="section-title">Riwayat Pretest</h2><div class="card-dashboard">`;
       if (pretest.length === 0) {
         html += '<p>Belum mengerjakan pretest. <a href="pretest.html">Mulai Pretest</a></p>';
       } else {
         html += '<div class="list-group">';
         pretest.forEach(p => {
           html += `<div class="list-group-item d-flex justify-content-between align-items-center">
-            <span>${escapeHtml(new Date(p.timestamp).toLocaleString())}</span>
-            <span class="badge bg-primary rounded-pill">Skor: ${p.score}</span>
-          </div>`;
+            <span>${PKD.escapeHtml(new Date(p.timestamp).toLocaleString())}</span>
+            <span class="badge bg-primary rounded-pill">Skor: ${p.score}</span></div>`;
         });
         html += '</div>';
       }
@@ -623,25 +561,22 @@
       container.innerHTML = html;
     }
 
-    // =====================================================
-    //   RENDER POSTTEST
-    // =====================================================
+    // -------------------------------------------------------
+    // Render Posttest
+    // -------------------------------------------------------
     async function renderPosttest(container) {
-      const res = await callAppsScript({ action: 'getMemberData', username: userData.username }, 'GET');
+      const user = PKD.getUserData();
+      const res = await PKD.getMemberData(user.username);
       const posttest = res.posttest || [];
-      let html = `
-        <h2 class="section-title">Riwayat Posttest</h2>
-        <div class="card-dashboard">
-      `;
+      let html = `<h2 class="section-title">Riwayat Posttest</h2><div class="card-dashboard">`;
       if (posttest.length === 0) {
         html += '<p>Belum mengerjakan posttest. <a href="posttest.html">Mulai Posttest</a></p>';
       } else {
         html += '<div class="list-group">';
         posttest.forEach(p => {
           html += `<div class="list-group-item d-flex justify-content-between align-items-center">
-            <span>${escapeHtml(new Date(p.timestamp).toLocaleString())}</span>
-            <span class="badge bg-warning text-dark rounded-pill">Skor: ${p.score}</span>
-          </div>`;
+            <span>${PKD.escapeHtml(new Date(p.timestamp).toLocaleString())}</span>
+            <span class="badge bg-warning text-dark rounded-pill">Skor: ${p.score}</span></div>`;
         });
         html += '</div>';
       }
@@ -649,22 +584,20 @@
       container.innerHTML = html;
     }
 
-    // =====================================================
-    //   RENDER ABSENSI
-    // =====================================================
+    // -------------------------------------------------------
+    // Render Absensi
+    // -------------------------------------------------------
     async function renderAbsensi(container) {
-      const res = await callAppsScript({ action: 'getMemberAbsensi', nama: userData.nama }, 'GET');
+      const user = PKD.getUserData();
+      const res = await PKD.callApi('getMemberAbsensi', { nama: user.nama }, 'GET');
       const absen = res.data || [];
-      let html = `
-        <h2 class="section-title">Riwayat Kehadiran</h2>
-        <div class="card-dashboard">
-      `;
+      let html = `<h2 class="section-title">Riwayat Kehadiran</h2><div class="card-dashboard">`;
       if (absen.length === 0) {
         html += '<p>Belum ada riwayat absensi.</p>';
       } else {
         html += '<table class="table"><thead><tr><th>Tanggal</th><th>Sesi</th></tr></thead><tbody>';
         absen.forEach(a => {
-          html += `<tr><td>${escapeHtml(new Date(a.timestamp).toLocaleString())}</td><td>${escapeHtml(a.sesiNama)}</td></tr>`;
+          html += `<tr><td>${PKD.escapeHtml(new Date(a.timestamp).toLocaleString())}</td><td>${PKD.escapeHtml(a.sesiNama)}</td></tr>`;
         });
         html += '</tbody></table>';
       }
@@ -672,16 +605,14 @@
       container.innerHTML = html;
     }
 
-    // =====================================================
-    //   RENDER SERTIFIKAT
-    // =====================================================
+    // -------------------------------------------------------
+    // Render Sertifikat
+    // -------------------------------------------------------
     async function renderSertifikat(container) {
-      const res = await callAppsScript({ action: 'getMemberSertifikat', nama: userData.nama }, 'GET');
+      const user = PKD.getUserData();
+      const res = await PKD.getMemberSertifikat(user.nama);
       const sertifikat = res.data || [];
-      let html = `
-        <h2 class="section-title">Sertifikat Saya</h2>
-        <div class="card-dashboard">
-      `;
+      let html = `<h2 class="section-title">Sertifikat Saya</h2><div class="card-dashboard">`;
       if (sertifikat.length === 0) {
         html += '<p>Belum ada sertifikat yang tersedia. Pastikan Anda telah menyelesaikan seluruh rangkaian kegiatan.</p>';
       } else {
@@ -691,15 +622,14 @@
             <div class="col-md-6">
               <div class="certificate-card d-flex justify-content-between align-items-center">
                 <div>
-                  <strong>${escapeHtml(s.nomor_sertifikat)}</strong><br>
-                  <small>${escapeHtml(s.nama_peserta)}</small>
+                  <strong>${PKD.escapeHtml(s.nomor_sertifikat)}</strong><br>
+                  <small>${PKD.escapeHtml(s.nama_peserta)}</small>
                 </div>
-                <a href="${escapeHtml(s.pdf_url)}" target="_blank" class="btn btn-sm btn-success">
+                <a href="${PKD.escapeHtml(s.pdf_url)}" target="_blank" class="btn btn-sm btn-success">
                   <i class="bi bi-download"></i> Unduh
                 </a>
               </div>
-            </div>
-          `;
+            </div>`;
         });
         html += '</div>';
       }
@@ -707,16 +637,12 @@
       container.innerHTML = html;
     }
 
-    // =====================================================
-    //   RENDER INFORMASI (termasuk notifikasi sertifikat)
-    // =====================================================
+    // -------------------------------------------------------
+    // Render Informasi (termasuk notifikasi sertifikat)
+    // -------------------------------------------------------
     async function renderInformasi(container) {
-      const res = await callAppsScript({ action: 'getInfoList' }, 'GET');
-      const info = res.data || [];
-      let html = `
-        <h2 class="section-title">Informasi & Pengumuman</h2>
-        <div class="row g-4">
-      `;
+      const info = await PKD.getInfoList();
+      let html = `<h2 class="section-title">Informasi & Pengumuman</h2><div class="row g-4">`;
       if (info.length === 0) {
         html += '<p class="text-muted">Belum ada informasi.</p>';
       } else {
@@ -726,49 +652,44 @@
             html += `
               <div class="col-md-6">
                 <div class="card-dashboard">
-                  <h5>${escapeHtml(item.judul)}</h5>
-                  <p>${escapeHtml(item.deskripsi)}</p>
+                  <h5>${PKD.escapeHtml(item.judul)}</h5>
+                  <p>${PKD.escapeHtml(item.deskripsi)}</p>
                   <div class="ratio ratio-16x9">
-                    <iframe src="${escapeHtml(item.url)}" allowfullscreen></iframe>
+                    <iframe src="${PKD.escapeHtml(item.url)}" allowfullscreen></iframe>
                   </div>
                 </div>
-              </div>
-            `;
+              </div>`;
           } else if (item.jenis === 'flyer' || item.jenis === 'galeri') {
             const imgUrl = item.url ? `https://drive.google.com/thumbnail?id=${item.url}` : '#';
             html += `
               <div class="col-md-4">
                 <div class="card-dashboard">
-                  <img src="${imgUrl}" class="img-fluid rounded" alt="${escapeHtml(item.judul)}">
-                  <h6 class="mt-2">${escapeHtml(item.judul)}</h6>
-                  <p class="small">${escapeHtml(item.deskripsi)}</p>
+                  <img src="${imgUrl}" class="img-fluid rounded" alt="${PKD.escapeHtml(item.judul)}">
+                  <h6 class="mt-2">${PKD.escapeHtml(item.judul)}</h6>
+                  <p class="small">${PKD.escapeHtml(item.deskripsi)}</p>
                 </div>
-              </div>
-            `;
+              </div>`;
           } else if (item.jenis === 'sertifikat') {
-            // Tampilan khusus untuk notifikasi sertifikat
             html += `
               <div class="col-md-6">
                 <div class="card-dashboard d-flex justify-content-between align-items-center">
                   <div>
-                    <h5>${escapeHtml(item.judul)}</h5>
-                    <p class="small">${escapeHtml(item.deskripsi)}</p>
+                    <h5>${PKD.escapeHtml(item.judul)}</h5>
+                    <p class="small">${PKD.escapeHtml(item.deskripsi)}</p>
                   </div>
-                  <a href="${escapeHtml(item.url)}" target="_blank" class="btn btn-sm btn-success">
+                  <a href="${PKD.escapeHtml(item.url)}" target="_blank" class="btn btn-sm btn-success">
                     <i class="bi bi-download"></i> Unduh
                   </a>
                 </div>
-              </div>
-            `;
+              </div>`;
           } else {
             html += `
               <div class="col-md-6">
                 <div class="card-dashboard">
-                  <h5>${escapeHtml(item.judul)}</h5>
-                  <p>${escapeHtml(item.deskripsi)}</p>
+                  <h5>${PKD.escapeHtml(item.judul)}</h5>
+                  <p>${PKD.escapeHtml(item.deskripsi)}</p>
                 </div>
-              </div>
-            `;
+              </div>`;
           }
         });
       }
@@ -776,36 +697,12 @@
       container.innerHTML = html;
     }
 
-    // =====================================================
-    //   FUNGSI BANTU
-    // =====================================================
-    function fileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-    }
-
-    function persistAuth() {
-      const state = { role: userRole, data: userData };
-      sessionStorage.setItem('pkd_auth', JSON.stringify(state));
-      localStorage.setItem('pkd_auth', JSON.stringify(state));
-    }
-
-    function logout() {
-      sessionStorage.removeItem('pkd_auth');
-      localStorage.removeItem('pkd_auth');
-      window.location.href = 'index.html';
-    }
-
-    // =====================================================
-    //   INISIALISASI
-    // =====================================================
+    // -------------------------------------------------------
+    // Inisialisasi halaman
+    // -------------------------------------------------------
     window.onload = function() {
-      loadAuth();
-      loadContent('dashboard'); // muat dashboard pertama kali
+      if (!checkMemberAccess()) return;
+      loadContent('dashboard');
     };
   </script>
 </body>

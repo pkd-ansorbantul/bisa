@@ -41,36 +41,28 @@
 </head>
 <body>
 
-<!-- ==================== MODE LOGIN CHECK (DIPERBAIKI) ==================== -->
+<!-- ==================== MODE LOGIN CHECK ==================== -->
+<script src="api.js"></script>
 <script>
-  (function() {
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec';
-
-    async function checkLoginThenLoad() {
-      try {
-        const res = await fetch(`${SCRIPT_URL}?action=getLoginMode`);
-        const data = await res.json();
-        const requireLogin = data.success ? data.enabled : false;
-
-        if (requireLogin) {
-          const auth = localStorage.getItem('pkd_auth') || sessionStorage.getItem('pkd_auth');
-          if (!auth) {
-            window.location.href = 'login.html';
-            return;
-          }
+  (async function() {
+    try {
+      const loginMode = await PKD.getLoginMode();
+      const requireLogin = loginMode.success ? loginMode.enabled : false;
+      if (requireLogin) {
+        const auth = localStorage.getItem('pkd_auth') || sessionStorage.getItem('pkd_auth');
+        if (!auth) {
+          window.location.href = 'login.html';
+          return;
         }
-      } catch (e) {
-        console.warn('Gagal cek mode login, lanjut tanpa login:', e);
       }
-
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadPosttest);
-      } else {
-        loadPosttest();
-      }
+    } catch (e) {
+      console.warn('Gagal cek login mode, lanjut tanpa login:', e);
     }
-
-    checkLoginThenLoad();
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadPosttest);
+    } else {
+      loadPosttest();
+    }
   })();
 </script>
 
@@ -96,160 +88,87 @@
   <i class="bi bi-c-circle"></i> 2026 · Tim Instruktur GP Ansor Kabupaten Bantul
 </footer>
 
-<!-- Toast notifikasi -->
-<div class="toast-container">
-  <div id="notificationToast" class="toast border-0 shadow-lg" role="alert" data-bs-delay="3000">
-    <div class="toast-header bg-white border-0">
-      <i class="bi me-2" id="toastIcon"></i>
-      <strong class="me-auto" id="toastTitle">Berhasil</strong>
-      <small>baru saja</small>
-      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-    </div>
-    <div class="toast-body" id="toastMessage"></div>
-  </div>
-</div>
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhkFxLG4RZd4tm3w_4j761hXz0gn4cmQFt-2JO0IEIBS-frohWV_c9CDA1fdM65lee/exec';
-
+  // State global
   let posttestQuiz = null;
 
-  function escapeHtml(unsafe) {
-    if (!unsafe) return '';
-    return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-  }
-
-  function showToast(message, type = 'success') {
-    const toastEl = document.getElementById('notificationToast');
-    const toastMessage = document.getElementById('toastMessage');
-    const toastIcon = document.getElementById('toastIcon');
-    const toastTitle = document.getElementById('toastTitle');
-    toastMessage.innerText = message;
-    if (type === 'success') {
-      toastEl.classList.add('border-success'); toastEl.classList.remove('border-danger');
-      toastIcon.className = 'bi bi-check-circle-fill me-2 text-success';
-      toastTitle.innerText = 'Berhasil';
-      toastTitle.style.color = '#28a745';
-    } else {
-      toastEl.classList.add('border-danger'); toastEl.classList.remove('border-success');
-      toastIcon.className = 'bi bi-x-circle-fill me-2 text-danger';
-      toastTitle.innerText = 'Gagal';
-      toastTitle.style.color = '#dc3545';
-    }
-    new bootstrap.Toast(toastEl, { delay: 3000 }).show();
-  }
-
-  async function callAppsScript(params, method = 'POST', timeout = 30000) {
-    return new Promise(async (resolve, reject) => {
-      if (method === 'GET') {
-        try {
-          const queryString = new URLSearchParams(params).toString();
-          const response = await fetch(`${SCRIPT_URL}?${queryString}`, { method: 'GET', mode: 'cors', headers: { 'Accept': 'application/json' } });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const data = await response.json();
-          return resolve(data);
-        } catch (fetchError) {
-          console.warn('Fetch GET gagal, fallback ke JSONP:', fetchError);
-          const callbackName = 'jsonp_callback_' + Date.now();
-          const script = document.createElement('script');
-          let isResolved = false;
-          let timer = setTimeout(() => {
-            if (!isResolved) {
-              isResolved = true;
-              if (document.head.contains(script)) document.head.removeChild(script);
-              delete window[callbackName];
-              reject(new Error('⏱️ Timeout: Server tidak merespon.'));
-            }
-          }, timeout);
-          window[callbackName] = function(data) {
-            if (!isResolved) { isResolved = true; clearTimeout(timer); resolve(data || {}); }
-            delete window[callbackName];
-            if (document.head.contains(script)) document.head.removeChild(script);
-          };
-          script.onerror = (err) => {
-            if (!isResolved) { isResolved = true; clearTimeout(timer); delete window[callbackName]; if (document.head.contains(script)) document.head.removeChild(script); reject(new Error('❌ Gagal memuat script JSONP.')); }
-          };
-          const cleanParams = { ...params };
-          const queryString = new URLSearchParams({ ...cleanParams, callback: callbackName }).toString();
-          script.src = `${SCRIPT_URL}?${queryString}`;
-          document.head.appendChild(script);
-        }
-      } else {
-        fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(params) })
-          .then(() => resolve({ success: true, message: 'Request sent (no-cors)' }))
-          .catch(reject);
-      }
-    });
-  }
+  // Bantuan lokal (pakai PKD)
+  function escapeHtml(unsafe) { return PKD.escapeHtml(unsafe); }
+  function showToast(message, type = 'success') { PKD.showToast(message, type); }
 
   // ========== CACHE ==========
   function getCachedPosttestQuestions() {
-    try {
-      const cached = sessionStorage.getItem('posttestQuestionsCache');
-      const time = sessionStorage.getItem('posttestQuestionsCacheTime');
-      if (cached && time && (Date.now() - parseInt(time)) < 3600000) return JSON.parse(cached);
-    } catch (e) {}
-    return null;
+    return PKD.getCached('posttestQuestionsCache', 3600000);
   }
   function saveCachedPosttestQuestions(data) {
-    try { sessionStorage.setItem('posttestQuestionsCache', JSON.stringify(data)); sessionStorage.setItem('posttestQuestionsCacheTime', Date.now().toString()); } catch (e) {}
+    PKD.saveCached('posttestQuestionsCache', data);
   }
   function getCachedQuizSettings() {
-    try {
-      const cached = sessionStorage.getItem('quizSettingsCache');
-      const time = sessionStorage.getItem('quizSettingsCacheTime');
-      if (cached && time && (Date.now() - parseInt(time)) < 3600000) return JSON.parse(cached);
-    } catch (e) {}
-    return null;
+    return PKD.getCached('quizSettingsCache', 3600000);
   }
   function saveCachedQuizSettings(data) {
-    try { sessionStorage.setItem('quizSettingsCache', JSON.stringify(data)); sessionStorage.setItem('quizSettingsCacheTime', Date.now().toString()); } catch (e) {}
+    PKD.saveCached('quizSettingsCache', data);
   }
 
+  // ========== FETCH DATA ==========
   async function fetchPosttestQuestions(forceRefresh = false) {
-    if (!forceRefresh) { const cached = getCachedPosttestQuestions(); if (cached) return cached; }
-    const res = await callAppsScript({ action: 'getPosttestQuestions' }, 'GET');
-    const data = res.data || [];
-    saveCachedPosttestQuestions(data);
-    return data;
+    if (!forceRefresh) {
+      const cached = getCachedPosttestQuestions();
+      if (cached) return cached;
+    }
+    const questions = await PKD.getPosttestQuestions(true);
+    saveCachedPosttestQuestions(questions);
+    return questions;
   }
+
   async function fetchQuizSettings(forceRefresh = false) {
-    if (!forceRefresh) { const cached = getCachedQuizSettings(); if (cached) return cached; }
-    const res = await callAppsScript({ action: 'getQuizSettings' }, 'GET');
-    const data = res.data || {};
-    saveCachedQuizSettings(data);
-    return data;
+    if (!forceRefresh) {
+      const cached = getCachedQuizSettings();
+      if (cached) return cached;
+    }
+    const settings = await PKD.getQuizSettings(true);
+    saveCachedQuizSettings(settings);
+    return settings;
   }
 
   // ========== STATE LOCALSTORAGE ==========
   function savePosttestQuiz() {
     if (!posttestQuiz) return;
     const { timer, questions, ...state } = posttestQuiz;
-    if (questions && Array.isArray(questions)) state.questionIds = questions.map(q => q.id);
+    if (questions && Array.isArray(questions)) {
+      state.questionIds = questions.map(q => q.id);
+    }
     localStorage.setItem('posttestQuiz', JSON.stringify(state));
   }
+
   function loadSavedPosttestQuiz() {
     const saved = localStorage.getItem('posttestQuiz');
     if (!saved) return null;
     try {
       const parsed = JSON.parse(saved);
-      parsed.nohp = parsed.nohp || ''; parsed.alamat = parsed.alamat || '';
-      parsed.started = parsed.started || false; parsed.isFinished = parsed.isFinished || false;
-      parsed.answers = parsed.answers || []; parsed.currentIndex = parsed.currentIndex || 0;
-      parsed.score = parsed.score || 0; parsed.timerDuration = parsed.timerDuration || 30;
+      parsed.nohp = parsed.nohp || '';
+      parsed.alamat = parsed.alamat || '';
+      parsed.started = parsed.started || false;
+      parsed.isFinished = parsed.isFinished || false;
+      parsed.answers = parsed.answers || [];
+      parsed.currentIndex = parsed.currentIndex || 0;
+      parsed.score = parsed.score || 0;
+      parsed.timerDuration = parsed.timerDuration || 30;
       parsed.timeLeft = parsed.timeLeft || parsed.timerDuration;
       return parsed;
     } catch (e) { console.warn('Gagal parse saved posttest:', e); return null; }
   }
-  function clearPosttestQuiz() { localStorage.removeItem('posttestQuiz'); posttestQuiz = null; }
+
+  function clearPosttestQuiz() {
+    localStorage.removeItem('posttestQuiz');
+    posttestQuiz = null;
+  }
 
   // ========== RENDER ==========
   function renderPosttestStartForm() {
     const quiz = posttestQuiz;
     if (!quiz) return;
+
     let html = `
       <div class="card-kahoot">
         <h4 class="mb-4">📝 Isi Data Diri untuk Memulai Posttest</h4>
@@ -258,12 +177,17 @@
         <div class="mb-3"><label class="form-label fw-bold">Alamat</label><textarea class="form-control" id="posttestAlamat" rows="2" placeholder="Masukkan alamat" required>${escapeHtml(quiz.alamat || '')}</textarea></div>
         <div class="text-center mt-4"><button id="startPosttestBtn" class="btn btn-primary btn-lg rounded-pill px-5">🚀 Mulai Posttest</button></div>
       </div>`;
+
     document.getElementById('posttestContainer').innerHTML = html;
+
     document.getElementById('startPosttestBtn').addEventListener('click', function() {
       const nama = document.getElementById('posttestNama').value.trim();
       const nohp = document.getElementById('posttestNohp').value.trim();
       const alamat = document.getElementById('posttestAlamat').value.trim();
-      if (!nama || !nohp || !alamat) { showToast('Nama, No HP, dan Alamat wajib diisi!', 'danger'); return; }
+      if (!nama || !nohp || !alamat) {
+        showToast('Nama, No HP, dan Alamat wajib diisi!', 'danger');
+        return;
+      }
       quiz.nama = nama; quiz.nohp = nohp; quiz.alamat = alamat;
       quiz.started = true; quiz.currentIndex = 0; quiz.score = 0; quiz.answers = [];
       quiz.timeLeft = quiz.timerDuration;
@@ -352,21 +276,18 @@
     quiz.timer = setInterval(() => {
       if (!quiz) { clearInterval(quiz.timer); return; }
       if (quiz.answers[quiz.currentIndex] !== undefined) {
-        clearInterval(quiz.timer);
-        quiz.timer = null;
-        return;
+        clearInterval(quiz.timer); quiz.timer = null; return;
       }
       quiz.timeLeft -= 1;
       updateTimerDisplay(quiz.timeLeft);
       if (quiz.timeLeft <= 0) {
-        clearInterval(quiz.timer);
-        quiz.timer = null;
+        clearInterval(quiz.timer); quiz.timer = null;
         if (quiz.answers[quiz.currentIndex] === undefined) {
           const q = quiz.questions[quiz.currentIndex];
           quiz.answers[quiz.currentIndex] = { questionId: q.id, selectedOption: null, isCorrect: false };
           renderPosttestQuestion();
           savePosttestQuiz();
-          setTimeout(() => nextPosttestQuestion(), 1500);
+          setTimeout(() => { nextPosttestQuestion(); }, 1500);
         }
       }
     }, 1000);
@@ -412,16 +333,14 @@
     document.getElementById('submitPosttestResultBtn').addEventListener('click', async function() {
       if (!quiz.nama) { showToast('Nama belum diisi!', 'danger'); return; }
       try {
-        await callAppsScript({
-          action: 'submitPosttest',
-          nama: quiz.nama, nohp: quiz.nohp, alamat: quiz.alamat,
-          answers: JSON.stringify(quiz.answers.map(a => ({ qid: a.questionId, selected: a.selectedOption, correct: a.isCorrect }))),
-          score: quiz.score
-        }, 'POST');
+        const answers = JSON.stringify(quiz.answers.map(a => ({ qid: a.questionId, selected: a.selectedOption, correct: a.isCorrect })));
+        await PKD.submitPosttest(quiz.nama, quiz.nohp, quiz.alamat, answers, quiz.score);
         showToast('Posttest berhasil dikirim!', 'success');
         clearPosttestQuiz();
+        location.reload();
       } catch (e) { showToast('Gagal mengirim: ' + e.message, 'danger'); }
     });
+
     document.getElementById('restartPosttestBtn').addEventListener('click', function() {
       clearPosttestQuiz();
       loadPosttest();
@@ -458,7 +377,10 @@
 
   function initPosttestWithData(questions, settings) {
     const container = document.getElementById('posttestContainer');
-    if (!questions.length) { container.innerHTML = '<div class="alert alert-info">Belum ada soal Posttest.</div>'; return; }
+    if (!questions.length) {
+      container.innerHTML = '<div class="alert alert-info">Belum ada soal Posttest.</div>';
+      return;
+    }
 
     const savedQuiz = loadSavedPosttestQuiz();
     if (savedQuiz && !savedQuiz.isFinished) {

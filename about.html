@@ -402,6 +402,8 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- api.js -->
+<script src="api.js"></script>
 
 <!-- ==================== SCRIPT TAMBAHAN ==================== -->
 <script>
@@ -417,20 +419,6 @@
     } catch (e) {
       return null;
     }
-  }
-
-  // =====================================================
-  //   FUNGSI ESCAPE HTML UNTUK KEAMANAN
-  // =====================================================
-  function escapeHtml(unsafe) {
-    if (!unsafe) return '';
-    return String(unsafe).replace(/[&<>"]/g, function(m) {
-      if (m === '&') return '&amp;';
-      if (m === '<') return '&lt;';
-      if (m === '>') return '&gt;';
-      if (m === '"') return '&quot;';
-      return m;
-    });
   }
 
   // =====================================================
@@ -455,11 +443,11 @@
       <form id="kontakForm">
         <div class="mb-3">
           <label class="form-label">Nama Lengkap</label>
-          <input type="text" class="form-control" id="nama" value="${escapeHtml(user.nama || user.username || '')}" readonly>
+          <input type="text" class="form-control" id="nama" value="${PKD.escapeHtml(user.nama || user.username || '')}" readonly>
         </div>
         <div class="mb-3">
           <label class="form-label">Email</label>
-          <input type="email" class="form-control" id="email" value="${escapeHtml(user.email || '')}" readonly>
+          <input type="email" class="form-control" id="email" value="${PKD.escapeHtml(user.email || '')}" readonly>
         </div>
         <div class="mb-3">
           <label class="form-label">Pesan</label>
@@ -492,34 +480,27 @@
       btn.disabled = true;
 
       try {
-        // Konfigurasi Apps Script (sesuaikan dengan URL Anda)
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec';
+        // Dapatkan IP pengirim (opsional)
+        let ip = 'unknown';
+        try {
+          const ipRes = await fetch('https://api.ipify.org?format=json');
+          const ipData = await ipRes.json();
+          ip = ipData.ip;
+        } catch (e) {}
 
-        // Ambil IP pengirim (opsional)
-        const ipRes = await fetch('https://api.ipify.org?format=json');
-        const ipData = await ipRes.json();
-        const ip = ipData.ip;
+        // Gunakan PKD.submitKontak
+        await PKD.submitKontak(
+          user.nama || user.username,
+          user.email || '',
+          pesan,
+          user.username,
+          user.role || 'member',
+          ip
+        );
 
-        const params = new URLSearchParams({
-          action: 'submitKontak',
-          nama: user.nama || user.username,
-          email: user.email || '',
-          pesan: pesan,
-          username: user.username,
-          role: user.role || 'member',
-          ip: ip
-        });
-
-        const res = await fetch(`${scriptUrl}?${params.toString()}`);
-        const data = await res.json();
-
-        if (data.error) {
-          document.getElementById('kontakStatus').innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
-        } else {
-          document.getElementById('kontakStatus').innerHTML = '<div class="alert alert-success">Pesan berhasil dikirim! Terima kasih.</div>';
-          this.reset(); // Reset hanya textarea, nama/email tetap
-          document.getElementById('pesan').value = '';
-        }
+        document.getElementById('kontakStatus').innerHTML = '<div class="alert alert-success">Pesan berhasil dikirim! Terima kasih.</div>';
+        this.reset();
+        document.getElementById('pesan').value = '';
       } catch (err) {
         document.getElementById('kontakStatus').innerHTML = '<div class="alert alert-danger">Gagal mengirim pesan. Coba lagi.</div>';
       } finally {
@@ -539,7 +520,6 @@
       const target = document.querySelector(targetId);
       if (target) {
         target.scrollIntoView({ behavior: 'smooth' });
-        // Update active class
         document.querySelectorAll('.nav-pills .nav-link').forEach(l => l.classList.remove('active'));
         this.classList.add('active');
       }
@@ -590,35 +570,18 @@
 
     function handleSwipe() {
       const deltaX = touchEndX - touchStartX;
-      // Ambil instance carousel Bootstrap
       const carouselInstance = bootstrap.Carousel.getInstance(carousel);
       if (!carouselInstance) return;
 
       if (Math.abs(deltaX) >= minSwipeDistance) {
         if (deltaX > 0) {
-          // swipe ke kanan -> slide sebelumnya
           carouselInstance.prev();
         } else {
-          // swipe ke kiri -> slide berikutnya
           carouselInstance.next();
         }
       }
     }
   })();
-</script>
-
-<!-- Opsional: script tambahan untuk navbar (dari about.html) -->
-<script>
-  document.addEventListener('click', function(event) {
-    const navbar = document.getElementById('navbarMain');
-    const toggler = document.querySelector('.navbar-toggler');
-    if (!navbar || !toggler) return;
-    const isClickInside = navbar.contains(event.target) || toggler.contains(event.target);
-    if (!isClickInside && navbar.classList.contains('show')) {
-      const bsCollapse = bootstrap.Collapse.getInstance(navbar);
-      if (bsCollapse) bsCollapse.hide();
-    }
-  });
 </script>
 </body>
 </html>

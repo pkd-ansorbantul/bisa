@@ -43,36 +43,29 @@
 </head>
 <body>
 
-<!-- ==================== MODE LOGIN CHECK (DIPERBAIKI) ==================== -->
+<!-- ==================== MODE LOGIN CHECK (dengan PKD) ==================== -->
+<script src="api.js"></script>
 <script>
-  (function() {
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec';
-
-    async function checkLoginThenLoad() {
-      try {
-        const res = await fetch(`${SCRIPT_URL}?action=getLoginMode`);
-        const data = await res.json();
-        const requireLogin = data.success ? data.enabled : false;
-
-        if (requireLogin) {
-          const auth = localStorage.getItem('pkd_auth') || sessionStorage.getItem('pkd_auth');
-          if (!auth) {
-            window.location.href = 'login.html';
-            return;
-          }
+  (async function() {
+    try {
+      const loginMode = await PKD.getLoginMode();
+      const requireLogin = loginMode.success ? loginMode.enabled : false;
+      if (requireLogin) {
+        const auth = localStorage.getItem('pkd_auth') || sessionStorage.getItem('pkd_auth');
+        if (!auth) {
+          window.location.href = 'login.html';
+          return;
         }
-      } catch (e) {
-        console.warn('Gagal cek mode login, lanjut tanpa login:', e);
       }
-
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', loadPretest);
-      } else {
-        loadPretest();
-      }
+    } catch (e) {
+      console.warn('Gagal cek login mode, lanjut tanpa login:', e);
     }
-
-    checkLoginThenLoad();
+    // Setelah pengecekan, muat pretest
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadPretest);
+    } else {
+      loadPretest();
+    }
   })();
 </script>
 
@@ -98,178 +91,39 @@
   <i class="bi bi-c-circle"></i> 2026 · Tim Instruktur GP Ansor Kabupaten Bantul
 </footer>
 
-<!-- Toast notifikasi -->
-<div class="toast-container">
-  <div id="notificationToast" class="toast border-0 shadow-lg" role="alert" data-bs-delay="3000">
-    <div class="toast-header"><i class="bi me-2" id="toastIcon"></i><strong id="toastTitle">Berhasil</strong></div>
-    <div class="toast-body" id="toastMessage"></div>
-  </div>
-</div>
+<!-- Toast notifikasi (dibuat oleh api.js) -->
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // =====================================================
-  //   KONFIGURASI & STATE
-  // =====================================================
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhkFxLG4RZd4tm3w_4j761hXz0gn4cmQFt-2JO0IEIBS-frohWV_c9CDA1fdM65lee/exec';
-
+  // State pretest global
   let pretestQuiz = null;
-  let cachedQuestions = null;
-  let cachedSettings = null;
 
-  // =====================================================
-  //   FUNGSI BANTU
-  // =====================================================
-  function escapeHtml(unsafe) {
-    if (!unsafe) return '';
-    return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-  }
+  // Fungsi bantu lokal (menggunakan PKD)
+  function escapeHtml(unsafe) { return PKD.escapeHtml(unsafe); }
+  function showToast(message, type = 'success') { PKD.showToast(message, type); }
 
-  function showToast(message, type = 'success') {
-    const toastEl = document.getElementById('notificationToast');
-    const toastMessage = document.getElementById('toastMessage');
-    const toastIcon = document.getElementById('toastIcon');
-    const toastTitle = document.getElementById('toastTitle');
-
-    toastMessage.innerText = message;
-
-    if (type === 'success') {
-      toastEl.classList.add('border-success');
-      toastEl.classList.remove('border-danger');
-      toastIcon.className = 'bi bi-check-circle-fill me-2 text-success';
-      toastTitle.innerText = 'Berhasil';
-      toastTitle.style.color = '#28a745';
-    } else {
-      toastEl.classList.add('border-danger');
-      toastEl.classList.remove('border-success');
-      toastIcon.className = 'bi bi-x-circle-fill me-2 text-danger';
-      toastTitle.innerText = 'Gagal';
-      toastTitle.style.color = '#dc3545';
-    }
-
-    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-    toast.show();
-  }
-
-  // =====================================================
-  //   PANGGILAN APPS SCRIPT (GET & POST)
-  // =====================================================
-  function callAppsScript(params, method = 'POST', timeout = 30000) {
-    return new Promise(async (resolve, reject) => {
-      if (method === 'GET') {
-        try {
-          const queryString = new URLSearchParams(params).toString();
-          const response = await fetch(`${SCRIPT_URL}?${queryString}`, {
-            method: 'GET',
-            mode: 'cors',
-            headers: { 'Accept': 'application/json' }
-          });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const data = await response.json();
-          return resolve(data);
-        } catch (fetchError) {
-          console.warn('Fetch GET gagal, fallback ke JSONP:', fetchError);
-          const callbackName = 'jsonp_callback_' + Date.now();
-          const script = document.createElement('script');
-          let isResolved = false;
-          let timer = setTimeout(() => {
-            if (!isResolved) {
-              isResolved = true;
-              if (document.head.contains(script)) document.head.removeChild(script);
-              delete window[callbackName];
-              reject(new Error('⏱️ Timeout: Server tidak merespon.'));
-            }
-          }, timeout);
-
-          window[callbackName] = function(data) {
-            if (!isResolved) {
-              isResolved = true;
-              clearTimeout(timer);
-              resolve(data || {});
-            }
-            delete window[callbackName];
-            if (document.head.contains(script)) document.head.removeChild(script);
-          };
-
-          script.onerror = (err) => {
-            if (!isResolved) {
-              isResolved = true;
-              clearTimeout(timer);
-              delete window[callbackName];
-              if (document.head.contains(script)) document.head.removeChild(script);
-              reject(new Error('❌ Gagal memuat script JSONP.'));
-            }
-          };
-
-          const cleanParams = { ...params };
-          const queryString = new URLSearchParams({ ...cleanParams, callback: callbackName }).toString();
-          script.src = `${SCRIPT_URL}?${queryString}`;
-          document.head.appendChild(script);
-        }
-      } else {
-        fetch(SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams(params)
-        })
-          .then(() => resolve({ success: true, message: 'Request sent (no-cors)' }))
-          .catch(reject);
-      }
-    });
-  }
-
-  // =====================================================
-  //   CACHE DI SESSIONSTORAGE
-  // =====================================================
+  // ========== CACHE ==========
   function getCachedPretestQuestions() {
-    try {
-      const cached = sessionStorage.getItem('pretestQuestionsCache');
-      const time = sessionStorage.getItem('pretestQuestionsCacheTime');
-      if (cached && time && (Date.now() - parseInt(time)) < 3600000) {
-        return JSON.parse(cached);
-      }
-    } catch (e) {}
-    return null;
+    return PKD.getCached('pretestQuestionsCache', 3600000);
   }
-
   function saveCachedPretestQuestions(data) {
-    try {
-      sessionStorage.setItem('pretestQuestionsCache', JSON.stringify(data));
-      sessionStorage.setItem('pretestQuestionsCacheTime', Date.now().toString());
-    } catch (e) {}
+    PKD.saveCached('pretestQuestionsCache', data);
   }
-
   function getCachedQuizSettings() {
-    try {
-      const cached = sessionStorage.getItem('quizSettingsCache');
-      const time = sessionStorage.getItem('quizSettingsCacheTime');
-      if (cached && time && (Date.now() - parseInt(time)) < 3600000) {
-        return JSON.parse(cached);
-      }
-    } catch (e) {}
-    return null;
+    return PKD.getCached('quizSettingsCache', 3600000);
   }
-
   function saveCachedQuizSettings(data) {
-    try {
-      sessionStorage.setItem('quizSettingsCache', JSON.stringify(data));
-      sessionStorage.setItem('quizSettingsCacheTime', Date.now().toString());
-    } catch (e) {}
+    PKD.saveCached('quizSettingsCache', data);
   }
 
-  // =====================================================
-  //   FETCH SOAL & PENGATURAN (dengan cache)
-  // =====================================================
+  // ========== FETCH DATA ==========
   async function fetchPretestQuestions(forceRefresh = false) {
     if (!forceRefresh) {
       const cached = getCachedPretestQuestions();
       if (cached) return cached;
     }
-    const res = await callAppsScript({ action: 'getPretestQuestions' }, 'GET');
-    const data = res.data || [];
-    saveCachedPretestQuestions(data);
-    return data;
+    const questions = await PKD.getPretestQuestions(true);
+    saveCachedPretestQuestions(questions);
+    return questions;
   }
 
   async function fetchQuizSettings(forceRefresh = false) {
@@ -277,15 +131,12 @@
       const cached = getCachedQuizSettings();
       if (cached) return cached;
     }
-    const res = await callAppsScript({ action: 'getQuizSettings' }, 'GET');
-    const data = res.data || {};
-    saveCachedQuizSettings(data);
-    return data;
+    const settings = await PKD.getQuizSettings(true);
+    saveCachedQuizSettings(settings);
+    return settings;
   }
 
-  // =====================================================
-  //   PENGELOLAAN STATE LOCALSTORAGE
-  // =====================================================
+  // ========== STATE LOCALSTORAGE ==========
   function savePretestQuiz() {
     if (!pretestQuiz) return;
     const { timer, questions, ...state } = pretestQuiz;
@@ -321,9 +172,7 @@
     pretestQuiz = null;
   }
 
-  // =====================================================
-  //   RENDER FORM AWAL (ISI DATA DIRI)
-  // =====================================================
+  // ========== RENDER FORM AWAL ==========
   function renderPretestStartForm() {
     const quiz = pretestQuiz;
     if (!quiz) return;
@@ -375,9 +224,7 @@
     });
   }
 
-  // =====================================================
-  //   RENDER PERTANYAAN DENGAN TIMER
-  // =====================================================
+  // ========== RENDER PERTANYAAN ==========
   function renderPretestQuestion() {
     const container = document.getElementById('pretestContainer');
     const quiz = pretestQuiz;
@@ -575,20 +422,17 @@
         return;
       }
       try {
-        await callAppsScript({
-          action: 'submitPretest',
-          nama: quiz.nama,
-          nohp: quiz.nohp,
-          alamat: quiz.alamat,
-          answers: JSON.stringify(quiz.answers.map(a => ({
-            qid: a.questionId,
-            selected: a.selectedOption,
-            correct: a.isCorrect
-          }))),
-          score: quiz.score
-        }, 'POST');
+        // Panggil submitPretest melalui PKD
+        const answers = JSON.stringify(quiz.answers.map(a => ({
+          qid: a.questionId,
+          selected: a.selectedOption,
+          correct: a.isCorrect
+        })));
+        await PKD.submitPretest(quiz.nama, quiz.nohp, quiz.alamat, answers, quiz.score);
         showToast('Pretest berhasil dikirim!', 'success');
         clearPretestQuiz();
+        // Redirect atau reset? Biarkan di halaman
+        location.reload();
       } catch (e) {
         showToast('Gagal mengirim: ' + e.message, 'danger');
       }
@@ -600,9 +444,7 @@
     });
   }
 
-  // =====================================================
-  //   FUNGSI UTAMA MEMUAT PRETEST (CACHE + BACKGROUND)
-  // =====================================================
+  // ========== FUNGSI UTAMA MEMUAT PRETEST ==========
   async function loadPretest() {
     const container = document.getElementById('pretestContainer');
     container.innerHTML = '<div class="text-center my-4"><div class="loading-spinner"></div><p class="mt-2 text-muted">Memuat soal...</p></div>';
@@ -612,6 +454,7 @@
 
     if (questions && settings) {
       initPretestWithData(questions, settings);
+      // Background update
       Promise.all([fetchPretestQuestions(true), fetchQuizSettings(true)])
         .then(([newQuestions, newSettings]) => {
           if (JSON.stringify(newQuestions) !== JSON.stringify(questions) ||
@@ -717,6 +560,7 @@
     renderPretestStartForm();
   }
 
+  // Fungsi loadPretest didefinisikan di atas sudah, pastikan global
   window.loadPretest = loadPretest;
 </script>
 </body>

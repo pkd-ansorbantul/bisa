@@ -29,6 +29,7 @@
     .toast.border-success { border-left-color: #28a745; }
     .toast.border-danger { border-left-color: #dc3545; }
     @media (max-width: 576px) { .container-card { padding: 1.5rem; } }
+    /* Tambahan style dari api.js toast bisa diabaikan karena api.js sudah membuatnya */
   </style>
 </head>
 <body>
@@ -60,148 +61,49 @@
   <i class="bi bi-c-circle"></i> 2026 · Tim Instruktur GP Ansor Kabupaten Bantul
 </footer>
 
-<!-- Toast notifikasi -->
-<div class="toast-container">
-  <div id="notificationToast" class="toast border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
-    <div class="toast-header bg-white border-0">
-      <i class="bi me-2" id="toastIcon"></i>
-      <strong class="me-auto" id="toastTitle">Berhasil</strong>
-      <small>baru saja</small>
-      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-    </div>
-    <div class="toast-body" id="toastMessage"></div>
-  </div>
-</div>
+<!-- Toast notifikasi (dibuat oleh api.js, tapi kita bisa gunakan yang sudah ada) -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="api.js"></script>
 
 <script>
   // =====================================================
   //   KONFIGURASI & STATE
   // =====================================================
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec'; // Ganti
+  // scriptUrl tidak diperlukan lagi
 
-  // =====================================================
-  //   FUNGSI BANTU
-  // =====================================================
-  function escapeHtml(unsafe) {
-    if (!unsafe) return '';
-    return unsafe
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
+  // Fungsi bantu lokal
+  function escapeHtmlLocal(unsafe) { return PKD.escapeHtml(unsafe); }
+  function showToastLocal(message, type = 'success') { PKD.showToast(message, type); }
 
-  function showToast(message, type = 'success') {
-    const toastEl = document.getElementById('notificationToast');
-    const toastMessage = document.getElementById('toastMessage');
-    const toastIcon = document.getElementById('toastIcon');
-    const toastTitle = document.getElementById('toastTitle');
-
-    toastMessage.innerText = message;
-
-    if (type === 'success') {
-      toastEl.classList.add('border-success');
-      toastEl.classList.remove('border-danger');
-      toastIcon.className = 'bi bi-check-circle-fill me-2 text-success';
-      toastTitle.innerText = 'Berhasil';
-      toastTitle.style.color = '#28a745';
-    } else {
-      toastEl.classList.add('border-danger');
-      toastEl.classList.remove('border-success');
-      toastIcon.className = 'bi bi-x-circle-fill me-2 text-danger';
-      toastTitle.innerText = 'Gagal';
-      toastTitle.style.color = '#dc3545';
-    }
-
-    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-    toast.show();
-  }
-
-  function togglePassword(id) {
+  function togglePasswordLocal(id) {
     const input = document.getElementById(id);
     input.type = input.type === 'password' ? 'text' : 'password';
   }
-  window.togglePassword = togglePassword;
+  window.togglePassword = togglePasswordLocal; // untuk onclick di HTML
 
   // =====================================================
-  //   PANGGILAN APPS SCRIPT (SEDERHANA, CEPAT)
-  // =====================================================
-  function callAppsScript(params, method = 'GET') {
-    // Hanya gunakan fetch, tanpa fallback JSONP yang lambat
-    if (method === 'GET') {
-      const queryString = new URLSearchParams(params).toString();
-      return fetch(`${scriptUrl}?${queryString}`, {
-        method: 'GET',
-        mode: 'cors',          // Apps Script mendukung CORS
-        headers: { 'Accept': 'application/json' }
-      }).then(response => {
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        return response.json();
-      });
-    } else {
-      // POST via no-cors (data tetap terkirim, tapi tanpa respons detail)
-      return fetch(scriptUrl, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(params)
-      }).then(() => ({ success: true, message: 'Request sent (no-cors)' }));
-    }
-  }
-
-  // =====================================================
-  //   CACHE LOGIN MODE SETTING
+  //   CACHE LOGIN MODE SETTING (menggunakan PKD)
   // =====================================================
   async function getLoginModeSetting() {
     const cacheKey = 'loginMode';
-    // Cek sessionStorage dulu (cache per session)
-    const cached = sessionStorage.getItem(cacheKey);
-    if (cached) {
-      try { return JSON.parse(cached); } catch(e) {}
-    }
-    try {
-      const res = await callAppsScript({ action: 'getLoginMode' }, 'GET');
-      // Simpan ke sessionStorage
-      sessionStorage.setItem(cacheKey, JSON.stringify(res));
-      return res;
-    } catch(e) {
-      console.warn('Gagal cek login mode', e);
-      return { success: true, enabled: false }; // default: tidak butuh login
-    }
+    const cached = PKD.getCached(cacheKey, 300000);
+    if (cached) return cached;
+    const res = await PKD.getLoginMode();
+    PKD.saveCached(cacheKey, res);
+    return res;
   }
 
   // =====================================================
-  //   CACHE SESSION (sessionStorage)
+  //   CACHE SESSION (sessionStorage) – pakai PKD
   // =====================================================
-  function getCachedSesi() {
-    try {
-      const cached = sessionStorage.getItem('absenSesiCache');
-      const time = sessionStorage.getItem('absenSesiCacheTime');
-      if (cached && time && (Date.now() - parseInt(time)) < 300000) { // 5 menit
-        return JSON.parse(cached);
-      }
-    } catch(e) {}
-    return null;
-  }
-
-  function saveCachedSesi(data) {
-    try {
-      sessionStorage.setItem('absenSesiCache', JSON.stringify(data));
-      sessionStorage.setItem('absenSesiCacheTime', Date.now().toString());
-    } catch(e) {}
-  }
-
   async function fetchSesiAbsen(forceRefresh = false) {
     if (!forceRefresh) {
-      const cached = getCachedSesi();
+      const cached = PKD.getCached('absenSesiCache', 300000);
       if (cached) return cached;
     }
-    const res = await callAppsScript({ action: 'getSesiAbsen' }, 'GET');
-    const data = res.data || [];
-    saveCachedSesi(data);
+    const data = await PKD.getSesiAbsen(true);
+    PKD.saveCached('absenSesiCache', data);
     return data;
   }
 
@@ -265,7 +167,7 @@
     html += `<h5>Pilih Sesi</h5><select class="form-select" id="pilihSesiAbsen" ${isQRMode ? 'disabled' : ''}>`;
     sesiList.forEach(s => {
       const selected = (sesiIdFromUrl && s.id == sesiIdFromUrl) ? 'selected' : '';
-      html += `<option value="${s.id}" ${selected}>${escapeHtml(s.nama)} (${escapeHtml(s.waktu || '')})</option>`;
+      html += `<option value="${s.id}" ${selected}>${escapeHtmlLocal(s.nama)} (${escapeHtmlLocal(s.waktu || '')})</option>`;
     });
     html += `</select></div>`;
 
@@ -275,7 +177,7 @@
              </div>`;
 
     if (isQRMode) {
-      html += `<input type="hidden" id="qrTokenAbsen" value="${escapeHtml(tokenFromUrl)}">`;
+      html += `<input type="hidden" id="qrTokenAbsen" value="${escapeHtmlLocal(tokenFromUrl)}">`;
       html += `<div class="alert alert-success mb-3">
                 <i class="bi bi-check-circle"></i> Absen via QR – token terisi otomatis.
               </div>`;
@@ -320,14 +222,14 @@
       btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengirim...';
 
       if (!window.sigPadAbsen || window.sigPadAbsen.isEmpty()) {
-        showToast('Tanda tangan wajib!', 'danger');
+        showToastLocal('Tanda tangan wajib!', 'danger');
         btn.disabled = false;
         btn.innerHTML = '📋 Kirim Absen';
         return;
       }
       const nama = document.getElementById('namaAbsen').value.trim();
       if (!nama) {
-        showToast('Nama wajib diisi!', 'danger');
+        showToastLocal('Nama wajib diisi!', 'danger');
         btn.disabled = false;
         btn.innerHTML = '📋 Kirim Absen';
         return;
@@ -346,7 +248,7 @@
       } else {
         const password = document.getElementById('passwordAbsen').value.trim();
         if (!password) {
-          showToast('Password sesi wajib diisi!', 'danger');
+          showToastLocal('Password sesi wajib diisi!', 'danger');
           btn.disabled = false;
           btn.innerHTML = '📋 Kirim Absen';
           return;
@@ -355,8 +257,8 @@
       }
 
       try {
-        const result = await callAppsScript(params, 'POST');
-        showToast('✅ Absen berhasil tercatat!', 'success');
+        const result = await PKD.callApi(params.action, params, 'POST');
+        showToastLocal('✅ Absen berhasil tercatat!', 'success');
         window.sigPadAbsen.clear();
         document.getElementById('namaAbsen').value = '';
         if (!isQRMode) document.getElementById('passwordAbsen').value = '';
@@ -365,7 +267,7 @@
           window.history.replaceState({}, document.title, window.location.pathname);
         }
       } catch (e) {
-        showToast('❌ ' + (e.message || 'Terjadi kesalahan'), 'danger');
+        showToastLocal('❌ ' + (e.message || 'Terjadi kesalahan'), 'danger');
       } finally {
         btn.disabled = false;
         btn.innerHTML = '📋 Kirim Absen';
@@ -392,7 +294,7 @@
         <p class="mt-2 text-muted">Memuat sesi tersedia...</p>
       </div>`;
 
-    let sesiList = getCachedSesi();
+    let sesiList = PKD.getCached('absenSesiCache', 300000);
     if (sesiList && sesiList.length > 0) {
       // Tampilkan cache dulu
       renderForm(sesiList, sesiIdFromUrl, tokenFromUrl, isQRMode);
@@ -407,7 +309,7 @@
         sesiList = await fetchSesiAbsen(true);
         renderForm(sesiList, sesiIdFromUrl, tokenFromUrl, isQRMode);
       } catch (err) {
-        container.innerHTML = `<div class="alert alert-danger">Gagal memuat sesi: ${err.message}</div>`;
+        container.innerHTML = `<div class="alert alert-danger">Gagal memuat sesi: ${escapeHtmlLocal(err.message)}</div>`;
       }
     }
   }
