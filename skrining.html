@@ -31,24 +31,39 @@
   </style>
 </head>
 <body>
-<!-- ========== MODE LOGIN CHECK ========== -->
+
+<!-- ==================== MODE LOGIN CHECK (DIPERBAIKI) ==================== -->
 <script>
-  (async function() {
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec'; // GANTI
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getLoginMode`);
-      const data = await res.json();
-      const requireLogin = data.success ? data.enabled : false;
-      if (requireLogin) {
-        const auth = localStorage.getItem('pkd_auth') || sessionStorage.getItem('pkd_auth');
-        if (!auth) {
-          window.location.href = 'login.html';
-          return;
+  (function() {
+    // Gunakan URL Apps Script yang sama dengan pengaturan.html
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec';
+
+    async function checkLoginThenLoad() {
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getLoginMode`);
+        const data = await res.json();
+        const requireLogin = data.success ? data.enabled : false;
+
+        if (requireLogin) {
+          const auth = localStorage.getItem('pkd_auth') || sessionStorage.getItem('pkd_auth');
+          if (!auth) {
+            window.location.href = 'login.html';
+            return;
+          }
         }
+      } catch (e) {
+        console.warn('Gagal cek mode login, lanjut tanpa login:', e);
       }
-    } catch(e) { console.error('Gagal cek mode login', e); }
-    // Lanjutkan ke konten
-    document.addEventListener('DOMContentLoaded', loadSkriningForm);
+
+      // Jalankan pemuat konten setelah pengecekan selesai
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadSkriningForm);
+      } else {
+        loadSkriningForm();
+      }
+    }
+
+    checkLoginThenLoad();
   })();
 </script>
 
@@ -119,7 +134,8 @@
   // =====================================================
   //   KONFIGURASI & STATE
   // =====================================================
-  const scriptUrl = 'https://script.google.com/macros/s/AKfycbxhkFxLG4RZd4tm3w_4j761hXz0gn4cmQFt-2JO0IEIBS-frohWV_c9CDA1fdM65lee/exec'; // GANTI
+  // Gunakan URL yang sama dengan pengecekan login di atas
+  const scriptUrl = 'https://script.google.com/macros/s/AKfycbxhkFxLG4RZd4tm3w_4j761hXz0gn4cmQFt-2JO0IEIBS-frohWV_c9CDA1fdM65lee/exec';
   const CACHE_DURATION = 3600000; // 1 jam
 
   let globalCache = {
@@ -483,7 +499,7 @@
     }
   }
 
-  // Panggil loadSkriningForm setelah pengecekan mode login (di atas)
+  // Pastikan fungsi tersedia di global scope (dipanggil oleh pengecekan login)
   window.loadSkriningForm = loadSkriningForm;
 </script>
 </body>

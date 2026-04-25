@@ -37,24 +37,37 @@
   </style>
 </head>
 <body>
-<!-- ========== MODE LOGIN CHECK ========== -->
+
+<!-- ==================== MODE LOGIN CHECK (DIPERBAIKI) ==================== -->
 <script>
-  (async function() {
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec'; // GANTI
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getLoginMode`);
-      const data = await res.json();
-      const requireLogin = data.success ? data.enabled : false;
-      if (requireLogin) {
-        const auth = localStorage.getItem('pkd_auth') || sessionStorage.getItem('pkd_auth');
-        if (!auth) {
-          window.location.href = 'login.html';
-          return;
+  (function() {
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec';
+
+    async function checkLoginThenLoad() {
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getLoginMode`);
+        const data = await res.json();
+        const requireLogin = data.success ? data.enabled : false;
+
+        if (requireLogin) {
+          const auth = localStorage.getItem('pkd_auth') || sessionStorage.getItem('pkd_auth');
+          if (!auth) {
+            window.location.href = 'login.html';
+            return;
+          }
         }
+      } catch (e) {
+        console.warn('Gagal cek mode login, lanjut tanpa login:', e);
       }
-    } catch(e) { console.error('Gagal cek mode login', e); }
-    // Lanjutkan ke konten
-    document.addEventListener('DOMContentLoaded', loadMateriList);
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadMateriList);
+      } else {
+        loadMateriList();
+      }
+    }
+
+    checkLoginThenLoad();
   })();
 </script>
 
@@ -138,7 +151,7 @@
   // =====================================================
   //   KONFIGURASI & STATE
   // =====================================================
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhkFxLG4RZd4tm3w_4j761hXz0gn4cmQFt-2JO0IEIBS-frohWV_c9CDA1fdM65lee/exec'; // GANTI
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhkFxLG4RZd4tm3w_4j761hXz0gn4cmQFt-2JO0IEIBS-frohWV_c9CDA1fdM65lee/exec';
   const CACHE_DURATION = 3600000; // 1 jam
 
   // =====================================================
@@ -384,15 +397,14 @@
     }
   }
 
-  // =====================================================
-  //   INISIALISASI (dipanggil setelah pengecekan mode login)
-  // =====================================================
-  // (Fungsi loadMateriList sudah dipanggil di atas)
   // Reset iframe saat modal ditutup
   document.getElementById('previewMateriModal')?.addEventListener('hidden.bs.modal', function () {
     document.getElementById('previewMateriIframe').src = '';
     document.getElementById('previewMateriSpinner').style.display = 'flex';
   });
+
+  // Pastikan fungsi tersedia di global scope
+  window.loadMateriList = loadMateriList;
 </script>
 </body>
 </html>

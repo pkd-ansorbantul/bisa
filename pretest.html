@@ -42,24 +42,37 @@
   </style>
 </head>
 <body>
-<!-- ========== MODE LOGIN CHECK ========== -->
+
+<!-- ==================== MODE LOGIN CHECK (DIPERBAIKI) ==================== -->
 <script>
-  (async function() {
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec'; // GANTI
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getLoginMode`);
-      const data = await res.json();
-      const requireLogin = data.success ? data.enabled : false;
-      if (requireLogin) {
-        const auth = localStorage.getItem('pkd_auth') || sessionStorage.getItem('pkd_auth');
-        if (!auth) {
-          window.location.href = 'login.html';
-          return;
+  (function() {
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec';
+
+    async function checkLoginThenLoad() {
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getLoginMode`);
+        const data = await res.json();
+        const requireLogin = data.success ? data.enabled : false;
+
+        if (requireLogin) {
+          const auth = localStorage.getItem('pkd_auth') || sessionStorage.getItem('pkd_auth');
+          if (!auth) {
+            window.location.href = 'login.html';
+            return;
+          }
         }
+      } catch (e) {
+        console.warn('Gagal cek mode login, lanjut tanpa login:', e);
       }
-    } catch(e) { console.error('Gagal cek mode login', e); }
-    // Lanjutkan ke konten
-    document.addEventListener('DOMContentLoaded', loadPretest);
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadPretest);
+      } else {
+        loadPretest();
+      }
+    }
+
+    checkLoginThenLoad();
   })();
 </script>
 
@@ -98,7 +111,7 @@
   // =====================================================
   //   KONFIGURASI & STATE
   // =====================================================
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhkFxLG4RZd4tm3w_4j761hXz0gn4cmQFt-2JO0IEIBS-frohWV_c9CDA1fdM65lee/exec'; // GANTI
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhkFxLG4RZd4tm3w_4j761hXz0gn4cmQFt-2JO0IEIBS-frohWV_c9CDA1fdM65lee/exec';
 
   let pretestQuiz = null;
   let cachedQuestions = null;
@@ -213,7 +226,7 @@
     try {
       const cached = sessionStorage.getItem('pretestQuestionsCache');
       const time = sessionStorage.getItem('pretestQuestionsCacheTime');
-      if (cached && time && (Date.now() - parseInt(time)) < 3600000) { // 1 jam
+      if (cached && time && (Date.now() - parseInt(time)) < 3600000) {
         return JSON.parse(cached);
       }
     } catch (e) {}
@@ -287,7 +300,6 @@
     if (!saved) return null;
     try {
       const parsed = JSON.parse(saved);
-      // pastikan properti ada
       parsed.nohp = parsed.nohp || '';
       parsed.alamat = parsed.alamat || '';
       parsed.started = parsed.started || false;
@@ -364,7 +376,7 @@
   }
 
   // =====================================================
-  //   RENDER PERTANYAAN DENGAN TIMER YANG DIPERBAIKI
+  //   RENDER PERTANYAAN DENGAN TIMER
   // =====================================================
   function renderPretestQuestion() {
     const container = document.getElementById('pretestContainer');
@@ -440,7 +452,6 @@
       });
     }
 
-    // Mulai timer hanya jika belum dijawab
     if (quiz.answers[quiz.currentIndex] === undefined) {
       startPretestTimer();
     }
@@ -461,12 +472,9 @@
       isCorrect
     };
 
-    // Timer otomatis berhenti karena pengecekan di interval
-    // Tidak perlu clearInterval di sini, akan dihentikan di render berikutnya
     renderPretestQuestion();
     savePretestQuiz();
 
-    // Otomatis lanjut ke soal berikutnya setelah 1.5 detik
     setTimeout(() => {
       if (quiz.currentIndex < quiz.questions.length && quiz.answers[quiz.currentIndex] !== undefined) {
         nextPretestQuestion();
@@ -477,34 +485,27 @@
   function startPretestTimer() {
     const quiz = pretestQuiz;
     if (!quiz) return;
-    // Hentikan timer lama jika ada
     if (quiz.timer) clearInterval(quiz.timer);
 
-    // Pastikan timeLeft diset ke durasi timer (30 detik)
     quiz.timeLeft = quiz.timerDuration;
     updateTimerDisplay(quiz.timeLeft);
 
     quiz.timer = setInterval(() => {
-      // Jika quiz sudah tidak ada, hentikan
       if (!quiz) { clearInterval(quiz.timer); return; }
 
-      // Jika soal sudah dijawab, hentikan timer
       if (quiz.answers[quiz.currentIndex] !== undefined) {
         clearInterval(quiz.timer);
         quiz.timer = null;
         return;
       }
 
-      // Kurangi waktu
       quiz.timeLeft -= 1;
       updateTimerDisplay(quiz.timeLeft);
 
-      // Jika waktu habis
       if (quiz.timeLeft <= 0) {
         clearInterval(quiz.timer);
         quiz.timer = null;
 
-        // Tandai soal sebagai tidak dijawab (null) dan tidak benar
         if (quiz.answers[quiz.currentIndex] === undefined) {
           const q = quiz.questions[quiz.currentIndex];
           quiz.answers[quiz.currentIndex] = {
@@ -515,7 +516,6 @@
           renderPretestQuestion();
           savePretestQuiz();
 
-          // Otomatis lanjut ke soal berikutnya
           setTimeout(() => {
             if (quiz.currentIndex < quiz.questions.length && quiz.answers[quiz.currentIndex] !== undefined) {
               nextPretestQuestion();
@@ -536,13 +536,12 @@
   function nextPretestQuestion() {
     const quiz = pretestQuiz;
     if (!quiz) return;
-    // Hentikan timer saat pindah soal
     if (quiz.timer) {
       clearInterval(quiz.timer);
       quiz.timer = null;
     }
     quiz.currentIndex++;
-    quiz.timeLeft = quiz.timerDuration; // reset timer untuk soal berikutnya
+    quiz.timeLeft = quiz.timerDuration;
     renderPretestQuestion();
     savePretestQuiz();
   }
@@ -608,14 +607,11 @@
     const container = document.getElementById('pretestContainer');
     container.innerHTML = '<div class="text-center my-4"><div class="loading-spinner"></div><p class="mt-2 text-muted">Memuat soal...</p></div>';
 
-    // Ambil dari cache
     let questions = getCachedPretestQuestions();
     let settings = getCachedQuizSettings();
 
     if (questions && settings) {
-      // Render dulu dengan data cache
       initPretestWithData(questions, settings);
-      // Background update
       Promise.all([fetchPretestQuestions(true), fetchQuizSettings(true)])
         .then(([newQuestions, newSettings]) => {
           if (JSON.stringify(newQuestions) !== JSON.stringify(questions) ||
@@ -625,7 +621,6 @@
         })
         .catch(console.warn);
     } else {
-      // Tidak ada cache, fetch langsung
       try {
         questions = await fetchPretestQuestions(true);
         settings = await fetchQuizSettings(true);
@@ -722,7 +717,6 @@
     renderPretestStartForm();
   }
 
-  // Fungsi loadPretest dipanggil setelah pengecekan mode login
   window.loadPretest = loadPretest;
 </script>
 </body>

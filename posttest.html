@@ -13,6 +13,8 @@
     body { background: #f8fafc; color: #0f172a; min-height: 100vh; display: flex; flex-direction: column; }
     .navbar { background: rgba(255,255,255,0.8) !important; backdrop-filter: blur(12px); border-bottom: 1px solid rgba(203,213,225,0.3); }
     .navbar-brand img { max-height: 40px; margin-right: 12px; }
+    .brand-title { font-size: 1.35rem; font-weight: 700; color: #0a3d62; }
+    .brand-sub { font-size: 0.9rem; color: #6c757d; display: block; }
     .container-card { max-width: 900px; background: white; border-radius: 32px; padding: 2rem; margin: 30px auto; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid rgba(226,232,240,0.6); }
     .section-title { font-weight: 650; font-size: 1.75rem; border-left: 6px solid #2563eb; padding-left: 1.2rem; }
     .card-kahoot { background: white; border: 1px solid #e2e8f0; border-radius: 28px; padding: 1.8rem; box-shadow: 0 6px 14px rgba(0,0,0,0.02); }
@@ -38,24 +40,37 @@
   </style>
 </head>
 <body>
-<!-- ========== MODE LOGIN CHECK ========== -->
+
+<!-- ==================== MODE LOGIN CHECK (DIPERBAIKI) ==================== -->
 <script>
-  (async function() {
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec'; // GANTI
-    try {
-      const res = await fetch(`${SCRIPT_URL}?action=getLoginMode`);
-      const data = await res.json();
-      const requireLogin = data.success ? data.enabled : false;
-      if (requireLogin) {
-        const auth = localStorage.getItem('pkd_auth') || sessionStorage.getItem('pkd_auth');
-        if (!auth) {
-          window.location.href = 'login.html';
-          return;
+  (function() {
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxtPXxjYNTuKffR4LPxBlSML4ZdXrlPBHmVgxeuNYCCgCYW3t6iUTGYn_iTQAV5m-0Z/exec';
+
+    async function checkLoginThenLoad() {
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getLoginMode`);
+        const data = await res.json();
+        const requireLogin = data.success ? data.enabled : false;
+
+        if (requireLogin) {
+          const auth = localStorage.getItem('pkd_auth') || sessionStorage.getItem('pkd_auth');
+          if (!auth) {
+            window.location.href = 'login.html';
+            return;
+          }
         }
+      } catch (e) {
+        console.warn('Gagal cek mode login, lanjut tanpa login:', e);
       }
-    } catch(e) { console.error('Gagal cek mode login', e); }
-    // Lanjutkan ke konten
-    document.addEventListener('DOMContentLoaded', loadPosttest);
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadPosttest);
+      } else {
+        loadPosttest();
+      }
+    }
+
+    checkLoginThenLoad();
   })();
 </script>
 
@@ -98,7 +113,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhkFxLG4RZd4tm3w_4j761hXz0gn4cmQFt-2JO0IEIBS-frohWV_c9CDA1fdM65lee/exec'; // GANTI
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxhkFxLG4RZd4tm3w_4j761hXz0gn4cmQFt-2JO0IEIBS-frohWV_c9CDA1fdM65lee/exec';
 
   let posttestQuiz = null;
 
@@ -270,7 +285,7 @@
 
     let html = `<div class="card-kahoot">`;
     html += `<div class="quiz-header">`;
-    html += `<div class="timer-box"><i class="bi bi-hourglass-split"></i> ${timerValue} detik</div>`;
+    html += `<div class="timer-box"><i class="bi bi-hourglass-split"></i> <span id="timerDisplay">${timerValue}</span> detik</div>`;
     html += `<div class="score-box"><i class="bi bi-star-fill"></i> Skor: ${quiz.score}</div>`;
     html += `<div class="progress-box"><i class="bi bi-list-ol"></i> ${progress}</div>`;
     html += `</div>`;
@@ -333,6 +348,7 @@
     const quiz = posttestQuiz;
     if (!quiz || quiz.timer) return;
     quiz.timeLeft = quiz.timerDuration;
+    updateTimerDisplay(quiz.timeLeft);
     quiz.timer = setInterval(() => {
       if (!quiz) { clearInterval(quiz.timer); return; }
       if (quiz.answers[quiz.currentIndex] !== undefined) {
@@ -341,8 +357,7 @@
         return;
       }
       quiz.timeLeft -= 1;
-      const timerEl = document.querySelector('.timer-box');
-      if (timerEl) timerEl.innerHTML = `<i class="bi bi-hourglass-split"></i> ${quiz.timeLeft} detik`;
+      updateTimerDisplay(quiz.timeLeft);
       if (quiz.timeLeft <= 0) {
         clearInterval(quiz.timer);
         quiz.timer = null;
@@ -355,6 +370,11 @@
         }
       }
     }, 1000);
+  }
+
+  function updateTimerDisplay(seconds) {
+    const timerEl = document.getElementById('timerDisplay');
+    if (timerEl) { timerEl.innerText = seconds; }
   }
 
   function nextPosttestQuestion() {
