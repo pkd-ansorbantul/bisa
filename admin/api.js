@@ -194,7 +194,7 @@
     userData = {};
     sessionStorage.removeItem('pkd_auth');
     localStorage.removeItem('pkd_auth');
-    window.location.href = 'index.html';
+    window.location.href = '/bisa/index.html';
   }
 
   async function verifyAdmin(username, password) {
