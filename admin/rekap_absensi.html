@@ -173,13 +173,26 @@
     URL.revokeObjectURL(link.href);
   }
 
+  // === Fungsi konversi yang sangat aman ===
+  function toSafeArray(value) {
+    if (value === null || value === undefined) return [];
+    if (Array.isArray(value)) return value;
+    // Jika memiliki iterator (misal Set, Map)
+    if (typeof value[Symbol.iterator] === 'function') {
+      return Array.from(value);
+    }
+    // Jika objek biasa dengan properti numerik (seperti {0: "a", 1: "b"})
+    if (typeof value === 'object') {
+      return Object.values(value);
+    }
+    return [];
+  }
+
   // Render tabel rekap
   function renderRekapTable({ peserta, sesi, hadirSet }, container) {
-    // === PERBAIKAN PENTING (BEBAS ERROR): ===
-    // Pastikan hadirSet selalu diubah menjadi array yang valid terlebih dahulu.
-    // Object biasa (hasil JSON.parse) juga akan dipaksa menjadi array kosong jika tidak Array.
-    const validHadirArray = Array.isArray(hadirSet) ? hadirSet : [];
-    const setHadir = new Set(validHadirArray);
+    // === PERBAIKAN PALING AMAN ===
+    const safeArray = toSafeArray(hadirSet);
+    const setHadir = new Set(safeArray);
     
     const sesiTampil = sesi.slice(0, 11);
 
@@ -253,8 +266,7 @@
         const toComparable = (data) => ({
             peserta: data.peserta || [],
             sesi: data.sesi || [],
-            // Konversi menjadi array terurut agar perbandingan JSON konsisten
-            hadirSet: Array.from(data.hadirSet || []).sort()
+            hadirSet: toSafeArray(data.hadirSet).sort()
         });
         
         if(JSON.stringify(toComparable(cached)) !== JSON.stringify(toComparable(newData))) {
