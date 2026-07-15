@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
   <title>PKD GP Ansor Bantul · Rekap Absensi</title>
 
-  <link rel="icon" type="image/png" href="logo-ansor.webp">
+  <!-- Favicon & Font -->
+  <link rel="icon" type="image/png" href="LOGO ANSOR.webp">
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <!-- Bootstrap + Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
@@ -67,7 +69,7 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
   <div class="container">
     <a class="navbar-brand d-flex align-items-center" href="/bisa/index.html">
-      <img src="logo-ansor.webp" alt="GP Ansor">
+      <img src="LOGO ANSOR.webp" alt="GP Ansor">
       <span><span class="brand-title">PKD GP Ansor</span><span class="brand-sub">Kabupaten Bantul</span></span>
     </a>
     <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"><span class="navbar-toggler-icon"></span></button>
@@ -131,6 +133,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="api.js"></script>
 <script>
+  // Validasi role admin
   window.onload = function() {
     if (typeof PKD === 'undefined' || PKD.getUserRole() !== 'admin') {
       window.location.href = '/bisa/login.html';
@@ -141,7 +144,8 @@
 
   const { escapeHtml, showToast, getCached, saveCached } = PKD;
 
-  function renderSkeletonTable(rows=5, cols=6) {
+  // Helper render skeleton
+  function renderSkeletonTable(rows = 5, cols = 6) {
     let h = '<div class="skeleton-table p-3">';
     for(let r=0; r<rows; r++) {
       h += '<div class="d-flex gap-2 mb-3">';
@@ -151,13 +155,28 @@
     return h + '</div>';
   }
 
+  // Fetch data dari server (tanpa cache)
   async function fetchRekapFromServer() {
     return await PKD.getAttendanceMatrix(true);
   }
 
+  // Fungsi download CSV
+  function downloadCSV(csvContent, filename) {
+    const bom = "\uFEFF";
+    const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+  }
+
+  // Render tabel rekap
   function renderRekapTable({ peserta, sesi, hadirSet }, container) {
-    // === PENTING: pastikan hadirSet adalah sebuah Set ===
-    const setHadir = (hadirSet instanceof Set) ? hadirSet : new Set(hadirSet);
+    // === PERBAIKAN PENTING: pastikan hadirSet selalu menjadi Set yang valid ===
+    const setHadir = new Set(hadirSet || []);
     const sesiTampil = sesi.slice(0, 11);
 
     let html = `
@@ -203,6 +222,7 @@
     document.getElementById('exportRekapCSVBtn')?.addEventListener('click', exportRekapCSV);
   }
 
+  // Ekspor CSV via API
   async function exportRekapCSV() {
     try {
       const res = await PKD.exportAttendanceMatrixCSV();
@@ -217,27 +237,22 @@
     }
   }
 
-  function downloadCSV(csvContent, filename) {
-    const bom = "\uFEFF";
-    const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.setAttribute('download', filename);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(link.href);
-  }
-
+  // Load utama dengan cache
   async function loadRekapAbsensi() {
     const container = document.getElementById('rekapContainer');
     const cached = getCached('rekapAbsensi');
+
     if(cached) {
       renderRekapTable(cached, container);
       fetchRekapFromServer().then(newData => {
-        const cachedForCompare = { peserta: cached.peserta, sesi: cached.sesi, hadirSet: Array.from(new Set(cached.hadirSet)) };
-        const newForCompare = { peserta: newData.peserta, sesi: newData.sesi, hadirSet: Array.from(newData.hadirSet) };
-        if(JSON.stringify(cachedForCompare) !== JSON.stringify(newForCompare)) {
+        // === PERBAIKAN PENTING: Fungsi pembantu untuk membandingkan data dengan aman ===
+        const toComparable = (data) => ({
+            peserta: data.peserta || [],
+            sesi: data.sesi || [],
+            hadirSet: Array.from(data.hadirSet || []).sort()
+        });
+        
+        if(JSON.stringify(toComparable(cached)) !== JSON.stringify(toComparable(newData))) {
           renderRekapTable(newData, container);
           saveCached('rekapAbsensi', newData);
         }
@@ -259,9 +274,14 @@
     const row = document.querySelector('.row.g-4');
     row.classList.toggle('sidebar-minimized');
     const icon = this.querySelector('i');
-    icon.classList.toggle('bi-arrow-left-right'); icon.classList.toggle('bi-arrow-right-left');
+    icon.classList.toggle('bi-arrow-left-right'); 
+    icon.classList.toggle('bi-arrow-right-left');
   });
-  document.getElementById('sidebarLogoutBtn')?.addEventListener('click', e => { e.preventDefault(); PKD.logout(); });
+
+  document.getElementById('sidebarLogoutBtn')?.addEventListener('click', e => { 
+    e.preventDefault(); 
+    PKD.logout(); 
+  });
 </script>
 </body>
 </html>
