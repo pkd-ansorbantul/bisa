@@ -175,8 +175,12 @@
 
   // Render tabel rekap
   function renderRekapTable({ peserta, sesi, hadirSet }, container) {
-    // === PERBAIKAN PENTING: pastikan hadirSet selalu menjadi Set yang valid ===
-    const setHadir = new Set(hadirSet || []);
+    // === PERBAIKAN PENTING (BEBAS ERROR): ===
+    // Pastikan hadirSet selalu diubah menjadi array yang valid terlebih dahulu.
+    // Object biasa (hasil JSON.parse) juga akan dipaksa menjadi array kosong jika tidak Array.
+    const validHadirArray = Array.isArray(hadirSet) ? hadirSet : [];
+    const setHadir = new Set(validHadirArray);
+    
     const sesiTampil = sesi.slice(0, 11);
 
     let html = `
@@ -245,10 +249,11 @@
     if(cached) {
       renderRekapTable(cached, container);
       fetchRekapFromServer().then(newData => {
-        // === PERBAIKAN PENTING: Fungsi pembantu untuk membandingkan data dengan aman ===
+        // Fungsi pembantu untuk membandingkan data dengan aman
         const toComparable = (data) => ({
             peserta: data.peserta || [],
             sesi: data.sesi || [],
+            // Konversi menjadi array terurut agar perbandingan JSON konsisten
             hadirSet: Array.from(data.hadirSet || []).sort()
         });
         
